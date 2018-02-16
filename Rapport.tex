@@ -1,0 +1,266 @@
+\documentclass[letterpaper, 12pt]{report}
+\usepackage[top = 1.8cm, left = 3cm, right = 3cm ]{geometry}
+\usepackage[pdftex]{graphicx}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{url}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{listings}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{epigraph}
+\usepackage{fancyhdr}
+\usepackage{gensymb}
+\usepackage{rotating}
+\usepackage[french,ruled,vlined]{algorithm2e}
+\usepackage{longtable}
+\usepackage[english,frenchb]{babel}
+\usepackage{newfloat}
+\usepackage{enumitem}
+\usepackage{amsfonts}
+
+\DeclareFloatingEnvironment[placement={!ht},name=Liste]{mylist}
+\newtheorem{mydef}{Definition}
+
+\def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
+\let\endchangemargin=\endlist 
+
+\newcommand{\alinea}{
+\hspace*{0.5cm}}
+
+\renewcommand*\sfdefault{phv}
+\renewcommand*\rmdefault{ppl}
+
+\renewcommand\epigraphflush{flushright}
+\renewcommand\epigraphsize{\normalsize}
+\setlength\epigraphwidth{0.7\textwidth}
+
+\definecolor{titlepagecolor}{RGB}{255,20,20}
+
+\DeclareFixedFont{\titlefont}{T1}{phv}{\seriesdefault}{n}{0.375in}
+  
+
+\makeatletter
+\@addtoreset{section}{part}
+
+\renewcommand{\partname}{Partie}
+
+
+% The following code is borrowed from: http://tex.stackexchange.com/a/86310/10898
+
+\newcommand\titlepagedecoration{%
+\begin{tikzpicture}[remember picture,overlay,shorten >= -10pt]
+
+\coordinate (aux1) at ([yshift=-50pt]current page.north east);
+\coordinate (aux2) at ([yshift=-380pt]current page.north east);
+\coordinate (aux3) at ([xshift=-5cm]current page.north east);
+\coordinate (aux4) at ([yshift=-130pt]current page.north east);
+\coordinate (aux5) at ([yshift=-4cm]current page.north west);
+\coordinate (aux6) at ([xshift=4cm]current page.north west);
+
+
+\begin{scope}[titlepagecolor!40,line width=12pt,rounded corners=12pt]
+\draw
+  (aux1) -- coordinate (a)
+  ++(225:5) --
+  ++(-45:5.1) coordinate (b);
+\draw[shorten <= -10pt]
+  (aux3) --
+  (a) --
+  (aux1);
+\draw[opacity=0.6,titlepagecolor,shorten <= -10pt]
+  (b) --
+  ++(225:2.2) --
+  ++(-45:2.2);
+\draw[opacity=0.5,titlepagecolor,shorten <= -15pt]
+  (aux5) --
+  (aux6);
+\end{scope}
+\draw[titlepagecolor,line width=8pt,rounded corners=8pt,shorten <= -10pt]
+  (aux4) --
+  ++(225:0.8) --
+  ++(-45:0.8);
+
+\begin{scope}[titlepagecolor!70,line width=6pt,rounded corners=8pt]
+\end{scope}
+\end{tikzpicture}%
+}
+
+\begin{document}
+\begin{titlepage}
+
+\noindent
+
+
+\newgeometry{bottom = 2cm, top = 2.5cm}
+\begin{center}
+\includegraphics[scale=0.2]{umonslogo}\\
+\vspace*{0.7cm}
+\includegraphics[scale=0.32]{fs-logo}\\
+\vspace*{2.5cm}
+\titlefont Mémoire\\~\\{\LARGE  Data Repairing\\}~\\~\\{\large} \par
+\end{center}
+\vspace*{3.5cm}
+\hfill
+\begin{minipage}{0.18\linewidth}
+  \begin{flushright}
+   \rule{0.5pt}{75pt}
+  \end{flushright}
+\end{minipage}
+\begin{minipage}{0.8\linewidth}
+\begin{flushleft}
+\textsf{\textbf{Project made by:}} Maxime Van Herzeele\\
+\textsf{\textbf{Academic Year:}} 2017-2018\\
+\textsf{\textbf{dissertation director:}} Jeff Wijsen\\
+%\textsf{\textbf{Rapporteurs}} Pierre Hauweele \& Tom Mens\\
+\textsf{\textbf{Section:}} 2$^{nd}$ Master Bloc in ComputerSciencesSciences
+\end{flushleft}
+\end{minipage}
+\vspace*{\fill}
+\begin{center}
+Faculté des Sciences $\bullet$ University of Mons $\bullet$ Place du Parc 20 $\bullet$ B-7000 Mons
+\end{center}
+\titlepagedecoration
+\end{titlepage}
+
+\newgeometry{top = 3cm, left = 2.5cm, right = 2.5cm}
+
+\pagestyle{fancy}
+\lhead{Maxime Van Herzeele}
+\rhead{MAB2 Computer Sciences}
+\cfoot{\thepage}
+
+\pagenumbering{roman} \setcounter{page}{1} 
+\section*{Remerciements} 
+\vspace*{0.8cm}
+\addcontentsline{toc}{section}{acknowledgement} 
+Todo : remerciement
+\newpage
+
+\tableofcontents
+\pagebreak
+
+\chapter{Introduction}
+
+\pagenumbering{arabic} \setcounter{page}{1} 
+
+\alinea Many institutions and companies collect, store and use a lot of data. These data could be dirty which means they contain erroneous information. An Erroneous information may mislead anyone who want to use the database. To prevent this problem, data should respect integrity constraints which are rules in database. Any information who doesn't fit these constraints is considered as a dirty data. But these constraints may be imprecise as well, failing to identify good data and dirty data. For this reason, some data aren't identify as violation as they should be and others data are identify as violent and they shouldn't be. Both mistakes on data and integrity constraints are a problem for anyone using the database.\\
+
+During my training, i had to work on a project related to a database with such problems. It has a huge impact for a part of my project. The repair of these data is a project for 2018 and i feel it would be interesting to study the data repairing concept.\\
+
+\emph{Data repairing} means recover erroneous data but also repair bad integrity constraints. In this thesis we are going to analyse the \emph{$\theta$-tolerant repair model} as explained in a scientifique article\cite{main}. First of all, we will to re-explain some notions and definition we need to understand the model. Then, we will present some database we used to illustrate data repairing models. Next we'll present some data repairing models with among them the $\theta$-model. We'll theorically compare them and identify pros and cons for all them.
+
+TO CONTINUE.
+
+\chapter{?(Find a good name)}
+
+In this chapter we'll remind some important notions that we are going to use to explain some data repairing models. We use database following the relational model which was introduced by E.F. Codd \cite{misc1}. We'll also present some database we're going to use to illustrate different notions.
+\section{Database}
+
+\alinea In this section we'll present databasse we used as example in this thesis. These databases are used to ulistrate data repairing models and others notions we'll  define.
+
+The first database comes from the main article used as bibliography in this thesis\cite{main}.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|c|c c c c c c|}
+	\hline
+	    & Name & BirthDay & Cellphone Number & Year & Income & Tax\\
+	\hline
+	 t1 & Ayres & 8-8-1984 & 322-573 & 2007 & 21k & 0\\
+	 t2 & Ayres & 5-1-1960 & ***-389 & 2007 & 22k & 0 \\
+	 t3 & Ayres & 5-1-1960 & 564-389 & 2007 & 22k & 0 \\
+	 t4 & Stanley & 13-8-1987 & 868-701 & 2007 & 23k & 3k\\
+	 t5 & Stanley & 31-7-1983 & ***-198 & 2007 & 24k & 0\\
+	 t6 & Stanley & 31-7-1983 & 930-198 & 2008 & 24k & 0\\
+	 t7 & Dustin & 2-12-1985 & 179-924 & 2008 & 25k & 0 \\
+	 t8 & Dustin & 5-9-1980 & ***-870 & 2008 & 100k & 21k \\
+	 t9 & Dustin & 5-9-1980 & 824-870 & 2009 & 100k & 21k \\
+	 t10 & Dustin & 9-4-1984 & 387-215 & 2009 & 150k & 40k \\
+	 \hline
+	\end{tabular}
+	\caption{\label{tableMain} Table de l'article de référence}.
+\end{table}
+
+La seconde base de données que nous allons utilisés est inventée de toute pièce. C'est un exemple de base de données que l'on peut retrouver dans un service public.
+Les attributs de la tables sont:
+
+The second database we are going to use comes from a personal experience. In a training, i had to work on a project related to a database with some dirty data. These data can't be used outside the company but we'll try to get the main idea. It's a table named person, who got several basic information on people from Belgium \footnote{Every data in our database are fictional person.}.
+\begin{itemize}
+\item \textbf{NISS:} The national number of the person. A national number is unique. Usually, a NISS is formated like this\cite{bcss}
+	\begin{itemize}
+	\item It start with the birthdate of the person in a YY-MM-DD format. Exception are made for stranger(People without Belgian nationality), but for ease we won't consider these cases.
+	\item Number 7 to 9 is even for men and odd for female.
+	\item Remaining number are the modulo 97 of the 9 first number. 
+	\end{itemize}
+\item \textbf{Name:} Person's name.
+\item \textbf{Firstname:} Person's firstname.
+\item \textbf{Birth\_Date:} birthDate in DD-MM-YYYY format.
+\item \textbf{Decease\_Date:} Person's date decease.
+\item \textbf{Civil\_State:} Person's current civil state(example: single, married, divorced, decease, widow,...)
+\end{itemize}
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|c|c c c c c c|}
+	\hline
+	    & Niss & Name & Firstname & Birth\_date & Decease\_date & civil\_state\\
+	\hline
+	 t1 & 14050250845 & Dupont & Jean & 14-05-1902 & 18-05-1962 & decease \\
+	\hline
+	 
+	 \hline
+	\end{tabular}
+	\caption{\label{tableMain} Table Person}.
+\end{table}
+
+\section{Relational Model}
+
+\alinea It's important to organize data and model the links between information. It can be done using the relational model with integrity constraints. It's one of the most used model for database management. The goal of this chapter is not to explain this model entirely, but remind some notions like the integrity constraints and others things we'll use to describe and explain data repairing models.\\
+
+In this relationnal model \cite{Integrity}
+\begin{itemize}
+\item An alphabet \emph{A} of predicates symbols. Each of them are unique(2 different symbol means two different things) and they are used to denote the relations, the objects and values in the database
+\item  A set of \emph{integrity constraint}  which are rules. These rules define the consistency of data in the database. They are assertions of symbols of the alphabet \emph{A}. 
+\end{itemize}
+
+On the main paper which this thesis is based, they define a denial constraint as \cite{main}:
+\begin{mydef}
+Consider a relation scheme $R$ with attributes $attr(R)$. Let predicate space $\mathbb{P}$ be a set of predicate  $P$ in the form  $v_1 \phi V_2$ or $v1 \phi c$ with $v_1,v_2 \in t_x.A$ , $x \in \{\alpha,\beta\}$ , $t_\alpha,t_\beta \in R$, $A \in attr(R)$, $c$ is a constant and $\phi \in \{ =,<,>,\leq, \geq, \neq \}$ is a build-in operator.  A \textbf{Denial Constraint(DC)}:
+
+$$\varphi : t_\alpha,t_\beta,... \in R, \neg(P_1 \wedge ... \wedge P_m)$$
+
+states that for any tuples $t_\alpha,t_\beta,...$ from R, all the predicates $P_i \in pred(\varphi)$,i = 1,...,m should not be true at the same time.
+\end{mydef}
+
+In other words, a denial constraint is a conjunction of predicates that shouldn't be true all in the same time. So if one of the predicates is false, the data is consider to be clean.
+%
+%\subsection{Les contraintes d'intégrité}
+%\begin{mydef}
+%Une \textbf{contrainte d'intégrité} $\varphi$ est une règle définissant la cohérence d'une donnée ou d'un ensemble de données de la BD
+%\end{mydef}
+
+
+
+\section{}
+
+\chapter{Data Repairing}
+\section{Integrity constraints variations}
+Insertion et délétion.
+\section{$\theta$-tolerant model}
+\section{Others}
+\subsection{Holistic}
+ et d'autres
+
+\chapter{Implementation and comparison with others models}
+\chapter{Conclusion}
+
+\bibliographystyle{plain}
+
+
+\bibliography{biblio}
+
+\newpage
+\appendix
+\end{document}
