@@ -110,16 +110,16 @@
 \end{minipage}
 \begin{minipage}{0.8\linewidth}
 \begin{flushleft}
-\textsf{\textbf{Project made by:}} Maxime Van Herzeele\\
-\textsf{\textbf{Academic Year:}} 2017-2018\\
-\textsf{\textbf{dissertation director:}} Jeff Wijsen\\
+\textsf{\textbf{Projet réalisé par:}} Maxime Van Herzeele\\
+\textsf{\textbf{Année académique:}} 2017-2018\\
+\textsf{\textbf{Directeur de Mémoire:}} Jeff Wijsen\\
 %\textsf{\textbf{Rapporteurs}} Pierre Hauweele \& Tom Mens\\
-\textsf{\textbf{Section:}} 2$^{nd}$ Master Bloc in ComputerSciencesSciences
+\textsf{\textbf{Section:}} 2$^{ème}$ Bloc Master en Sciences Informatiques
 \end{flushleft}
 \end{minipage}
 \vspace*{\fill}
 \begin{center}
-Faculté des Sciences $\bullet$ University of Mons $\bullet$ Place du Parc 20 $\bullet$ B-7000 Mons
+Faculté des Sciences $\bullet$ Université de Mons $\bullet$ Place du Parc 20 $\bullet$ B-7000 Mons
 \end{center}
 \titlepagedecoration
 \end{titlepage}
@@ -128,13 +128,13 @@ Faculté des Sciences $\bullet$ University of Mons $\bullet$ Place du Parc 20 $\
 
 \pagestyle{fancy}
 \lhead{Maxime Van Herzeele}
-\rhead{MAB2 Computer Sciences}
+\rhead{MAB2 Sciences Informatiques}
 \cfoot{\thepage}
 
 \pagenumbering{roman} \setcounter{page}{1} 
 \section*{Remerciements} 
 \vspace*{0.8cm}
-\addcontentsline{toc}{section}{acknowledgement} 
+\addcontentsline{toc}{section}{Remerciements} 
 Todo : remerciement
 \newpage
 
@@ -145,22 +145,39 @@ Todo : remerciement
 
 \pagenumbering{arabic} \setcounter{page}{1} 
 
-\alinea Many institutions and companies collect, store and use a lot of data. These data could be dirty which means they contain erroneous information. An Erroneous information may mislead anyone who want to use the database. To prevent this problem, data should respect integrity constraints which are rules in database. Any information who doesn't fit these constraints is considered as a dirty data. But these constraints may be imprecise as well, failing to identify good data and dirty data. For this reason, some data aren't identify as violation as they should be and others data are identify as violent and they shouldn't be. Both mistakes on data and integrity constraints are a problem for anyone using the database.\\
+De nombreuse entreprises et institutions récoltent, conservent et utilisent un nombre importants de données. Ces données sont parfois considérées comme inexactes car elles ne respectent pas certaines règles appelées \emph{contraintes d'intégrité}. Parfois ce sont ces contraintes d'intégrités qui sont incorrectes. Ces deux types d'erreurs sont contraignantes à l'utilisation des données.
 
-During my training, i had to work on a project related to a database with such problems. It has a huge impact for a part of my project. The repair of these data is a project for 2018 and i feel it would be interesting to study the data repairing concept.\\
+Le \emph{data repairing} consiste à identifier les données et les contraintes d'intégrités et à les corriger. Dans ce mémoire, nous allons analyser une technique de data repairing appelés \emph{Modèle de réparation $\theta$-tolérant}. Cette technique est tiré d'un article scientifique Dans un premier temps, nous allons rappelé différentes notions importantes du modèle relationnel tel que les contraintes d'intégrités. Ensuite nous allons présenter des bases de données afin d'illustrer les notions rappelés précédemment. + TODO(continué l'intro au fur et à mesure des chapitres)
 
-\emph{Data repairing} means recover erroneous data but also repair bad integrity constraints. In this thesis we are going to analyse the \emph{$\theta$-tolerant repair model} as explained in a scientifique article\cite{main}. First of all, we will to re-explain some notions and definition we need to understand the model. Then, we will present some database we used to illustrate data repairing models. Next we'll present some data repairing models with among them the $\theta$-model. We'll theorically compare them and identify pros and cons for all them.
+\chapter{?}
 
-TO CONTINUE.
+\section{Le modèle relationnel}
 
-\chapter{?(Find a good name)}
 
-In this chapter we'll remind some important notions that we are going to use to explain some data repairing models. We use database following the relational model which was introduced by E.F. Codd \cite{misc1}. We'll also present some database we're going to use to illustrate different notions.
-\section{Database}
+\alinea Il est impératif que les données soient organisées et que les liens entre les informations soient modélisés. Cela se fait par le modèle relationnel avec contraintes d'intégrités. C'est l'un des modèles les plus utilisés. Le but de ce mémoire n'est pas d'expliquer ce modèle mais nous allons rappeler quelques notions que nous allons régulièrement utilisés.
 
-\alinea In this section we'll present databasse we used as example in this thesis. These databases are used to ulistrate data repairing models and others notions we'll  define.
+Dans le modèle relationnel, nous avons \cite{Integrity}
+\begin{itemize}
+\item Un alphabet \emph{A} de symboles de prédicats. Chaque symbole de l'alphabet est unique
+\item Un set de \emph{contraintes d'intégrités}  $\varphi$ qui sont des règles définissant la cohérence d'une donnée ou d'un ensemble de données de la BD. Ce sont des assertions des prédicats de l'alphabet.
+\end{itemize}
 
-The first database comes from the main article used as bibliography in this thesis\cite{main}.
+\begin{mydef}
+Soit un schéma de relation $R$ avec comme attributs $attr(R)$ Soit un ensemble $\mathbb{P}$ de prédicat $P$ de la forme $v_1 \phi V_2$ ou $v1 \phi c$ avec $v_1,v_2 \in t_x.A$ , $x \in \{\alpha,\beta\}$ , $t_\alpha,t_\beta \in R$, $A \in attr(R)$, $c$ est une constante et $\phi \in \{ =,<,>,\leq, \geq, \neq \}$ est un opérateur.  Une \textbf{contrainte de déni(denial constraint)}\cite{main}:
+
+TODO
+\end{mydef}
+%
+%\subsection{Les contraintes d'intégrité}
+%\begin{mydef}
+%Une \textbf{contrainte d'intégrité} $\varphi$ est une règle définissant la cohérence d'une donnée ou d'un ensemble de données de la BD
+%\end{mydef}
+
+\section{Les bases de données}
+Dans cette section nous présenterons les bases de données que nous utiliserons comme exemple afin d'illustrer les différentes notions que nous aborderons.
+\subsection{Exemples de bases de données}
+
+La première base de données que nous allons utilisés vient de la source principale de ce mémoire \cite{main}.
 
 \begin{table}[H]
 	\centering
@@ -185,29 +202,22 @@ The first database comes from the main article used as bibliography in this thes
 
 La seconde base de données que nous allons utilisés est inventée de toute pièce. C'est un exemple de base de données que l'on peut retrouver dans un service public.
 Les attributs de la tables sont:
-
-The second database we are going to use comes from a personal experience. In a training, i had to work on a project related to a database with some dirty data. These data can't be used outside the company but we'll try to get the main idea. It's a table named person, who got several basic information on people from Belgium \footnote{Every data in our database are fictional person.}.
 \begin{itemize}
-\item \textbf{NISS:} The national number of the person. A national number is unique. Usually, a NISS is formated like this\cite{bcss}
-	\begin{itemize}
-	\item It start with the birthdate of the person in a YY-MM-DD format. Exception are made for stranger(People without Belgian nationality), but for ease we won't consider these cases.
-	\item Number 7 to 9 is even for men and odd for female.
-	\item Remaining number are the modulo 97 of the 9 first number. 
-	\end{itemize}
-\item \textbf{Name:} Person's name.
-\item \textbf{Firstname:} Person's firstname.
-\item \textbf{Birth\_Date:} birthDate in DD-MM-YYYY format.
-\item \textbf{Decease\_Date:} Person's date decease.
-\item \textbf{Civil\_State:} Person's current civil state(example: single, married, divorced, decease, widow,...)
+\item \textbf{Niss:} Le numéro national de la personne.
+\item \textbf{Nom:} Le nom de la personne.
+\item \textbf{Prénom:} Le prénom de la personne.
+\item \textbf{Date\_naissance:} La date à laquelle la personne est née.
+\item \textbf{Date\_décès:} La date à laquelle la personne est décédée.
+\item \textbf{statut\_civil:} Le statut civil de la personne (exemple: célibataire, marié, décédé, divorcé,...).
 \end{itemize}
 
 \begin{table}[H]
 	\centering
 	\begin{tabular}{|c|c c c c c c|}
 	\hline
-	    & Niss & Name & Firstname & Birth\_date & Decease\_date & civil\_state\\
+	    & Niss & Nom & Prénom & Date\_naissance & Date\_décès & statut\_civil\\
 	\hline
-	 t1 & 14050250845 & Dupont & Jean & 14-05-1902 & 18-05-1962 & decease \\
+	 t1 & 14050250825 & Dupont & Jean & 14-05-1902 & 18-05-1962 & décédé \\
 	\hline
 	 
 	 \hline
@@ -215,45 +225,17 @@ The second database we are going to use comes from a personal experience. In a t
 	\caption{\label{tableMain} Table Person}.
 \end{table}
 
-\section{Relational Model}
-
-\alinea It's important to organize data and model the links between information. It can be done using the relational model with integrity constraints. It's one of the most used model for database management. The goal of this chapter is not to explain this model entirely, but remind some notions like the integrity constraints and others things we'll use to describe and explain data repairing models.\\
-
-In this relationnal model \cite{Integrity}
-\begin{itemize}
-\item An alphabet \emph{A} of predicates symbols. Each of them are unique(2 different symbol means two different things) and they are used to denote the relations, the objects and values in the database
-\item  A set of \emph{integrity constraint}  which are rules. These rules define the consistency of data in the database. They are assertions of symbols of the alphabet \emph{A}. 
-\end{itemize}
-
-On the main paper which this thesis is based, they define a denial constraint as \cite{main}:
-\begin{mydef}
-Consider a relation scheme $R$ with attributes $attr(R)$. Let predicate space $\mathbb{P}$ be a set of predicate  $P$ in the form  $v_1 \phi V_2$ or $v1 \phi c$ with $v_1,v_2 \in t_x.A$ , $x \in \{\alpha,\beta\}$ , $t_\alpha,t_\beta \in R$, $A \in attr(R)$, $c$ is a constant and $\phi \in \{ =,<,>,\leq, \geq, \neq \}$ is a build-in operator.  A \textbf{Denial Constraint(DC)}:
-
-$$\varphi : t_\alpha,t_\beta,... \in R, \neg(P_1 \wedge ... \wedge P_m)$$
-
-states that for any tuples $t_\alpha,t_\beta,...$ from R, all the predicates $P_i \in pred(\varphi)$,i = 1,...,m should not be true at the same time.
-\end{mydef}
-
-In other words, a denial constraint is a conjunction of predicates that shouldn't be true all in the same time. So if one of the predicates is false, the data is consider to be clean.
-%
-%\subsection{Les contraintes d'intégrité}
-%\begin{mydef}
-%Une \textbf{contrainte d'intégrité} $\varphi$ est une règle définissant la cohérence d'une donnée ou d'un ensemble de données de la BD
-%\end{mydef}
-
-
-
 \section{}
 
 \chapter{Data Repairing}
-\section{Integrity constraints variations}
+\section{Variations de contraintes d'intégrités}
 Insertion et délétion.
-\section{$\theta$-tolerant model}
-\section{Others}
+\section{Modèle $\theta$-tolerant}
+\section{Autres modèles}
 \subsection{Holistic}
  et d'autres
 
-\chapter{Implementation and comparison with others models}
+\chapter{Implémentation \& comparaison de modèles}
 \chapter{Conclusion}
 
 \bibliographystyle{plain}
