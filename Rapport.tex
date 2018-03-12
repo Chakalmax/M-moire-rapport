@@ -1,6 +1,7 @@
 \documentclass[letterpaper, 12pt]{report}
 \usepackage[top = 1.8cm, left = 3cm, right = 3cm ]{geometry}
 \usepackage[pdftex]{graphicx}
+\usepackage[english]{babel}
 \usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage{url}
@@ -15,13 +16,13 @@
 \usepackage{rotating}
 \usepackage[french,ruled,vlined]{algorithm2e}
 \usepackage{longtable}
-\usepackage[english,frenchb]{babel}
 \usepackage{newfloat}
 \usepackage{enumitem}
 \usepackage{amsfonts}
 
 \DeclareFloatingEnvironment[placement={!ht},name=List]{mylist}
 \newtheorem{mydef}{Definition}
+\newtheorem{myprop}{Property}
 
 \def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
 \let\endchangemargin=\endlist 
@@ -42,9 +43,11 @@
   
 
 \makeatletter
-\@addtoreset{section}{part}
-
-\renewcommand{\partname}{Partie}
+\setcounter{secnumdepth}{3} 
+%\setcounter{tocdepth}{3} % makes the subsubsection appear in the table of content.
+%\@addtoreset{section}{part}
+%
+%\renewcommand{\partname}{Partie}
 
 
 % The following code is borrowed from: http://tex.stackexchange.com/a/86310/10898
@@ -112,9 +115,9 @@
 \begin{flushleft}
 \textsf{\textbf{Project made by:}} Maxime Van Herzeele\\
 \textsf{\textbf{Academic Year:}} 2017-2018\\
-\textsf{\textbf{dissertation director:}} Jeff Wijsen\\
+\textsf{\textbf{Dissertation director:}} Jeff Wijsen\\
 %\textsf{\textbf{Rapporteurs}} Pierre Hauweele \& Tom Mens\\
-\textsf{\textbf{Section:}} 2$^{nd}$ Master Bloc in ComputerSciencesSciences
+\textsf{\textbf{Section:}} 2$^{nd}$ Master Bloc in ComputerSciences
 \end{flushleft}
 \end{minipage}
 \vspace*{\fill}
@@ -199,17 +202,23 @@ The second database we are going to use comes from a personal experience. In a t
 \item \textbf{Birth\_Date:} birthDate in DD-MM-YYYY format.
 \item \textbf{Decease\_Date:} Person's date decease.
 \item \textbf{Civil\_State:} Person's current civil state(example: single, married, divorced, decease, widow,...)
+\item \textbf{City} : The city where the person lives.
+\item \textbf{Post\_code} : The postal code of the city.
+\item \textbf{Salary} : The salary of the person for one year
+\item \textbf{Tax} : The tax amount the person have to pay every year
+\item \textbf{Child} : the number of children the person have.
 \end{itemize}
 
 \begin{table}[H]
+ \tiny
 	\centering
-	\hspace*{-1.5cm}\begin{tabular}{|c|c c c c c c c c|}
+	\hspace*{-1.5cm}\begin{tabular}{|c|c c c c c c c c c c c|}
 	\hline
-	    & Niss & LM & FN & Birth\_date & Decease\_date & civil\_state & district & post code\\
+	    & Niss & LM & FN & Birth\_date & Decease\_date & Civil\_state & City & Post\_code& Salary & Tax & Child\\
 	\hline
-	 t1 & 14050250845 & Dupont & Jean & 14-05-1902 & 18-05-1962 & decease & Hainaut & 7822\\
-	 t2 & 08042910402 & Brel & Jacques & 08-04-1929 & 09-10-1978 & decease & Schaerbeek & 1030\\
-	 t3 & 08042910402 & Merckx & Eddy & 07-06-1945 & null & decease & Schaerbeek & 1030\\
+	 t1 & 14050250845 & Dupont & Jean & 14-05-1902 & 18-05-1962 & decease & Ath & 7822 & 25k & 4k & 2\\
+	 t2 & 08042910402 & Brel & Jacques & 08-04-1929 & 09-10-1978 & decease & Schaerbeek & 1030 & 100k & 8k & 1\\
+	 t3 & 45060710204 & Merckx & Eddy & 07-06-1945 & null & decease & Schaerbeek & 1030 & 125k & 9k & 2\\
 	\hline
 	 
 	 \hline
@@ -217,33 +226,12 @@ The second database we are going to use comes from a personal experience. In a t
 	\caption{\label{tablePerson} Table Person}.
 \end{table}
 
-\newpage
-%\section{Relational Model}
 
-%\alinea It's important to organize data and model the links between information. It can be done using the relational model with integrity constraints. It's one of the most used model for database management. The goal of this chapter is not to explain this model entirely, but remind some notions like the integrity constraints and others things we'll use to describe and explain data repairing models.\\
-%
-%In this relationnal model \cite{Integrity}
-%\begin{itemize}
-%\item An alphabet \emph{A} of predicates symbols. Each of them are unique(2 different symbol means two different things) and they are used to denote the relations, the objects and values in the database
-%\item  A set of \emph{integrity constraint}  which are rules. These rules define the consistency of data in the database. They are assertions of symbols of the alphabet \emph{A}. 
-%\end{itemize}
-%
-%Integrity constraints are rules that can either be set on only one collumn but can also be related to multiple column of the same table.
+\newpage
+
 \section{Constraint on database}
 
 When you want to add rows in a database, you can't put what you want. It would be a problem if it was possible to add non-logical value on some columns of a table. To avoid this kind of problems, we can add rules on a database. Basically a rule works on this way: if the entry row $t_\alpha$ respects some conditions, we can accept the value. Otherwise $t_\alpha$ is not correct and something is wrong with the value of this entry row.\\
-
-%\begin{mylist}
-%	Consider $t_\alpha$ as an entry
-%	\begin{enumerate}
-%	\item If $t_\alpha$.birth\_date > $t_\alpha$.decease\_date
-%	\item \hspace*{0.5cm} $t_\alpha$ is not correct
-%	\item else:
-%	\item \hspace*{0.5cm} $t_\alpha$ is correct
-%	\end{enumerate}
-%	This rules means nobody should be born after his death.
-%	\caption{Example of simple rules on the table Person (table \ref{tablePerson})}
-%\end{mylist}
 
 On the relational database model which is used in most of the database, the notion of \emph{functional dependency(FD)} is used. 
 
@@ -259,7 +247,6 @@ In other words, for a dependency $X \rightarrow Y$ means that for a specific val
 \item If some got a decease date, his civil status should be equal to decease. In this case we need a conditional functional dependency(CFD) which is typically a functional dependency with equality operator on some columns. A functional dependency should work for all records on the table, CFD can hold some conditions on collumns. $[Decease\_date = $'18-05-1962'$] \rightarrow [civil\_status = decease]$
 \end{enumerate}
  
-
 \begin{mydef}
 A set $\Sigma$ of DF on the relation schema $A$. The relation $R$ satisfy $\Sigma$ noted $R \models \Sigma$ if for each DF in $\Sigma$, R satisfy the DF.
 \end{mydef}
@@ -307,15 +294,32 @@ In the opposite of oversimplified, a DC can be overrefined which means a dirty d
 
 In this case the Year information is not usefull. We don't recognize $t_5$ and $t_8$ as a violation with this constraint.
 
-\section{Integrity constraints variations}
+\subsection{Some definitions and properties}
 
-We saw earlier that a constraint can be overrefined failing to detect some error or in the opposite a constraint can be oversimplified leading to consider some good data as a error. Because constraints can be inaccurate we need to modify them. We'll considerer two type of constraint variance: predicate deletion and in the opposite predicate insertion.\\
+In this section we'll present some definitions and properties on the denial constraint. They are going to help us in following chapters.
 
-When we perform a predicate insertion, some tuples no longer violate the DC. With this variation we can repair a oversimplified constraint but we need to be careful otherwise the DC can be useless. We need to avoid insertion which can lead to a trivial DC or insertion of predicates with constants. \\
+\subsubsection{Trivial DC}
 
-An example of trivial DC is a DC $\varphi$ with a predicate $P_i$ : $x \phi_i y$ and we had another predicate $P_j$ : $x \phi_j y$ in the DC with $\overline{\phi_j} \in Imp(\phi_i)$. In \cite{main}, they said for $Imp(\phi)$: For any two values a and b, if $a \phi_2 b$ always implies $a \phi_2 b$, it means $\phi_2 \in Imp(\phi_1)$. With this definition, we see that if $P_i$ is true, $P_j$ is false and vice versa.
+A DC can be useless and always true. Such DCs shouldn't be present because they never identify any violations. In that case we say that the denial constraint is\emph{trivial}. We'll definie a trivial DC as:
 
-For example if we have $x = y$ as predicate and we add $x < y$, both the predicates can't be true at the same time. Table \ref{tableImp}
+\begin{mydef}
+	We say a denial constraint $\varphi$ is \textbf{trivial} if for any instance $I$  of $R$ we have $\varphi \models I$
+\end{mydef}
+
+It's quite easy to discover trivial denial constraint with the following property \cite{DCs}:
+
+\begin{myprop}
+ $\forall P_i, P_j$ if $P_i \in Imp(P_j)$, then $\neq(P_i \wedge P_j)$ is a trivial DC.
+\end{myprop}
+
+In \cite{main}, they said for $Imp(\phi)$:
+
+\begin{mydef} For any two values a and b, if $a \phi_2 b$ always implies $a \phi_2 b$, it means $\phi_2 \in Imp(\phi_1)$.
+\end{mydef}
+
+With this definition, we see that if $P_i$ is true, $P_j$ is false and vice versa.\\
+
+For example if we have $x = y$ as predicate and we add $x < y$, both the predicates can't be true at the same time. Table \ref{tableImp} show for each $\phi$ the correspondent $Imp(\phi)$.
 
 \begin{table}[H]
 	\centering
@@ -332,6 +336,62 @@ For example if we have $x = y$ as predicate and we add $x < y$, both the predica
 	\end{tabular}
 	\caption{\label{tableImp}}.
 \end{table}
+
+If we say for the table \ref{tableMain}:
+$$\varphi : t_\alpha,t_\beta \in R \; \neg(t_\alpha.Tax = t_\beta.Tax \wedge t_\alpha.Tax < t_\beta.Tax)$$
+
+It's quite obvious it's impossible that two persons have the same tax rate and one's tax rate is greater than the other. For the rest of this study we won't consider trivial DCs
+
+\subsubsection{Augmentation}
+
+Further in this report, we'll see addition and deletion operations in order to perform data repairing on these constraint. But adding predicates to valid DCs is useless because of the augmentation property \cite{DCs}:
+
+\begin{myprop}
+	If $\varphi = \neq (P_1 \wedge P_2 \wedge ... \wedge P_n)$ is a valide DC, then $\varphi ' = \neq(P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q)$ is also a valide DC
+\end{myprop}
+
+It's quite easy to prove this property. If $\varphi$ is valid it means every $t_\alpha \in R$ is accepted by the constraint. If it's accepted, $\forall t_\alpha$ one of the $P_i \in \varphi$ is false. So whatever $Q$ is, $t_\alpha$ will still be accepted.
+
+\subsubsection{Transitivity}
+In \cite{DCs} they defined the transitivity of DCs as:
+
+\begin{myprop}
+	If $\varphi = \neq (P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q_1)$ and $\varphi ' = \neq (R_1 \wedge Q_2 \wedge ... \wedge Q_n \wedge Q_2)$ are both valid DCs and $Q_2 \in Imp(\overline{Q_1})$, \\ then $ \varphi '' = \neq(P_1 \wedge ... \wedge P_n \wedge R_1 \wedge ... \wedge R_n)$ is also a valid DC.
+\end{myprop}
+
+In other words if two \textbf{valid} DCs, each with predicates that can't be false in the same time, then merging those DCs and removing the two predicates will produce a \textbf{valid} DC.
+
+It's possible to prove that:
+
+\begin{proof}
+	$\forall t_\alpha \in R$, we have $\varphi$ and $\varphi '$ verified.
+	
+\hspace*{0.5cm}	We have $Q_2 \in Imp(\overline{Q_1})$ so $Q_2$ and $Q_1$ can not be true or false at the same time.
+	\begin{enumerate}
+	 \item if $Q_1$ is false, then $Q_2$ is true . Therefore $\exists R_i such as R_i$ is false (because $\varphi$ should be verified). $\varphi ''$ is verified too because $R_i \in \varphi ''$
+	 \item if $Q_1$ is true, then $Q_2$ is false . Therefore $\exists P_i such as P_i$ is false (because $\varphi$ should be verified). $\varphi ''$ is verified too because $P_i \in \varphi ''$
+	\end{enumerate}
+\end{proof}
+
+\subsubsection{Refinement}
+
+In \cite{main} they define the refinement of a DC as :
+
+\begin{mydef}
+ $\varphi_2$ is a \textbf{refinement} of $\varphi_1$, denoted by $\varphi_1 \preceq \varphi_2$, if for each $ P$ : $x\phi_1 y \in pred(\varphi_1)$, there exists a $Q : x \phi_2 y \in pred(\varphi_2)$ such that $\phi_1 \in Imp(\phi_2$
+\end{mydef}
+
+\begin{mydef}
+ $\Sigma_2$ is a \textbf{refinement} of $\Sigma_1$, denoted by $\Sigma_1 \preceq \Sigma_2$, if for each $ \varphi_2 \in \Sigma_2$, there exists a $\varphi_2 \in \Sigma_1$ such that $varphi_1 \preceq \varphi_2$
+\end{mydef}
+
+As we can see, if you want to change less data, you should refine your DCs with insertion or substitution. For example if our DC is $t_\alpha.Tax \leq t_\beta$ and we change it to $t_\alpha.Tax < t_\beta$ you'll change less data.
+
+\begin{myprop}\cite{main}
+
+For any inserted predicate $ P $ : $x \phi y \in pred(\varphi ') \setminus pred(\varphi)$, if $\phi \in \{\leq,\geq,\neq \}$, then $\varphi '$ is not maximal.
+
+\end{myprop}
 
 \chapter{Data Repairing}
 
@@ -366,7 +426,7 @@ It's important to notice it's not impossible to don't find any repair $I'$ that 
 
 Let's take an example on the table \ref{tableMain}. Let's say our Denial Constraint is the following one:
 
-$$ \varphi : t_\alpha,t_\beta \in R, \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.tax \leq t_\beta.CP)$$
+$$ \varphi : t_\alpha,t_\beta \in R, \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.Tax \leq t_\beta.Tax)$$
 
 In other words, we supposed that if someone get a higher income than another person then he should paid an higher tax every year. We have $ \langle t_1,t_2 \rangle \not\models \varphi $ because $t_1$.Income < $t2.$Income and $t2$.Tax$\ \leq\ t1$.Tax. Same problem with $ \langle t_1,t_3 \rangle$, $ \langle t_1,t_5 \rangle$, ect... A repair $I'$ could be the following one:
 
@@ -376,7 +436,7 @@ In other words, we supposed that if someone get a higher income than another per
 	\hline
 	   & $t_1$ & $t_2$ & $t_3$ &$t_4$ &$t_5$ &$t_6$ &$t_7$ &$t_18$ &$t_9$ &$t_10$ \\
 	\hline
-	 Tax & 0 & $fv_1$ & $fv_2$& 3k & $fv_3$& $fv_4$& $fv_5$& 21k & 21k & 40k\\
+	 Tax & 0 & \color{red} $fv_1$ & \color{red} $fv_2$& 3k & \color{orange}$fv_3$& \color{orange} $fv_4$& \color{orange} $fv_5$& 21k & 21k & 40k\\
 	 \hline
 	\end{tabular}
 	\caption{\label{tableExample} Example of repair with Tax}.
@@ -391,6 +451,7 @@ The reason we put $fv_1$ as Tax value for $t_2$ is because we knew the following
 
 \end{enumerate}
 Because we had no value in the $dom(Tax)$ that would respect 1 and 2, we need to use a fresh variable $fv_1$ out of the $dom(Tax)$.\\
+We only know that 0< $fv_1$,$fv_2$ <3k in order to respect 1 and 2. In the same idea, we have 3k < $fv_3$,$fv_4$,$fv_5$ < 21k
 
 We can compute the repair cost for $Tax$ in this table. Let's say that:\\
 
@@ -407,6 +468,54 @@ $$
 
 When we don't change anything, the distance is obviously equal to zero. $dist(a,fv)$ have to be higher than $dist(a,b)$ otherwise the cost for a non-domain value will be lower than a domain value and we want to avoid fresh variable as much as possible. In our example, with the value said just before, we can compute a $\Delta(I,I')$ = 7.5
 
+\section{Integrity constraints variations}
+
+We saw earlier that a constraint can be overrefined failing to detect some error or in the opposite a constraint can be oversimplified leading to consider some good data as an error. Because constraints can be inaccurate we need to modify them. We'll consider two types of constraint variance: predicate deletion and in the opposite predicate insertion.\\
+
+When we perform a predicate insertion, some tuples no longer violate the DC. With this variation we can repair a oversimplified constraint but we need to be careful otherwise the DC can be useless. We need to avoid insertion which can lead to a trivial DC or insertion of predicates with obvious constants(like $t_\alpha.Salary$<0 in the table \ref{tablePerson}). \\
+
+An example of trivial DC is a DC $\varphi$ with a predicate $P_i$ : $x \phi_i y$ and we had another predicate $P_j$ : $x \phi_j y$ in the DC with $\overline{\phi_j} \in Imp(\phi_i)$. 
+
+For overrefined DCs, we need to remove some predicates but we need to be careful. If too many predicates are withdraw, we can get an new oversimplified DCs. The more the predicates are deleted, the higher the data repair cost will be as stated in the Lemma1 in \cite{main}. In the other hand the more the predicates are added, the lower the data repair will be. So if you add more predicates than you remove, the changed data will be smaller than removing more predicates and deleting more. The \emph{data repair cost function} take this effect into consideration. It count positively predicate insertion and negatively predicate addition. For $\Sigma '$ a variant of $\Sigma$ in which all $\varphi ' \in \Sigma '$ are obtained by insertion or deletion of predicates for corresponding $\varphi \in \Sigma$, in \cite{main} they define the constraint variation cost:
+
+\begin{mydef}
+For a variant $\Sigma '$ of $\Sigma$, the contraint variation cost is defined as
+
+$$\Theta (\Sigma,\Sigma ') = \sum_{\varphi in \Sigma} edit(\varphi,\varphi ')$$
+
+\hspace*{2cm} where $\varphi '$ is a variant of $\phi$ and $edit(\varphi,\varphi ')$ is the corresponding cost.
+\end{mydef}
+
+the $edit(\varphi , \varphi ')$ indicating the cost of changing $\varphi$ to $\varphi'$ is defined as:
+\begin{mydef}
+$$
+ edit(\varphi, \varphi') = \sum_{P \in \varphi \\ \varphi'} c(P) + \lambda \sum_{P \in \varphi' \\ \varphi} c(P)$$
+ 
+where $c(P)$ denote the weighted cost of predicate P and $\lambda$ is the weight of a deletion compare to an addition and -1<$\lambda$<0.
+\end{mydef}
+
+We don't have to use $\lambda$ =-1 otherwise a deletion followed by an addition would have a cost equal to 0(and it's a bad idea for predicate substitution). For example if we have:
+$$ \varphi : t_\alpha,t_\beta \in R, \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.Tax \leq t_\beta.Tax)$$
+This DC express the fact that if I get a higher income than someone else, i should pay a higher tax rate. We'll change this DC by deleting $\alpha.Tax \leq t_\beta.Tax$ by $\alpha.Tax < t_\beta.Tax$. It can express the fact that someone with a very low Income could get a Tax equals to 0.
+$$ \varphi ' : t_\alpha,t_\beta \in R, \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.Tax < t_\beta.Tax)$$
+
+The constraint variation with $\lambda$ = $\frac{1}{2}$ and $c(P)$ = 0 is : $edit(\varphi, \varphi') = c(t_\alpha.Tax < t_\beta.Tax) + \frac{1}{2} c(\alpha.Tax \leq t_\beta.Tax)$ = $\frac{1}{2}$
+
+With this new constraint, the modification we made in table \ref{tableExample} changed to:
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|c|c c c c c c c c c c|}
+	\hline
+	   & $t_1$ & $t_2$ & $t_3$ &$t_4$ &$t_5$ &$t_6$ &$t_7$ &$t_18$ &$t_9$ &$t_10$ \\
+	\hline
+	 Tax & 0 & 0 & 0 & \textcolor{red}{0} & 0 & 0 & 0 & 21k & 21k & 40k\\
+	 \hline
+	\end{tabular}
+	\caption{\label{tableExample} Example of repair with Tax}.
+\end{table}
+
+Indeed, a column with only one mistakes is more likely correct than a column with five dirty data. On our new DC, only the ($t_4.Tax$)=3k have to be changed with the value 0.
 \section{$\theta$-tolerant model}
 \section{Others}
 \subsection{Holistic}
