@@ -14,7 +14,7 @@
 \usepackage{fancyhdr}
 \usepackage{gensymb}
 \usepackage{rotating}
-\usepackage[french,ruled,vlined]{algorithm2e}
+\usepackage[english,ruled,vlined]{algorithm2e}
 \usepackage{longtable}
 \usepackage{newfloat}
 \usepackage{enumitem}
@@ -23,6 +23,7 @@
 \DeclareFloatingEnvironment[placement={!ht},name=List]{mylist}
 \newtheorem{mydef}{Definition}
 \newtheorem{myprop}{Property}
+\newtheorem{mylemma}{Lemma}
 
 \def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
 \let\endchangemargin=\endlist 
@@ -210,9 +211,9 @@ The second database we are going to use comes from a personal experience. In a t
 \end{itemize}
 
 \begin{table}[H]
- \tiny
+ \footnotesize	
 	\centering
-	\hspace*{-1.5cm}\begin{tabular}{|c|c c c c c c c c c c c|}
+	\hspace*{-2cm}\begin{tabular}{|c|c c c c c c c c c c c|}
 	\hline
 	    & Niss & LM & FN & Birth\_date & Decease\_date & Civil\_state & City & Post\_code& Salary & Tax & Child\\
 	\hline
@@ -272,6 +273,11 @@ states that for any tuples $t_\alpha,t_\beta,...$ from R, all the predicates $P_
 
 In other words, a denial constraint is a first-order logic conjunction of predicates that shouldn't be true all in the same time. So if one of the predicates is false, the data is consider to be clean. 
 
+\begin{figure}
+	\centering
+	\includegraphics[scale=1]{img/quadran.png}
+	\caption{A denial constraint(DC) can express many type of others constraints}
+\end{figure}
 A DC can be oversimplified which means a correct data could consider as a violation. Let's take an example on the table \ref{tableMain}. If we take the following constraint:
 $$ \varphi : t_\alpha,t_\beta \in R, \neg(t_\alpha.Name = t_\beta.Name \wedge t_\alpha.CP \neq t_\beta.CP)$$
 This constraint means that any person with the same \emph{Name} should get the same cellphone number (\emph{CP}), which is incorrect because two person different person can get the same name and of course different cellphone number. For example $t_1$ and $t_2$ don't respect this denial constraint. So it's considered as a violation, but we can see it's two different person because they don't have the same age. If we want a correct DC we need to check their age, i.e their \emph{Birthdate}:
@@ -314,7 +320,7 @@ It's quite easy to discover trivial denial constraint with the following propert
 
 In \cite{main}, they said for $Imp(\phi)$:
 
-\begin{mydef} For any two values a and b, if $a \phi_2 b$ always implies $a \phi_2 b$, it means $\phi_2 \in Imp(\phi_1)$.
+\begin{mydef} For any two values a and b, if $a \phi_2 b$ always implies $a \phi_1 b$, it means $\phi_2 \in Imp(\phi_1)$.
 \end{mydef}
 
 With this definition, we see that if $P_i$ is true, $P_j$ is false and vice versa.\\
@@ -347,7 +353,7 @@ It's quite obvious it's impossible that two persons have the same tax rate and o
 Further in this report, we'll see addition and deletion operations in order to perform data repairing on these constraint. But adding predicates to valid DCs is useless because of the augmentation property \cite{DCs}:
 
 \begin{myprop}
-	If $\varphi = \neq (P_1 \wedge P_2 \wedge ... \wedge P_n)$ is a valide DC, then $\varphi ' = \neq(P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q)$ is also a valide DC
+	If $\varphi = \neg (P_1 \wedge P_2 \wedge ... \wedge P_n)$ is a valide DC, then $\varphi ' = \neg(P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q)$ is also a valide DC
 \end{myprop}
 
 It's quite easy to prove this property. If $\varphi$ is valid it means every $t_\alpha \in R$ is accepted by the constraint. If it's accepted, $\forall t_\alpha$ one of the $P_i \in \varphi$ is false. So whatever $Q$ is, $t_\alpha$ will still be accepted.
@@ -356,7 +362,7 @@ It's quite easy to prove this property. If $\varphi$ is valid it means every $t_
 In \cite{DCs} they defined the transitivity of DCs as:
 
 \begin{myprop}
-	If $\varphi = \neq (P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q_1)$ and $\varphi ' = \neq (R_1 \wedge Q_2 \wedge ... \wedge Q_n \wedge Q_2)$ are both valid DCs and $Q_2 \in Imp(\overline{Q_1})$, \\ then $ \varphi '' = \neq(P_1 \wedge ... \wedge P_n \wedge R_1 \wedge ... \wedge R_n)$ is also a valid DC.
+	If $\varphi = \neg (P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q_1)$ and $\varphi ' = \neg (R_1 \wedge Q_2 \wedge ... \wedge Q_n \wedge Q_2)$ are both valid DCs and $Q_2 \in Imp(\overline{Q_1})$, \\ then $ \varphi '' = \neg(P_1 \wedge ... \wedge P_n \wedge R_1 \wedge ... \wedge R_n)$ is also a valid DC.
 \end{myprop}
 
 In other words if two \textbf{valid} DCs, each with predicates that can't be false in the same time, then merging those DCs and removing the two predicates will produce a \textbf{valid} DC.
@@ -374,24 +380,18 @@ It's possible to prove that:
 \end{proof}
 
 \subsubsection{Refinement}
-
+\label{RefinementSection}
 In \cite{main} they define the refinement of a DC as :
 
 \begin{mydef}
- $\varphi_2$ is a \textbf{refinement} of $\varphi_1$, denoted by $\varphi_1 \preceq \varphi_2$, if for each $ P$ : $x\phi_1 y \in pred(\varphi_1)$, there exists a $Q : x \phi_2 y \in pred(\varphi_2)$ such that $\phi_1 \in Imp(\phi_2$
+ $\varphi_2$ is a \textbf{refinement} of $\varphi_1$, denoted by $\varphi_1 \preceq \varphi_2$, if for each $ P$ : $x\phi_1 y \in pred(\varphi_1)$, there exists a $Q : x \phi_2 y \in pred(\varphi_2)$ such that $\phi_1 \in Imp(\phi_2)$
 \end{mydef}
 
 \begin{mydef}
- $\Sigma_2$ is a \textbf{refinement} of $\Sigma_1$, denoted by $\Sigma_1 \preceq \Sigma_2$, if for each $ \varphi_2 \in \Sigma_2$, there exists a $\varphi_2 \in \Sigma_1$ such that $varphi_1 \preceq \varphi_2$
+ $\Sigma_2$ is a \textbf{refinement} of $\Sigma_1$, denoted by $\Sigma_1 \preceq \Sigma_2$, if for each $ \varphi_2 \in \Sigma_2$, there exists a $\varphi_2 \in \Sigma_1$ such that $\varphi_1 \preceq \varphi_2$
 \end{mydef}
 
 As we can see, if you want to change less data, you should refine your DCs with insertion or substitution. For example if our DC is $t_\alpha.Tax \leq t_\beta$ and we change it to $t_\alpha.Tax < t_\beta$ you'll change less data.
-
-\begin{myprop}\cite{main}
-
-For any inserted predicate $ P $ : $x \phi y \in pred(\varphi ') \setminus pred(\varphi)$, if $\phi \in \{\leq,\geq,\neq \}$, then $\varphi '$ is not maximal.
-
-\end{myprop}
 
 \chapter{Data Repairing}
 
@@ -428,7 +428,7 @@ Let's take an example on the table \ref{tableMain}. Let's say our Denial Constra
 
 $$ \varphi : t_\alpha,t_\beta \in R, \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.Tax \leq t_\beta.Tax)$$
 
-In other words, we supposed that if someone get a higher income than another person then he should paid an higher tax every year. We have $ \langle t_1,t_2 \rangle \not\models \varphi $ because $t_1$.Income < $t2.$Income and $t2$.Tax$\ \leq\ t1$.Tax. Same problem with $ \langle t_1,t_3 \rangle$, $ \langle t_1,t_5 \rangle$, ect... A repair $I'$ could be the following one:
+In other words, we supposed that if someone get a higher income than another person then he should paid an higher tax every year. We have $ \langle t_1,t_2 \rangle \not\models \varphi $ because $t_1$.Income < $t2.$Income and $t2$.Tax$\ \leq\ t1$.Tax. Same problem with $ \langle t_1,t_3 \rangle$, $ \langle t_1,t_5 \rangle$, ect... you can find all the violation in the figure \ref{BadTax} A repair $I'$ could be the following one:
 
 \begin{table}[H]
 	\centering
@@ -442,6 +442,13 @@ In other words, we supposed that if someone get a higher income than another per
 	\caption{\label{tableExample} Example of repair with Tax}.
 \end{table}
 
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=1]{img/TaxBad}
+	\caption{\label{BadTax} All the violation for $\varphi$}
+\end{figure}
+
 The reason we put $fv_1$ as Tax value for $t_2$ is because we knew the following things:
 \begin{enumerate}
 
@@ -450,8 +457,8 @@ The reason we put $fv_1$ as Tax value for $t_2$ is because we knew the following
 \item $dom(Tax) = \{0,3k,21k,40k\}$
 
 \end{enumerate}
-Because we had no value in the $dom(Tax)$ that would respect 1 and 2, we need to use a fresh variable $fv_1$ out of the $dom(Tax)$.\\
-We only know that 0< $fv_1$,$fv_2$ <3k in order to respect 1 and 2. In the same idea, we have 3k < $fv_3$,$fv_4$,$fv_5$ < 21k
+Because we had no value in the $dom(Tax)$ that would respect 1 and 2, we need to use a fresh variable $fv_1$ out of the $dom(Tax)$. The same  logic can be used to understand why we had to use $fv_2$ to $fv_5$. We could put random value instead but it could be a problem if we insert correct value in the future (These correct values could be see as dirty one).
+We only know that 0< $fv_1$,$fv_2$ <3k in order to respect 1 and 2. In the same idea, we have 3k < $fv_3$,$fv_4$,$fv_5$ < 21k.
 
 We can compute the repair cost for $Tax$ in this table. Let's say that:\\
 
@@ -466,7 +473,7 @@ $$
 \right.
 $$
 
-When we don't change anything, the distance is obviously equal to zero. $dist(a,fv)$ have to be higher than $dist(a,b)$ otherwise the cost for a non-domain value will be lower than a domain value and we want to avoid fresh variable as much as possible. In our example, with the value said just before, we can compute a $\Delta(I,I')$ = 7.5
+When we don't change anything, the distance is obviously equal to zero. $dist(a,fv)$ have to be higher than $dist(a,b)$ otherwise the cost for a non-domain value will be lower than a domain value and we want to avoid fresh variable as much as possible. If we had $dist(a,fv)$ lower than $dist(a,b)$, any repair that uses fresh variable outside the domain would be better and of course it's not a good behavior. In our example, with the value said just before, we can compute a $\Delta(I,I')$ = 7.5
 
 \section{Integrity constraints variations}
 
@@ -501,7 +508,7 @@ $$ \varphi ' : t_\alpha,t_\beta \in R, \neg(t_\alpha.Income > t_\beta.Income \we
 
 The constraint variation with $\lambda$ = $\frac{1}{2}$ and $c(P)$ = 0 is : $edit(\varphi, \varphi') = c(t_\alpha.Tax < t_\beta.Tax) + \frac{1}{2} c(\alpha.Tax \leq t_\beta.Tax)$ = $\frac{1}{2}$
 
-With this new constraint, the modification we made in table \ref{tableExample} changed to:
+With this new constraint, we got less violations. All the violations can be found the figure \ref{GoodTax}. The modifications we made in table \ref{tableExample} changed to:
 
 \begin{table}[H]
 	\centering
@@ -515,10 +522,308 @@ With this new constraint, the modification we made in table \ref{tableExample} c
 	\caption{\label{tableExample} Example of repair with Tax}.
 \end{table}
 
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=1]{img/TaxGood}
+	\caption{\label{GoodTax} All the violation for $\varphi '$}
+\end{figure}
+
 Indeed, a column with only one mistakes is more likely correct than a column with five dirty data. On our new DC, only the ($t_4.Tax$)=3k have to be changed with the value 0.
+
+When we do constraint modification, we should not consider the case where we delete an entire constraint.  We should not remove all the predicates because a DC like $\neg()$ doesn't mean anything. We can't even say if it's always true or always false.
+
+\subsection{Maximal Constraint Variants}
+
+	Every constraint variant $\Sigma'$ with cost $\Theta(\Sigma,\Sigma')$ shouldn't be considered. They're some variation that we're sure they are not better. To perform a prunning of constraints variant that doesn't generate minimum data repair, we'll use the definition of refinement we explained in the previous chapter at the section \ref{RefinementSection}.
+	
+\begin{mydef}\cite{main}
+ We say that a variant $\varphi '$ of a constraint $\varphi$ with $\varphi \preceq \varphi'$ is \textbf{maximal}, if there does not exist another $\varphi ''$ such that $\varphi ' \preceq \varphi ''$ and $edit(\varphi,\varphi'') = edit (\varphi,\varphi')$
+\end{mydef}
+
+\begin{myprop}\cite{main}
+
+For any inserted predicate $ P $ : $x \phi y \in pred(\varphi ') \setminus pred(\varphi)$, if $\phi \in \{\leq,\geq,\neq \}$, then $\varphi '$ is not maximal.
+
+\end{myprop}
+
+With this property we see that it's useless to insert every predicate that you're able to construct. We only have to insert predicates with operators {>,<,=} when considering variants of $\varphi$ Let's illustrate that with an example. We'll take two denial constraint on table \ref{tableMain} for this.
+$$\varphi_1 : \forall t_\alpha,t_\beta \in R, \neg( t_\alpha.Name = t_\beta.Name \wedge t_\alpha.Income = t_\beta.Income \wedge t_\alpha.CP \neq t_\beta.CP )$$
+$$\varphi_2 : \forall t_\alpha,t_\beta \in R, \neg( t_\alpha.Name = t_\beta.Name \wedge t_\alpha.Income \leq t_\beta.Income \wedge t_\alpha.CP \neq t_\beta.CP )$$
+
+
+We know that $\leq \in Imp(=)$ (see table \ref{tableImp}) for Income so we have $\varphi_2 \preceq \varphi_1$. By the last property we know that $\varphi_2$ is not maximal because it contains $\leq$ operator. In this scenario the data repair cost is 7 for $\varphi_2$ and $\varphi$ will get a data repair cost equal to 3. 
+
+\begin{table}[H]
+	\parbox{.45\linewidth}{
+	\centering
+	\begin{tabular}{|c|c c c|}
+	\hline
+	    & Name & Cellphone Number & Income\\
+	\hline
+	 t1 & Ayres & \color{red}564-389 & \color{red}22k\\
+	 t2 & Ayres & \color{red}564-389 & 22k\\
+	 t3 & Ayres & 564-389 & 22k\\
+	 t4 & Stanley &\color{red} 930-198 &\color{red}24k\\
+	 t5 & Stanley &\color{red} 930-198 & 24k\\
+	 t6 & Stanley & 930-198 & 24k\\
+	 t7 & Dustin & \color{red}824-870 & \color{red}100k\\
+	 t8 & Dustin & \color{red}824-870 & 100k\\
+	 t9 & Dustin & 824-870 & 100k\\
+	 t10 & Dustin & \color{red}824-870 & \color{red}100k\\
+	 \hline
+	\end{tabular}
+	\caption{Correction with $\varphi_2$: 7 changes needed only for the collumn CP.}.
+	}
+	\hfill
+	\parbox{.45\linewidth}{
+	\centering
+	\begin{tabular}{|c|c c c|}
+	\hline
+	    & Name & Cellphone Number & Income\\
+	\hline
+	 t1 & Ayres & 322-573 & 21k\\
+	 t2 & Ayres & \color{red} 564-389 & 22k\\
+	 t3 & Ayres & 564-389 & 22k\\
+	 t4 & Stanley & 868-701 &23k\\
+	 t5 & Stanley & \color{red} 930-198 & 24k\\
+	 t6 & Stanley & 930-198 & 24k\\
+	 t7 & Dustin & 179-924 & 25k\\
+	 t8 & Dustin & \color{red} 824-870 & 100k\\
+	 t9 & Dustin & 824-870 & 100k\\
+	 t10 & Dustin & 387-215 & 150k\\
+	 \hline
+	\end{tabular}
+	\caption{Correction with $\varphi_1$ : only 3 changes are needed.}.
+	}
+\end{table}
+
+
+
+We see that the refinement got a better data repair cost. It's not a coincidence because the following lemma exist: \cite{main}
+
+\begin{mylemma}
+ Given two constraitn variants $\Sigma_1,\Sigma_2$ of $\Sigma$ such that $\Sigma_2$
+ is also a refinement of $\Sigma_1$, have $\Sigma \preceq \Sigma_1 \preceq \Sigma_2$, is always has $\Delta(I,I_1) \geq \Delta(I,I_2)$, where $I_1$ and $I_2$ are the minimum data repairs with regards to $\Sigma_1$ and $\Sigma_2$, respectively.
+\end{mylemma}
+
+As a consequence of this Lemma, any non-maximal set of denial constraint $\Sigma$ can be removed from the possibilities of good repair
+
+\subsection{Pruning our candidates}
+
+In this subsection we'll focus on removing the constraint variant $\Sigma '$ that can't generate the minimum data repair. We are going to  consider two bounds of possible minimum data repairs cost for the instance $I$ : the lower bound noted as $\delta_l(\Sigma',I)$ and the upper bound noted $\delta_u(\Sigma,I)$. We consider the following property:
+
+\begin{myprop}
+\label{boundRemove}
+	For two constraints variants $\Sigma$ and $\Sigma'$ for the instance $I$ of $R$, if $\delta_u(\Sigma,I) < \delta_l(\Sigma',I)$ then $\Sigma'$ can be discarded.
+\end{myprop}
+
+Which means the worst bound(upper) of repair for $\Sigma$ is still better than the best bound(lower) of repair for $\Sigma'$.
+
+\subsubsection{Conflict Graph}
+
+Now, we'll introduce the conflict graph which can represent the violations in an instance $I$ of $R$. In the first place, we need to find all the violations and we could get the data repair cost bound from them. We define the violation set as: \cite{main}
+
+\begin{mydef}
+ The violation set noted as $viol(I,\varphi) = {\langle t_i,t_j \rangle | \langle t_i,t_j \rangle \not\models }$ is a set of tuple lists that violate $\varphi$. The violation set of $\Sigma$ is $viol(I,\Sigma) = \cup_{\varphi \in \Sigma}viol(I,\varphi)$.
+\end{mydef}
+
+\begin{figure}
+ \centering
+\hspace*{-1.8cm} \includegraphics[scale=1]{img/grapht4.png}
+ \caption{\label{grapht4} Conflict hypergraph for $\varphi$}
+\end{figure}
+
+With the conflict hypergraph $G$ we can represent the violations in I. For each violation tuples $ \langle t_i,t_j,...\rangle \in viol(I,\varphi)$ there are an edge for $cell(t_i,t_j,...,\varphi)$ in G. A good repairing $I'$ consist in correcting the data base to be able to remove all the edge on the graph. The hypergraph of $I'$ should be empty.
+
+Let's take an example on the table \ref{tableMain} with a denial constraint we already used:
+
+$$\varphi': \forall t_\alpha,t_\beta \in R , \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.Tax < t_\beta.Tax)$$
+
+For this relation the violation set is:
+ $$ viol(I,\varphi') = \{ \langle t_5,t_4 \rangle,\langle t_6,t_4 \rangle,\langle t_7,t_4 \rangle \}$$
+
+On our hypergraph, $\langle t_5,t_4 \rangle \in viol(I,\varphi')$ consist of $cell(t_5,t_4;\varphi')$ which is equal to $\{ t_5.income,t_4.Income,t_5.Tax,t_4.Tax\}$. We want to remove a vertex, i.e eliminate a conflict. Let's first introduce some definition and a Lemma: \cite{main}
+
+\begin{mydef}
+	We denote $ \min_{a \in dom(A)} dist(I(t.A),a) $ the weight of a vertex t.A, i.e, the minimum cost should be paid to repair t.A.
+\end{mydef}
+
+\begin{mydef}
+	$\mathbb{V}(G)$ is the \textbf{minimum weighted vertex cover} of the hypergraph G corresponding to $\Sigma$ with weight
+	$$||\mathbb{V*(G)}|| = \sum_{t.A \in \mathbb{V}(G)} min_{a\in dom(A)} dist(I(t.A),a)$$
+\end{mydef}
+
+\begin{mylemma}
+	For any valid repair $I'$ of $I$, i.e, $I' \models \Sigma$, we have $\Delta(I,I') \leq ||V*(G)||$. 
+\end{mylemma}
+
+%Computing $\mathbb{V}$ is a NP-Hard problem so we need to approximate it. We'll consider an constant factor-f approximation of $\mathbb{V}$ which is $\frac{||\mathbb{V}(G)||}{||\mathbb{V}*(G)||} \leq f$. where f is the maximum degree of hyperedges and $||\mathbb{V}(G)||$ is an approximation of $||\mathbb{V}*(G)||$.
+
+In \cite{main} they define the upper and lower bound in this way :
+$$ \delta_l(\Sigma,I) = \frac{||\mathbb{V}(G)||}{Deg((\Sigma)}$$
+$$ \delta_u(\Sigma,I) = \sum_{t.A \in \mathbb{V}(G)} dist(I(t.A),fv)$$
+
+If we come back to our example and suppose that we have :
+$$
+\forall a,b \in dom(A) \ with \ a \neq b.
+\left\{
+	\begin{array}{ll}
+	   dist(a,a)=0\\
+	   dist(a,b)=1\\
+	   dist(a,fv)=1.1\\
+	\end{array}
+\right.
+$$
+
+So if each vertex has a weight of 1 (=$ dist(a,b)$) and if we put $\mathbb{V}(G)$ = $\{t_4.Tax \}$ we get $||\mathbb{V}(G)||$ = 1. We also have $Deg(\varpi')$ = 4, so with formula we have we know upper and lower bound : $\delta_l(\Sigma,I)$=$\frac{||\mathbb{V}(G)||}{Deg((\Sigma)}$ = $\frac{1}{4}$ = 0.25 and $\delta_u(\Sigma,I) = \sum_{t.A \in \mathbb{V}(G)} dist(I(t.A),fv)$ = $dist(a,fv)$=1.1 .
+
+
 \section{$\theta$-tolerant model}
-\section{Others}
-\subsection{Holistic}
+
+In this section we'll talk about the $\theta$-tolerant repair model which is the main models we want to study. $\theta$ is a threshold on the variation on the set of constraint $\Sigma$, so we don't want a constraint variation cost greater than $\theta$ : $\Theta(\Sigma,\Sigma') \leq \theta$. It helps to avoid any kind of over-refinement and so don't detect some dirty data. To avoid the over-simplification and identify correct data as dirty data, the repairing should pursue the minimum change principle. We need to find a repair $I'$ of the original instance $I$ and minimize $\Delta(I,I')$.\\
+
+Finding the best (minimum) $\theta$-tolerant repair is difficult, it's a NP-hard problem. An NP-hard problem is a class of decision problems which are at least as hard as the hardest problems in NP. What we have to remind of it, it's not possible to resolve it in a polynomial time. Even is the first approach we could made is to get all the constraints variant $\Sigma'$ and then compute $\Theta(\Sigma,\Sigma')$, look if it's lower than $\theta$ and then find the minimum data repair $I'$.\\
+
+We saw that we could replace some value by a fresh variable $fv$. It's better to not turn all of them in a fresh variable mainly because $fv$ is not $dom(A)$ and also a repair like this will never return the optimal repair because we want to minimize the repair cost. \\
+
+Now, consider $\mathbb{D}$ = $\Sigma_1 ' x \Sigma_2' x ... \Sigma_{|\Sigma|}'$ where each $\Sigma_i' \in \mathbb{D}$ is a variant of $\Sigma$ obtained by previous variations. Consider those variations bounded by $\theta$ so we have $\Theta(\Sigma,\Sigma') \leq \theta$. The algorithm \ref{tetha} return the best instance $I_min$ for our set of constraint variation $\Sigma$. The algorithm is simple. For each $\Sigma_i$ , if the lower bound is lower than the previous upper bound (remember the property \ref{boundRemove}). we update the value of $\delta_{min}$ if a better repaired instance comes from $I_i$. \\
+
+\IncMargin{1em}
+\begin{algorithm}
+\label{tetha}
+
+	\DontPrintSemicolon
+  \caption{$\theta$-TolerantRepair$(\mathbb{D},\Sigma,I)$}
+  \LinesNumbered
+    \SetKwInOut{Input}{Input}
+    \SetKwInOut{Output}{Output}
+
+   % \underline{$\theta$-TolerantRepair} $(\mathbb{D},\Sigma,I)$\;
+    \Input{Instance $I$, a constraint set $\Sigma$, a set $\mathbb{D}$of constraint variants with variation bound by $\theta$ }
+    \Output{A minimum data repair $I_{min}$}
+    $\delta_{min}$ = $\delta_u(\Sigma,I)$\;
+
+	\For{each constraint variant $\Sigma_i \in \mathbb{D}$}{
+    	\If{$\delta_l (\Sigma_i,I) \leq \delta_{min}$}
+    		{
+    		$I_i$ = DATAREPAIR($\Sigma_i,I,\mathbb{V}(G_i),\delta_{min}$\;
+    		\If{$\Delta(I,I_i) \leq \delta_min$}
+    		{$\delta_{min}$ = $\Delta(I,I_i)$\;
+    		$I_{min}$ = $I_i$\;}
+    		}   		
+    		
+	}
+	\Return $I_{min}$
+
+\end{algorithm}\DecMargin{1em}
+
+
+To get an example , imagine we have for a $\theta$ = $\frac{1}{2}$ , a set of constraint variation $\mathbb{D}$ = $\{\Sigma_1,\Sigma_2\}$ with the first set of constraints $\Sigma_1$ = $\{\varphi'\}$ and the second set of constraints $\Sigma_2$ = $\{\varphi''\}$ with:
+$$\varphi': \forall t_\alpha,t_\beta \in R , \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.Tax < t_\beta.Tax)$$
+$$\varphi'': \forall t_\alpha,t_\beta \in R , \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.Tax = t_\beta.Tax)$$
+
+We already have done the conflict hypergraph for $\varphi$ in figure \ref{grapht4} we also know that $\delta(\Sigma_1,I)=1.1$
+
+For $\Sigma2$ we obtain the hypergraph in figure \ref{graphSigma2} (and the violations in figure \ref{EqualTax}) with $\mathbb{V}(G_2)$ = $\{ t_2.Tax,t_3.Tax,t_5.Tax,t_6.Tax,t_7.Tax\}$. We have $Deg(\Sigma_2)$ = $Deg(\varphi')$ \footnote{same reasoning: 4 cells involved.}, so we have $\delta_l(\Sigma_2,I)$= $\frac{6}{2}$ = 1,5. Remember that $\delta_u(\Sigma_1,I)$ =1.1, so we have $\delta_u(\Sigma_1,I) < \delta_l(\Sigma_2,I)$ which means we can ignore $\Sigma2$ and don't call the DATAREPAIR function on it.
+
+\begin{figure}
+\centering
+\hspace*{-1.8cm} \includegraphics[scale=0.95]{img/graph2}
+\caption{\label{graphSigma2}Conflict hypergraph for $\Sigma_2$ with :}
+	odd number for Tax, even number for Income. \\
+	$t_1$ in yellow, $t_2$ in red, $t_3$ in green,\\
+	$t_4$ in blue, $t_5$ in purple and $t_6$ in white.
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=1]{img/TaxEqual}
+\caption{\label{EqualTax}All the violations for $\varphi''$}
+\end{figure}
+
+Let's talk about the complexity. If we say that $l$ is the maximum number involved in a constraint of $\Sigma$ then we can say that the construction of $G_i$ for each $\Sigma_i \in \mathbb{D}$ cost $O(|I|^l)$. The data repairing algorithm get a complexity in time of $O(|I|^l)$ and the algorithm \ref{tetha} runs in $O(|I|^l|\mathbb{D}|)$ time. Usualy a denial constraint get 2 tuples \cite{main}.
+
+\section{Minimum Data Repair and Violation Free}
+
+After using the $\theta$-tolerant model, we know which constraint set $\Sigma'$ derived from $\Sigma$ we have to use to perform a repairing. But we haven't see how to repair yet. In this section we'll focus on the minimum data repair $I'$ based on the $\Sigma'$. To make this we'll use the violation free to be sure we don't create any violation after correcting one data. For example, if we put $t5.Tax$ to 22, we solved the violation $ \langle t_5,t_4 \rangle$ we had with $\varphi'$ \footnote{remember the $\varphi: \forall t_\alpha,t_\beta \in R , \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.Tax < t_\beta.Tax)$ we used many times}but we introduce a new violation $\langle t_8,t_5 \rangle$.\\
+
+Remember we already said that finding a minimum repairing is NP-hard problem. For this reason we need to make some approximation in order to repair. For the following explanation and definition we'll note $\mathbb{C}$ the selected cells $\mathbb{V}(G)$
+
+\subsection{Suspect identification}
+
+\begin{mydef} \cite{main}
+	The suspect set $susp(\mathbb{C},\varphi)$ of a $\varphi$ is a set of tuple lists $\langle t_i,t_j,...:\varphi \rangle$ satisfying all the predicates in $\varphi$ which do not involve cells in$\mathbb{C}$.
+\end{mydef}
+
+and they satisfy the suspect condition:
+
+\begin{displaymath}
+\begin{split}
+sc(t_\alpha,t_\beta,...:\varphi) &= \{I(v_1)\phi c| P: v_1 \phi c \in pred(\varphi),v_1 \in \mathbb\{C\}\}\cup \\
+	&\{I(v_1)\phi v_2| P: v_1 \phi v_2 \in pred(\varphi),v_1,v_2 \in \mathbb\{C\}\}
+\end{split}
+\end{displaymath}
+
+Any violation is of course in the suspect list, which lead to the trivial lemma:
+
+\begin{mylemma}
+	For any $\mathbb{C}$, it always has $viol(I,\varphi) \subseteq susp(\mathbb{C},\varphi$
+\end{mylemma}
+
+And by this way, if we catch all the suspect, we also get all the violation.\\
+
+To explain it, let's return on the example $\varphi'$ related with the hypergraph at figure \ref{grapht4}. We will change only $t_4.Tax$ as we made in the figure \ref{tableExample}. So we have $\mathbb{C}$ =  $\{ t_4.Tax \}$ and $susp(\mathbb{C},\varphi') = \{\langle t_4 , t_1\rangle , 
+\langle t_4 , t_2\rangle,
+\langle t_4 , t_3\rangle,
+\langle t_5 , t_4\rangle,
+\langle t_6 , t_4\rangle,
+\langle t_7 , t_4\rangle,
+\langle t_8 , t_4\rangle,
+\langle t_9 , t_4\rangle,
+\langle t_{10} , t_4\rangle \}$ If we get $\langle t_4 , t_1\rangle$ ,   we have $t_4.Income > t_1.Income$ but there is a chance that any change on $t_4.Tax$ leads to a new violation($I'(t_4.Tax)<I(t_1.Tax) $. This is the reason why it's on the suspect list. In the figure \ref{fig3} we have a graph with cells not in $\mathbb{C}$ are circle and cell in $\mathbb{C}$ are squares. Red arrow are predicates that are not respected and blue arrows are respected predicates.
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=1]{img/fig3}
+	\caption{\label{fig3}Suspect condition represented by blue arrows and repair context represented by red arrow (with inverse operator)}
+\end{figure}
+
+\subsection{Repair context over suspects}
+
+We can now define a repair context. The repair contest of a suspect tuple is something that makes sure the suspect will not satisfy the predicates declared on $\mathbb{C}$. The reason why we need it is because a denial constraint needs at least one false predicate for every rows of the database. The repair context takes the inverse operator of predicates in $\mathbb{C}$. In \cite{main}, the repair context $rc(t_i,t_j,...:\varphi)$ of a suspect $\langle t_i,t_j,... \rangle $is defined as:
+
+\begin{mydef}
+	\begin{displaymath}
+	\begin{split}
+	rc(t_\alpha,t_\beta,...:\varphi) =
+	&\{ I'(v_1)\overline{\phi}c|P : v_i\phi c \in pred(\varphi),v_1 \in \mathbb{C}\}\cup\\
+	&\{I'(v_1)\overline{\phi} I'(v_2)|P : v_i\phi v_2 \in pred(\varphi),v_1,v_2 \in \mathbb{C}\}\cup\\
+	&\{I'(v_1)\overline{\phi} '(v_2)|P : v_i\phi v_2 \in pred(\varphi),v_1,\in \mathbb{C},v2 \not\in \mathbb{C}\}\cup\\
+	&\{I(v_1)\overline{\phi} I'(v_2)|P : v_i\phi v_2 \in pred(\varphi),v_2 \in \mathbb{C},v_1 \not\in \mathbb{C}\}.
+	\end{split}
+	\end{displaymath}
+\end{mydef}
+
+\begin{myprop}
+Any assignment that satisfies all the repair contexts forms a valid repair $I'$ without introducing any new violations, i.e, $I' \preceq \Sigma$
+\end{myprop}
+
+If we continue with our previous example with $\varphi'$, we have $rc(t_4,t_1:\varphi')$ = $\{I'(t_4.Tax \geq I(t_1.Tax)\}$ , $\geq$ is the inverse operator of $<$, and we only consider predicates of $\varphi'$ with cells from $\mathbb{C}$ which are red arrows on the figure \ref{fig3}. We also have $rc(t_5,t_4:\varphi')$ = $\{I'(t_5.Tax \geq I(t_4.Tax)\}$. With both of these repair constraint we have $0 = t_1.Tax \leq t_4.Tax \leq t_5.Tax =0$ which lead to only one possible value : $t_4.Tax =0$. Remember that previously we put a fresh variable $fv$ instead of 0 (see the table \ref{tableExample} in the previous chapter).\\
+
+We want a repair cost as small as possible, which leads to to minimize the repair cost under repair cost constraint:
+\begin{displaymath}
+\begin{split}
+& \hspace*{1cm} \min \sum_{t_i.A \in \mathbb{C}} dst(I(t_i.A),I'(t_i.A)) \\
+ &\ under\ the\ constraint : rc(t_i,t_j,...:\varphi)\ with\ \langle t_i,t_j,... \rangle \in susp(\mathbb{C},\varphi),\varphi \in \Sigma
+\end{split}
+\end{displaymath}
+
+But it could be possible that we can't assign any value (in our domain) that can fit all the repair context. In these case can't put any value except a fresh variable. If a cell is assigned by a fresh variable $fv$ we can remove every repair context with this cell. The reason is that $fv$ are defined as a way they don't satisfy any kind of predicates which include predicates in repair context. If we can solved our problems i.e we can't found value in dom(A) for a repaired instance $I'$, we'll assign a fresh variable until the problems is solvable. It's better to start by cells with the largest number of appearance in predicates in the repair context. We can say $I'(t.A)$ = $fv$ if $rc(t.A,\Sigma)$ which represent all the repair context declared between a constant or between $t.A$ and $v_i \not\in \mathbb{C}$.\\
+
+If we come back to one of our first example : $\varphi : t_\alpha,t_\beta \in R, \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.Tax \leq t_\beta.Tax)$  For $t_2$ we have $rc(t_2.Tax,\{ \varphi \}) = \{ I'(t_2.Tax) > I(t_1.Tax),I(t_4.Tax) > I'(t_2.Tax),I(t_8.Tax) > I'(t_2.Tax),I(t_9.Tax) > I'(t_2.Tax),I(t_10.Tax) > I'(t_2.Tax) \{$ In the same we we did for $\varphi'$, here we have $0 = I(t_1.Tax)< I'(t_2.Tax) < I(t_4.Tax) = 3k$ and there is no value who respect it in dom(A) = $\{ 0,3k,21k,40 \}$
+\section{Other repairing}
+\subsection{Holistic data repair}
 \subsection{...}
 
 \chapter{Implementation and comparison with others models}
