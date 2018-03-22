@@ -145,16 +145,19 @@ Faculté des Sciences $\bullet$ University of Mons $\bullet$ Place du Parc 20 $\
 
 \tableofcontents
 \pagebreak
+\listoffigures
+\listoftables
+\pagebreak
 
 \chapter{Introduction}
 
 \pagenumbering{arabic} \setcounter{page}{1} 
 
-\alinea Many institutions and companies collect, store and use a lot of data. These data could be dirty which means they contain erroneous information. An Erroneous information may mislead anyone who want to use the database. To prevent this problem, data should respect integrity constraints which are rules in database. Any information who doesn't fit these constraints is considered as a dirty data. But these constraints may be imprecise as well, failing to identify good data and dirty data. For this reason, some data aren't identify as violation as they should be and others data are identify as violent and they shouldn't be. Both mistakes on data and integrity constraints are a problem for anyone using the database.\\
+\alinea Many institutions and companies collect, store and use a lot of data. These data could be dirty which means they contain erroneous information. An Erroneous information may mislead anyone who wants to use the database. To prevent this problem, data should respect integrity constraints. These constraints are rules in database and any information who doesn't fit them are considered as a dirty data. But these constraints may be imprecise as well, failing to make the difference between good data and dirty data. For this reason, some data aren't identify as violation as they should be and others data are identify as a violation of constraints (dirty data) and they shouldn't be. Both mistakes on data and integrity constraints are a problem for anyone using the database.\\
 
-During my training, i had to work on a project related to a database with such problems. It has a huge impact for a part of my project. The repair of these data is a project for 2018 and i feel it would be interesting to study the data repairing concept.\\
+For example, during my training, i had to work on a project related to a database with such problems. It has a huge impact for a part of my project. The repair of these data is a project for 2018 and i felt it would be interesting to study the data repairing concept.\\
 
-\emph{Data repairing} means recover erroneous data but also repair bad integrity constraints. It would be naive to think we can delete dirty data as we wish. The number of loss would be huge because sometimes there is only one error in a row. Furthermore, integrity constraint can also be dirty which means row deletion could erase some clean data. For this reason we need techniques to repair a data without loosing too much information and without failling to identifie dirty data. \\
+\emph{Data repairing} means recover erroneous data but also repair bad integrity constraints. It would be naive to think we can delete dirty data as we wish. The number of loss would be huge because sometimes there is only one error in a row on a table. Furthermore, integrity constraint can also be dirty which means row deletion could erase some clean data. For this reason we need techniques to repair both data and  constraint  without loosing too much information and without failing to identify dirty data. \\
 
 In this thesis we are going to analyse the \emph{$\theta$-tolerant repair model} as explained in a scientifique article\cite{main}. First of all, we have to re-explain some notions and definition to understand the $\theta$-tolerant model and we also need to present some database we used to illustrate data repairing models. Next we'll present some data repairing models with among them the $\theta$-model. We'll theorically compare them and identify pros and cons for all them.
 
@@ -162,10 +165,13 @@ TO CONTINUE.
 
 \chapter{Integrity constraints}
 
-In this chapter we'll remind some important notions that we are going to use to explain some data repairing models. We use database following the relational model which was introduced by E.F. Codd \cite{misc1}. We'll also present some database we're going to use to illustrate different notions.
+%In this chapter we'll remind some important notions that we are going to use to explain some data repairing models. We use database following the relational model which was introduced by E.F. Codd \cite{misc1}. We'll also present some database we're going to use to illustrate different notions.
+
+\alinea In this chapter, we'll remind some well know notions that we are going to use further in this thesis. First we'll introduce some database in order to use them as example to explain many properties and definitions. These database  the relational model which was introduced by E.F. Codd \cite{misc1} Then we'll work on constraints and introduce a new kind of constraint called denial constraint. Denial constraints got some property and useful usage for next chapter.
+
 \section{Database}
 
-In this section we'll present databasse we used as example in this thesis. These databases are used to ulistrate data repairing models and others notions we'll  define.
+\alinea In this section we'll present databases we used as example in this thesis. These databases are used to illustrate data repairing models and others notions we'll  define.\\
 
 The first database comes from the main article used as bibliography in this thesis\cite{main}.
 
@@ -187,7 +193,7 @@ The first database comes from the main article used as bibliography in this thes
 	 t10 & Dustin & 9-4-1984 & 387-215 & 2009 & 150k & 40k \\
 	 \hline
 	\end{tabular}
-	\caption{\label{tableMain} Table of the main article\cite{main}}.
+	\caption{\label{tableMain} Database of the main article\cite{main}}.
 \end{table}
 
 The second database we are going to use comes from a personal experience. In a training, i had to work on a project related to a database with some dirty data. These data can't be used outside the company but we'll try to get the main idea. It's a table named person, who got several basic information on people from Belgium \footnote{Every data in our database are fictional person.}.
@@ -232,46 +238,46 @@ The second database we are going to use comes from a personal experience. In a t
 
 \section{Constraint on database}
 
-When you want to add rows in a database, you can't put what you want. It would be a problem if it was possible to add non-logical value on some columns of a table. To avoid this kind of problems, we can add rules on a database. Basically a rule works on this way: if the entry row $t_\alpha$ respects some conditions, we can accept the value. Otherwise $t_\alpha$ is not correct and something is wrong with the value of this entry row.\\
+\alinea When you want to add rows in a database, you can't put what you want. It would be a problem if it was possible to add non-logical value on some columns of a table. To avoid this kind of problems, we can add rules on a database. Basically a rule works on this way: if the entry row $t_\alpha$ respects some conditions, we can accept the value. Otherwise $t_\alpha$ is not correct and something is wrong with the value of this entry row.\\
 
-On the relational database model which is used in most of the database, the notion of \emph{functional dependency(FD)} is used. 
+On the relational database model used in most of the database, the notion of \emph{functional dependency(DF)} is applied. We can define it as: 
 
 \begin{mydef}
-Given a relation R and a set of attributes $X \in R$, a \textbf{functional dependency} determine another set $Y \in R$ (written X $\rightarrow$ Y) if and only if each X value is associated with one Y value.
+Given a relation R and a set of attributes $X \in R$, a \textbf{functional dependency (FD)} determines another set $Y \in R$ (written X $\rightarrow$ Y) if and only if each X value is associated with one Y value.
 \end{mydef} 
 
-In other words, for a dependency $X \rightarrow Y$ means that for a specific value X there's only one possible value for Y. If the DF is respected on a relation R, we say that R satisfy the DF. Let's take some examples on the table \ref{tablePerson}.
+In other words, for a dependency $X \rightarrow Y$ means that for a specific value X there's only one possible value for Y. If the FD is respected on a relation R, we say that R satisfy the FD. Let's take some examples on the table \ref{tablePerson}.
 
 \begin{enumerate}
-\item A NISS identify a person. This constraint can be describe by a key constraint $Key{Niss}$
-\item Two persons with the same post code lived in the same district. The functional dependency for this constraint is $post\_code \rightarrow district$
-\item If some got a decease date, his civil status should be equal to decease. In this case we need a conditional functional dependency(CFD) which is typically a functional dependency with equality operator on some columns. A functional dependency should work for all records on the table, CFD can hold some conditions on collumns. $[Decease\_date = $'18-05-1962'$] \rightarrow [civil\_status = decease]$
+\item \emph{A NISS identify a person.} : This constraint can be describe by a key constraint $Key\{ Niss \}$
+\item \emph{Two persons with the same post code lived in the same district.} : The functional dependency for this constraint is $post\_code \rightarrow district$. For a specific value of $post\_code$ there's only one possible value for $district$.
+\item \emph{If someone died the march 18$^{th}$ 1962 , his civil status should be equal to decease.} : In this case we need a conditional functional dependency(CFD) which is typically a functional dependency with equality operator on some columns. A functional dependency should work for all records on the table, CFD can hold some conditions on collumns. $[Decease\_date = $'18-05-1962'$] \rightarrow [civil\_status = decease]$
 \end{enumerate}
  
 \begin{mydef}
-A set $\Sigma$ of DF on the relation schema $A$. The relation $R$ satisfy $\Sigma$ noted $R \models \Sigma$ if for each DF in $\Sigma$, R satisfy the DF.
+A set $\Sigma$ of FD on the relation schema $A$. The relation $R$ satisfy $\Sigma$ noted $R \models \Sigma$ if for each FD in $\Sigma$, R satisfy the FD.
 \end{mydef}
 
-However we can't express everything as functional dependencies. Sometimes it fails. For example, if we want to express "Nobody can die before his own birth", in this case we need to compare the birth date and the decease date. Functional dependencies can't work in this case. We can use the first-order logic. 
+However we can't express everything as functional dependencies. Sometimes it fails. For example, if we want to express "Nobody can die before his own birth", in this case we need to compare the birth date and the decease date. Functional dependencies can't work in this case. However, we can use the first-order logic. 
 $$\forall t_\alpha \in R, \; \neg(t_\alpha.decease\_date \leq t_\alpha.birth\_date)$$ We can express the others examples in first-order logic.
 
 \begin{enumerate}
-\item A NISS identify a person. $\forall t_\alpha,t_\beta \in R$ $\neg(t_\alpha.NISS = t_\beta.NISS)$ (We suppose in this notation, we can't take $t_\alpha = t_\beta$)
-\item Two persons with the same post code lived in the same district. $\forall t_\alpha,t_\beta \in R$ $\neg(t_\alpha.post\_code = t_\beta.post\_code \wedge t_\alpha.district \neq t_\beta.district) $
-\item If some got a decease date, his civil status should be equal to decease. $forall t_\alpha,t_\beta \in R$ $\neg(decease\_date = null \wedge civil\_state = decease)$
+\item \emph{A NISS identify a person.}: $\forall t_\alpha,t_\beta \in R$ $\neg(t_\alpha.NISS = t_\beta.NISS)$ (We suppose in this notation, we can't take $t_\alpha = t_\beta$)
+\item \emph{Two persons with the same post code lived in the same district.}: $\forall t_\alpha,t_\beta \in R$ $\neg(t_\alpha.post\_code = t_\beta.post\_code \wedge t_\alpha.district \neq t_\beta.district) $
+\item \emph{If some got a decease date, his civil status should be equal to decease.}: $\forall t_\alpha \in R$ $\neg(t_\alpha.decease\_date = $'18-05-1962'$ \wedge t_\alpha.civil\_state = decease)$.
 \end{enumerate}
 
 On the main paper which this thesis is based, they define a denial constraint as \cite{main}:
 
 \begin{mydef}
-Consider a relation scheme $R$ with attributes $attr(R)$. Let predicate space $\mathbb{P}$ be a set of predicate  $P$ in the form  $v_1 \phi V_2$ or $v1 \phi c$ with $v_1,v_2 \in t_x.A$ , $x \in \{\alpha,\beta\}$ , $t_\alpha,t_\beta \in R$, $A \in attr(R)$, $c$ is a constant and $\phi \in \{ =,<,>,\leq, \geq, \neq \}$ is a build-in operator.  A \textbf{Denial Constraint(DC)}:
+Consider a relation scheme $R$ with attributes $attr(R)$. Let predicate space $\mathbb{P}$ be a set of predicate  $P$ in the form  $v_1 \phi v_2$ or $v1 \phi c$ with $v_1,v_2 \in t_x.A$ , $x \in \{\alpha,\beta\}$ , $t_\alpha,t_\beta \in R$, $A \in attr(R)$, $c$ is a constant and $\phi \in \{ =,<,>,\leq, \geq, \neq \}$ is a build-in operator.  A \textbf{Denial Constraint(DC)}:
 
 $$\varphi : t_\alpha,t_\beta,... \in R, \neg(P_1 \wedge ... \wedge P_m)$$
 
 states that for any tuples $t_\alpha,t_\beta,...$ from R, all the predicates $P_i \in pred(\varphi)$,i = 1,...,m should not be true at the same time.
 \end{mydef}
 
-In other words, a denial constraint is a first-order logic conjunction of predicates that shouldn't be true all in the same time. So if one of the predicates is false, the data is consider to be clean. 
+In other words, a denial constraint is a first-order logic conjunction of predicates that shouldn't be true all in the same time. So if one of the predicates is false, the data is consider to be clean. \\
 
 \begin{figure}
 	\centering
@@ -280,7 +286,7 @@ In other words, a denial constraint is a first-order logic conjunction of predic
 \end{figure}
 A DC can be oversimplified which means a correct data could consider as a violation. Let's take an example on the table \ref{tableMain}. If we take the following constraint:
 $$ \varphi : t_\alpha,t_\beta \in R, \neg(t_\alpha.Name = t_\beta.Name \wedge t_\alpha.CP \neq t_\beta.CP)$$
-This constraint means that any person with the same \emph{Name} should get the same cellphone number (\emph{CP}), which is incorrect because two person different person can get the same name and of course different cellphone number. For example $t_1$ and $t_2$ don't respect this denial constraint. So it's considered as a violation, but we can see it's two different person because they don't have the same age. If we want a correct DC we need to check their age, i.e their \emph{Birthdate}:
+This constraint means that any person with the same \emph{Name} should get the same cellphone number (\emph{CP}), which is incorrect because two different person can get the same name and of course different cellphone number. For example $t_1$ and $t_2$ don't respect this denial constraint. So it's considered as a violation, but we can see it's two different person because they don't have the same age(represented by a birthday data in this case). If we want a correct DC we need to check their \emph{Birthdate}:
 
 \begin{displaymath}
   \begin{split}
@@ -298,7 +304,7 @@ In the opposite of oversimplified, a DC can be overrefined which means a dirty d
   \end{split}
 \end{displaymath}
 
-In this case the Year information is not usefull. We don't recognize $t_5$ and $t_8$ as a violation with this constraint.
+In this case the Year information is not usefull. We don't recognize $t_5$ and $t_8$ as a violation with this constraint. The year information represents the year we took the information and of course we can take the information of the same person on two different year.
 
 \subsection{Some definitions and properties}
 
@@ -306,7 +312,7 @@ In this section we'll present some definitions and properties on the denial cons
 
 \subsubsection{Trivial DC}
 
-A DC can be useless and always true. Such DCs shouldn't be present because they never identify any violations. In that case we say that the denial constraint is\emph{trivial}. We'll definie a trivial DC as:
+A DC can be useless and always true. Such DCs shouldn't be present because they never identify any violations. In that case we say that the denial constraint is \emph{trivial}. We'll definie a trivial DC as:
 
 \begin{mydef}
 	We say a denial constraint $\varphi$ is \textbf{trivial} if for any instance $I$  of $R$ we have $\varphi \models I$
@@ -315,12 +321,13 @@ A DC can be useless and always true. Such DCs shouldn't be present because they 
 It's quite easy to discover trivial denial constraint with the following property \cite{DCs}:
 
 \begin{myprop}
+\label{trivialprop}
  $\forall P_i, P_j$ if $P_i \in Imp(P_j)$, then $\neq(P_i \wedge P_j)$ is a trivial DC.
 \end{myprop}
 
 In \cite{main}, they said for $Imp(\phi)$:
 
-\begin{mydef} For any two values a and b, if $a \phi_2 b$ always implies $a \phi_1 b$, it means $\phi_2 \in Imp(\phi_1)$.
+\begin{mydef} For any two values a and b, if $a \phi_2 b$ always implies\footnote{any tuples who satisfy $a\phi_2 b$ satisfy $a\phi_1 b$} $a \phi_1 b$, it means $\phi_2 \in Imp(\phi_1)$.
 \end{mydef}
 
 With this definition, we see that if $P_i$ is true, $P_j$ is false and vice versa.\\
@@ -340,13 +347,13 @@ For example if we have $x = y$ as predicate and we add $x < y$, both the predica
 	 
 	 \hline
 	\end{tabular}
-	\caption{\label{tableImp}}.
+	\caption{\label{tableImp} Table of operator, their opposite and their implication}.
 \end{table}
 
-If we say for the table \ref{tableMain}:
-$$\varphi : t_\alpha,t_\beta \in R \; \neg(t_\alpha.Tax = t_\beta.Tax \wedge t_\alpha.Tax < t_\beta.Tax)$$
+If we say for data the table \ref{tableMain}:
+$$\varphi : t_\alpha,t_\beta \in R \; \neg(t_\alpha.Tax = t_\beta.Tax \wedge t_\alpha.Tax < t_\beta.Tax)$$ 
 
-It's quite obvious it's impossible that two persons have the same tax rate and one's tax rate is greater than the other. For the rest of this study we won't consider trivial DCs
+It's a trivial by property \ref{trivialprop} It's quite obvious it's impossible that two persons have the same tax rate and one's tax rate is greater than the other. For the rest of this study we won't consider trivial DCs
 
 \subsubsection{Augmentation}
 
