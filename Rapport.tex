@@ -245,9 +245,7 @@ La seconde base de données que nous allons utiliser est inspiré d'une expérie
 
 \newpage
 
-\section{Constraint on database}
-
-\alinea Databases should be filled by values that respect some constraints related to the database. It would be a problem if it was possible to add non-logical value on some columns of a table. To avoid this kind of problems, we can add rules on a database. These rules are called \emph{constraints} and works on this way: if the entry row $t$ respects some conditions, we can accept the value. Otherwise $t$ is not correct and something is wrong with the value of this entry row.\\
+\section{Contraintes sur les bases de données}
 
 \alinea Les bases de données devraient n'accepter que des valeurs qui respectent certaines normes en relation avec la base de données. Ce serait un problème si on pouvait ajouter n'importe quelle valeur à chaque colonne d'une base de données. Pour eviter ce problème nous avons recours à des règles sur les bases de données. Ces règles sont appelées \emph{contraintes d'intégrité} et fonctionnent de la manière suivante: Si un tuple $t$ respecte toutes les conditions alors les données sont acceptables. Sinon $t$ n'est pas correcte et au moins une des valeurs du tuple est erronée.
 
@@ -262,7 +260,7 @@ En d'autre mots, la contrainte $X \rightarrow Y$ signifie que pour une valeur sp
 
 \begin{enumerate}
 \item \emph{Un NISS identifie une personne}: En d'autre mot, pour une valeur spécifique du NISS, il n'y a qu'une seule valeur possible pour tout le reste de la table. Cela peut se décrire par la DF suivante:
-$ NISS \rightarrow Nom, Prénom, Nai_Date, Dec_Date, Etat_Civil, Ville, Code_Post, Salaire, Taxe, Enfant$
+$ NISS \rightarrow Nom, Prénom, Nai\_Date, Dec\_Date, Etat\_Civil, Ville, Code\_Post, Salaire, Taxe, Enfant$
 \item \emph{Deux personnes avec le même code postal vivent dans la même ville.} : Pour une valeur spécifique de $Code\_Post$ dans notre table il n'y a qu'une valeur possible de $Ville$. Par exemple si la valeur de $Code\_Post$ d'une personne est '7822', la seule valeur possible pour l'attribut $Ville$ est 'Ath'. La dépendance fonctionnelle dans ce cas est $Code\_Post \rightarrow Ville$.
 %\item \emph{If someone died the march 18$^{th}$ 1962 , his civil status should be equal to decease.} : In this case we need a conditional functional dependency(CFD) which is typically a functional dependency with equality operator on some columns. A functional dependency should work for all records on the table, CFD can hold some conditions on collumns. $[Decease\_date = $'18-05-1962'$] \rightarrow [civil\_status = decease]$
 \end{enumerate}
@@ -273,16 +271,51 @@ Si pour chaque tuple de la relation $R$, la DF $\tau$ est respectée, nous dison
 Soit un ensemble $\Sigma$ de DF sur la relation $R$. On dit que la relation $R$ satisfait $\Sigma$ noté $R \models \Sigma$ si pour chaque DF $ \tau \in \Sigma$, on a $R \models \tau$
 \end{mydef}
 
-Malheureusement les dépendances fonctionnelles sont limitées en terme de puissance, il existe de nombreuses contraintes que nous ne pouvons pas exprimer avec une DF. Par exemple, si nous souhaitons exprimer le fait que \emph{'Une personne ne peut être mort avant sa propre mort'}, nous avons besoin de comparer la $Nai\_Date$ et la $Dec\_Date$ de la personne et de s'assurer que la date de décès ne soit pas avant la date de naissance. Les dépendances fonctionnelles ne permettent pas d'utiliser des opérateurs de comparaison, il est donc nécessaire d'exprimer les contraintes d'une autre façon. Pour ce faire nous allons introduire un nouveau type de contrainte qui répondra bien à nos besoins: les \emph{denial constraints}.
+Malheureusement les dépendances fonctionnelles sont limitées en terme de puissance. En effet, il existe de nombreuses contraintes que nous ne pouvons pas exprimer avec une DF. Par exemple, si nous souhaitons exprimer le fait que \emph{'Une personne ne peut être née avant sa propre mort'}, nous avons besoin de comparer la $Nai\_Date$ et la $Dec\_Date$ de la personne et de s'assurer que la date de décès ne soit antérieure à la date de naissance. Les dépendances fonctionnelles ne permettent pas d'utiliser des opérateurs de comparaison, il est donc nécessaire d'exprimer les contraintes d'une autre façon. Pour ce faire nous allons introduire un nouveau type de contrainte qui répondra bien à nos besoins: les \emph{denial constraints}.
 
+\section{Les Denials constraints}
 
+Dans cette section nous allons définir ce qu'est une denial constraint. Nous allons aussi expliquer son utilisation dans les bases de données et nous allons également lister et expliquer plusieurs propriétés que peuvent avoir ces contraintes. Commençons d'abord par définir la denial constraint
 
-%Nous pouvons par exemple exprimer cela avec la logique du premier ordre. Dans le cas \emph{' Une personne ne peut être mort avant sa propre mort'} nous aurions par exemple: 
-%
-%$$ \forall t : R(t) \rightarrow \neg[t(decease\_date)\leq t(birth\_date)]$$ or
-%$$ \forall t : R(t) \rightarrow t(decease\_date) > t(birth\_date)$$
-% 
-%Nous pouvons également exprimer 
+\begin{mydef}
+Considérons un schéma de relation $R$ avec un ensemble $S$ fini d'\emph{attribut}. Une \emph{denial constraint (DC)} sur l'ensemble $S$ est une fonction partielle qui associe l'ensemble $S$ vers le powerset $OP$ de $\{ <,=,> \}$. Nous utiliserons la lettre grecque $\varphi$ pour représenter une DC
+\end{mydef}
+
+Par définition le powerset d'un ensemble $S$ noté $\mathcal{P}(S)$ est l'ensemble de tous les sous-ensemble de $S$. Cela inclut l'ensemble $S$ lui même mais aussi l'ensemble vide $\emptyset$. Par exemple le powerset de $OP$ est $\mathcal{P}(OP)$ = $\{ \emptyset, \{<\} , \{=\}, \{>\}, \{<,=\}, \{=,>\}, \{<,>\}, \{<,=,>\} \}$. Il existe différentes abréviations pour les éléments de $OP$, ceux-ci étant répertorié dans la table \ref{operatorTable}. Nous avons eu besoin d'introduire 2 nouveaux opérateur $\top$ et $\bot$, chacun étant l'abréviation pour l'ensemble $\{<,=,>\}$ et $\emptyset$ respectivement. Nous les définissons comme tel: $ \forall a,b \in \mathbf{dom}$,nous avons $d_1 \bot d_2$ est toujours faux et $d_1 \top d_2$ est toujours vrai. Nous utiliserons la lettre grecque $\phi$ pour représenter un opérateur.\\
+
+Pour chaque opérateur dans $OP$ nous pouvons définir son inverse, sa réciproque et son implication. Les valeurs de l'inverse, la réciproque et l'implication de chaque élément de $OP$ se trouve également à la table \ref{operatorTable}.
+\begin{mydef}
+Soit $\phi$ un élément de $OP$
+
+L'inverse de $\phi$ noté $\overline{\phi}$ est égal à $\{<,=,>\}\setminus \emptyset$
+
+La réciproque de $\phi$ noté $\hat{\phi}$ s'obtient en inter-changeant < et > dans $\phi$
+
+L'implication de $\phi$ noté $Imp(\phi)$ est un ensemble d'élément de $OP$ tel que pour n'importe quelle valeur a et b, si $a \phi_2 b$ \textbf{implique}\footnote{Tout tuple qui satisfait $a \phi_2 b$ satisfait $a \phi_1 b$} \textbf{toujours} $a \phi_1  b$ alors $\phi_2       \in Imp(\phi_1)$.
+\end{mydef}
+
+Notons que $\forall \phi_1,\phi_2$, si $\phi_2 \in Imp(\phi_1)$ alors $\phi$ est un sous ensemble de $\phi_2$. Par exemple $\neq \in Imp(>)$ et $\{ > \} \in \{<,> \}$.
+\begin{table}
+	\begin{center}
+	\begin{tabular}{|c|c|c|c|c|}\hline
+	Élément & Abréviation & inverse & réciproque & implication\\\hline\hline
+	$\emptyset$ & $\bot$ & $\top$ & $\bot$ & $\{\bot\}$\\\hline
+	$\{<\}$     & $<$ & $\geq$ & $>$ & $\{<,\leq,\neq, \top \}$\\\hline
+	$\{=\}$     & $=$ & $\neq$ & $=$ & $\{=,\leq,\geq, \top \}$\\\hline
+	$\{>\}$     & $>$ & $\leq$ & $<$ & $\{ >,\geq,\neq,\top \}$\\\hline 
+	$\{<,=\}$   & $\leq$ & $>$ & $\geq$ & $\{\leq, \top \}$\\\hline 
+	$\{<,>\}$   & $\neq$ & $=$ & $\neq$ & $\{\geq, \top \}$\\\hline
+	$\{>,=\}$   & $\geq$ & $<$& $\leq$ & $\{\neq, \top \}$\\\hline 
+	$\{<,=,>\}$ & $\top$ & $\bot$ & $\top$ & $\{\top \}$\\\hline
+	\end{tabular}
+	\end{center}
+	\caption{Element de OP, le powerset of $\{ <,=,>\}$ \label{operatorTable}}
+\end{table}
+
+Une DC est un fonction partielle de l'ensemble $S$ des attributs vers $OP$. Reprenons nos exemples sur les DF et essayons de les exprimer en terme de DC. Pour notre table \ref{tablePerson}, nous avons l'ensemble $S=\{NISS, Nom, Prénom, Nai\_Date, Dec\_Date, Etat\_Civil, Ville, Code\_Post, Salaire, Taxe, Enfant \}$.
+\begin{itemize}
+\item \emph{Un NISS identifie une personne.}: $\{ (NISS,=), (Nom,\neq) (Prénom\neq), (Nai\_Date\neq), (Dec\_Date\neq), (Etat\_Civil\neq), (Ville\neq), (Code\_Post\neq), (Salaire\neq), (Taxe\neq), (Enfant\neq) \}$
+\end{itemize}
 We can express previous constraints in first-order logic:
 
 \begin{enumerate}
