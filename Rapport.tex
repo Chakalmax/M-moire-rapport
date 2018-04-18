@@ -1,7 +1,7 @@
 \documentclass[letterpaper, 12pt]{report}
 \usepackage[top = 1.8cm, left = 3cm, right = 3cm ]{geometry}
 \usepackage[pdftex]{graphicx}
-\usepackage[english]{babel}
+\usepackage[francais]{babel}
 \usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage{url}
@@ -14,16 +14,28 @@
 \usepackage{fancyhdr}
 \usepackage{gensymb}
 \usepackage{rotating}
-\usepackage[english,ruled,vlined]{algorithm2e}
+\usepackage[french,ruled,vlined]{algorithm2e}
 \usepackage{longtable}
 \usepackage{newfloat}
 \usepackage{enumitem}
 \usepackage{amsfonts}
 
 \DeclareFloatingEnvironment[placement={!ht},name=List]{mylist}
+\theoremstyle{definition}
 \newtheorem{mydef}{Definition}
 \newtheorem{myprop}{Property}
 \newtheorem{mylemma}{Lemma}
+\newtheorem{myexample}{Example}
+
+\newcommand{\dom}{\mathbf{dom}}
+\newcommand{\att}[1]{{\mathsf{#1}}}
+\newcommand{\na}{\att{Name}}
+\newcommand{\cp}{\att{CP}}
+\newcommand{\bd}{\att{Birthday}}
+\newcommand{\yr}{\att{Year}}
+\newcommand{\ta}{\att{Tax}}
+\newcommand{\ic}{\att{Income}}
+\newcommand{\lrformula}[1]{\left({#1}\right)}
 
 \def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
 \let\endchangemargin=\endlist 
@@ -116,7 +128,7 @@
 \begin{flushleft}
 \textsf{\textbf{Project made by:}} Maxime Van Herzeele\\
 \textsf{\textbf{Academic Year:}} 2017-2018\\
-\textsf{\textbf{Dissertation director:}} Jeff Wijsen\\
+\textsf{\textbf{Dissertation director:}} Jef Wijsen\\
 %\textsf{\textbf{Rapporteurs}} Pierre Hauweele \& Tom Mens\\
 \textsf{\textbf{Section:}} 2$^{nd}$ Master Bloc in ComputerSciences
 \end{flushleft}
@@ -153,33 +165,29 @@ Faculté des Sciences $\bullet$ University of Mons $\bullet$ Place du Parc 20 $\
 
 \pagenumbering{arabic} \setcounter{page}{1} 
 
-\alinea Many institutions and companies collect, store and use a lot of data. These data could be dirty which means they contain erroneous information. An Erroneous information may mislead anyone who wants to use the database. To prevent this problem, data should respect integrity constraints. These constraints are rules in database and any information who doesn't fit them are considered as a dirty data. But these constraints may be imprecise as well, failing to make the difference between good data and dirty data. For this reason, some data aren't identify as violation as they should be and others data are identify as a violation of constraints (dirty data) and they shouldn't be. Both mistakes on data and integrity constraints are a problem for anyone using the database.\\
+\alinea De nombreuses institutions et entreprises collectent, stockent et utilisent de nombreuses informations. Ces données peuvent être \emph{erronées} ce qui peut induire en erreur n'importe quelle personne voulant utiliser la base de données. Afin d'éviter ce problème, les données devraient respecter les contraintes d'intégrités. Ces contraintes sont des règles devant être respectées par les données, et n'importe quelle information qui ne les respectent pas est considérées comme étant erronée. Malheureusement, ces contraintes peuvent être imprécises et par conséquent elle peuvent échouée dans la différenciation entre les bonnes données et les données erronées. Pour cette raison, certaines données sont identifiées comme étant des violations de ces contraintes (données erronées) malgré qu'elles ne le devraient pas et d'un autre côté, certaines données ne sont pas identifiées comme étant des violations alors qu'elles le devraient. Ces erreurs à la fois sur les données et sur les contraintes, sont un problème pour quiconque souhaite utiliser la base de donnée.\\
 
-For example, during my training, i had to work on a project related to a database with such problems. It has a huge impact for a part of my project. The repair of these data is a project for 2018 and i felt it would be interesting to study the data repairing concept.\\
+Par exemple, durant mon stage en entreprise, j'ai pu travailler sur un projet associé de près à une base de données ayant ce problème semblable. Cela a eu un énorme impact sur une partie de mon projet. Le projet de réparation de ces données est prévu pour le courant de l'année 2018.\\
 
-\emph{Data repairing} means recover erroneous data but also repair bad integrity constraints. It would be naive to think we can delete dirty data as we wish. The number of loss would be huge because sometimes there is only one error in a row on a table. Furthermore, integrity constraint can also be dirty which means row deletion could erase some clean data. For this reason we need techniques to repair both data and  constraint  without loosing too much information and without failing to identify dirty data. \\
+Le terme \emph{Data repairing} ou réparation de données signifie réparer les données mais aussi réparer les contraintes d'intégrité. Il serait naïf de penser que l'on puisse supprimer des données erronées comme on le souhaite. La perte d'information serait important parce que une telle pratique demanderait d'effacer une ligne complète de la table et ce malgré qu'il n'y ait qu'une seule erreur dans la ligne. En outre, les contraintes d'intégrité peuvent aussi ne pas être correcte ce qui veut dire que l'on pourrait supprimer une ligne ne contenant que des données correctes. Pour cette raison, nous avons besoin de techniques afin de réparer à la fois les données et les contraintes et ce sans perdre trop d'information tout en évitant d'échouer dans la détection d'erreurs dans les données.\\
 
-In this thesis we are going to analyse the \emph{$\theta$-tolerant repair model} as explained in a scientifique article\cite{main}. First of all, we have to re-explain some notions and definition to understand the $\theta$-tolerant model and we also need to present some database we used to illustrate data repairing models. Next we'll present some data repairing models with among them the $\theta$-model. We'll theorically compare them and identify pros and cons for all them.
+Dans cette thèse de mémoire, nous allons analyser le \emph{modèle de réparation $\theta$-tolérant} comme il a été introduit dans un papier scientifique\cite{main}. Dans un premier temps nous allons introduire le concept de \emph{denial constraint}, une forme de contraintes d'intégrité qui va nous aider à définir et comprendre le concept du modèle de réparation $\theta$-tolérant. Nous allons également introduire quelques bases de données que nous utiliserons pour illustrer les différentes notions que nous allons aborder. Ensuite, nous allons présenter une implémentation du modèle $\theta$-tolérant. Et enfin, nous terminerons par une analyse des performances de l'implémentation du modèle.
 
-TO CONTINUE.
+\chapter{Les contraintes d'intégrité}
 
-\chapter{Integrity constraints}
+\alinea Dans ce chapitre, nous allons rappeler quelques notions bien connues mais nous allons également introduire de nouveaux concept. Dans un premier temps nous allons introduire quelques bases de données que nous utiliserons en tant qu'exemple pour expliquer et illustrer de nombreuses propriétes et définitions. Ces bases de données suivent le modèle relationnel qui a été introduit par E.F. Codd \cite{misc1}. Ensuite nous allons travailler sur les contraintes d'intégrités et nous allons introduire un nouveau type de contrainte appelé \emph{denial constraint}. Nous allons expliquer plusieurs caractéristiques et propriétés de ces contraintes et expliquer pourquoi nous n'utilisons pas une forme plus conventionnel de contrainte, comme par exemple les dépendances fonctionnelles.
 
-%In this chapter we'll remind some important notions that we are going to use to explain some data repairing models. We use database following the relational model which was introduced by E.F. Codd \cite{misc1}. We'll also present some database we're going to use to illustrate different notions.
+\section{Base de données}
 
-\alinea In this chapter, we'll remind some well know notions that we are going to use further in this thesis. First we'll introduce some database in order to use them as example to explain many properties and definitions. These database  the relational model which was introduced by E.F. Codd \cite{misc1} Then we'll work on constraints and introduce a new kind of constraint called denial constraint. Denial constraints got some property and useful usage for next chapter.
+\alinea Dans cette section nous allons présenter des bases de données que nous allons utiliser comme exemple dans cette thèse de mémoire. Nous utiliser ces bases de données pour illustrer le modèle de réparation de données $\theta$-tolérant ainsi que d'autres notions que nous définirons.\\
 
-\section{Database}
-
-\alinea In this section we'll present databases we used as example in this thesis. These databases are used to illustrate data repairing models and others notions we'll  define.\\
-
-The first database comes from the main article used as bibliography in this thesis\cite{main}.
+La première base de données est tirée de l'article principal utilisés dans la bibliographie de cette thèse \cite{main}.
 
 \begin{table}[H]
 	\centering
 	\begin{tabular}{|c|c c c c c c|}
 	\hline
-	    & Name & BirthDay & Cellphone Number & Year & Income & Tax\\
+	    & Nom & Anniversaire & Num\_Tel & Année & Revenu & Taxe\\
 	\hline
 	 t1 & Ayres & 8-8-1984 & 322-573 & 2007 & 21k & 0\\
 	 t2 & Ayres & 5-1-1960 & ***-389 & 2007 & 22k & 0 \\
@@ -193,27 +201,28 @@ The first database comes from the main article used as bibliography in this thes
 	 t10 & Dustin & 9-4-1984 & 387-215 & 2009 & 150k & 40k \\
 	 \hline
 	\end{tabular}
-	\caption{\label{tableMain} Database of the main article\cite{main}}.
+	\caption{\label{tableMain} Base de données de l'article principal \cite{main}}.
 \end{table}
 
-The second database we are going to use comes from a personal experience. In a training, i had to work on a project related to a database with some dirty data. These data can't be used outside the company but we'll try to get the main idea. It's a table named person, who got several basic information on people from Belgium \footnote{Every data in our database are fictional person.}.
+La seconde base de données que nous allons utiliser est inspiré d'une expérience personnelle. Lors d'un stage en entreprise, j'ai pu travailler sur un projet lié à une base de donnée contenant des données erronées. Ces données ne pouvant pas être utilisé en dehors de l'entreprise, nous utiliserons une base de données reprenant l'idée générale. C'est une table appelée 'Personne' contenant différentes informations basiques sur des personnes en Belgique \footnote{Les données sont fictives} . 
+
 \begin{itemize}
-\item \textbf{NISS:} The national number of the person. A national number is unique. Usually, a NISS is formated like this\cite{bcss}
+\item \textbf{NISS:} Le numéro national de la personne. Un numéro national est unique. En règle général, un NISS est formé de la manière suivante: \cite{bcss}
 	\begin{itemize}
-	\item It start with the birthdate of the person in a YY-MM-DD format. Exception are made for stranger(People without Belgian nationality), but for ease we won't consider these cases.
-	\item Number 7 to 9 is even for men and odd for female.
-	\item Remaining number are the modulo 97 of the 9 first number. 
+	\item Il commence avec la date de naissance de la personne dans un format YY-MM-DD. Des exceptions existe pour les étranger (c'est à dire des personne n'ayant pas la nationalité Belge) mais nous n'allons pas considérer ces cas. En effet ces cas peuvent être difficile à comprendre et ne sont aucunement intéressant pour la suite.
+	\item Le nombre composé du septième, huitième et neuvième chiffres est pair pour les hommes et impair pour les femmes
+	\item Le nombre composé des deux derniers chiffres est le resulat de is $n \mod 97$ avec n le nombre formé des 9 premiers chiffres
 	\end{itemize}
-\item \textbf{LN:} Person's lastname.
-\item \textbf{FN:} Person's firstname.
-\item \textbf{Birth\_Date:} birthDate in DD-MM-YYYY format.
-\item \textbf{Decease\_Date:} Person's date decease.
-\item \textbf{Civil\_State:} Person's current civil state(example: single, married, divorced, decease, widow,...)
-\item \textbf{City} : The city where the person lives.
-\item \textbf{Post\_code} : The postal code of the city.
-\item \textbf{Salary} : The salary of the person for one year
-\item \textbf{Tax} : The tax amount the person have to pay every year
-\item \textbf{Child} : the number of children the person have.
+\item \textbf{Nom:} Nom de famille de la personne.
+\item \textbf{Prénom:} Prénom de la personne.
+\item \textbf{Nai\_Date:} Date de naissance de la personne dans le format DD-MM-YYYY.
+\item \textbf{Dec\_Date:} Date de décès de la personne dans le format DD-MM-YYYY.
+\item \textbf{Etat\_Civil:} État civil courant de la personne, celui ci doit être parmi les suivants : (célibataire, décédés, marié, divorcé, décédé, veuf)
+\item \textbf{Ville} : La ville où la personne vit.
+\item \textbf{Code\_Post} : Le code postal de la ville.
+\item \textbf{Salaire} : Le salaire perçu par la personne en une année.
+\item \textbf{Taxe} : Le montant de taxe payé par la personne en une année.
+\item \textbf{Enfant} : Le nombre d'enfant que la personne a à charge.
 \end{itemize}
 
 \begin{table}[H]
@@ -221,16 +230,16 @@ The second database we are going to use comes from a personal experience. In a t
 	\centering
 	\hspace*{-2cm}\begin{tabular}{|c|c c c c c c c c c c c|}
 	\hline
-	    & Niss & LM & FN & Birth\_date & Decease\_date & Civil\_state & City & Post\_code& Salary & Tax & Child\\
+	    & Niss & Nom & Prénom & Nai\_Date & Dec\_Date & Etat\_Civil & Ville & Code\_Post & Salaire & Taxe & Enfant\\
 	\hline
-	 t1 & 14050250845 & Dupont & Jean & 14-05-1902 & 18-05-1962 & decease & Ath & 7822 & 25k & 4k & 2\\
-	 t2 & 08042910402 & Brel & Jacques & 08-04-1929 & 09-10-1978 & decease & Schaerbeek & 1030 & 100k & 8k & 1\\
-	 t3 & 45060710204 & Merckx & Eddy & 07-06-1945 & null & decease & Schaerbeek & 1030 & 125k & 9k & 2\\
+	 t1 & 14050250845 & Dupont & Jean & 14-05-1902 & 18-05-1962 & décédé & Ath & 7822 & 25k & 4k & 2\\
+	 t2 & 08042910402 & Brel & Jacques & 08-04-1929 & 09-10-1978 & décédé & Schaerbeek & 1030 & 100k & 8k & 1\\
+	 t3 & 45060710204 & Merckx & Eddy & 07-06-1945 & null & décédé & Schaerbeek & 1030 & 125k & 9k & 2\\
 	\hline
 	 
 	 \hline
 	\end{tabular}
-	\caption{\label{tablePerson} Table Person}.
+	\caption{\label{tablePerson} La table Personne}.
 \end{table}
 
 
@@ -238,46 +247,125 @@ The second database we are going to use comes from a personal experience. In a t
 
 \section{Constraint on database}
 
-\alinea When you want to add rows in a database, you can't put what you want. It would be a problem if it was possible to add non-logical value on some columns of a table. To avoid this kind of problems, we can add rules on a database. Basically a rule works on this way: if the entry row $t_\alpha$ respects some conditions, we can accept the value. Otherwise $t_\alpha$ is not correct and something is wrong with the value of this entry row.\\
+\alinea Databases should be filled by values that respect some constraints related to the database. It would be a problem if it was possible to add non-logical value on some columns of a table. To avoid this kind of problems, we can add rules on a database. These rules are called \emph{constraints} and works on this way: if the entry row $t$ respects some conditions, we can accept the value. Otherwise $t$ is not correct and something is wrong with the value of this entry row.\\
 
-On the relational database model used in most of the database, the notion of \emph{functional dependency(DF)} is applied. We can define it as: 
+\alinea Les bases de données devraient n'accepter que des valeurs qui respectent certaines normes en relation avec la base de données. Ce serait un problème si on pouvait ajouter n'importe quelle valeur à chaque colonne d'une base de données. Pour eviter ce problème nous avons recours à des règles sur les bases de données. Ces règles sont appelées \emph{contraintes d'intégrité} et fonctionnent de la manière suivante: Si un tuple $t$ respecte toutes les conditions alors les données sont acceptables. Sinon $t$ n'est pas correcte et au moins une des valeurs du tuple est erronée.
+
+Le modèle relationnel des bases de données introduit la notion de \emph{dépendance fonctionnelle}:
 
 \begin{mydef}
-Given a relation R and a set of attributes $X \in R$, a \textbf{functional dependency (FD)} determines another set $Y \in R$ (written X $\rightarrow$ Y) if and only if each X value is associated with one Y value.
+Une \textbf{dépendance fonctionnelle (DF)} est une expression $X \rightarrow Y$ avec $X,Y \subseteq
+sort(R)$ et où $sort(R) = \{ A_1,A_2,...,A_n\}$
 \end{mydef} 
 
-In other words, for a dependency $X \rightarrow Y$ means that for a specific value X there's only one possible value for Y. If the FD is respected on a relation R, we say that R satisfy the FD. Let's take some examples on the table \ref{tablePerson}.
+En d'autre mots, la contrainte $X \rightarrow Y$ signifie que pour une valeur spécifique de X, il n'y a au plus une valeur possible pour Y. Si la DF est respectée sur la relation R, nous pouvons dire que R satisfait la DF. Prenons quelques exemple sur la table \ref{tablePerson}:
 
 \begin{enumerate}
-\item \emph{A NISS identify a person.} : This constraint can be describe by a key constraint $Key\{ Niss \}$
-\item \emph{Two persons with the same post code lived in the same district.} : The functional dependency for this constraint is $post\_code \rightarrow district$. For a specific value of $post\_code$ there's only one possible value for $district$.
-\item \emph{If someone died the march 18$^{th}$ 1962 , his civil status should be equal to decease.} : In this case we need a conditional functional dependency(CFD) which is typically a functional dependency with equality operator on some columns. A functional dependency should work for all records on the table, CFD can hold some conditions on collumns. $[Decease\_date = $'18-05-1962'$] \rightarrow [civil\_status = decease]$
+\item \emph{Un NISS identifie une personne}: En d'autre mot, pour une valeur spécifique du NISS, il n'y a qu'une seule valeur possible pour tout le reste de la table. Cela peut se décrire par la DF suivante:
+$ NISS \rightarrow Nom, Prénom, Nai_Date, Dec_Date, Etat_Civil, Ville, Code_Post, Salaire, Taxe, Enfant$
+\item \emph{Deux personnes avec le même code postal vivent dans la même ville.} : Pour une valeur spécifique de $Code\_Post$ dans notre table il n'y a qu'une valeur possible de $Ville$. Par exemple si la valeur de $Code\_Post$ d'une personne est '7822', la seule valeur possible pour l'attribut $Ville$ est 'Ath'. La dépendance fonctionnelle dans ce cas est $Code\_Post \rightarrow Ville$.
+%\item \emph{If someone died the march 18$^{th}$ 1962 , his civil status should be equal to decease.} : In this case we need a conditional functional dependency(CFD) which is typically a functional dependency with equality operator on some columns. A functional dependency should work for all records on the table, CFD can hold some conditions on collumns. $[Decease\_date = $'18-05-1962'$] \rightarrow [civil\_status = decease]$
 \end{enumerate}
- 
+
+Si pour chaque tuple de la relation $R$, la DF $\tau$ est respectée, nous disons que la relation $R$ \emph{satisfait $\tau$}. Cela ce note $R \models \tau$. Évidement, certaines bases de données ne contiennent pas qu'une seule contrainte mais plusieurs. Il est important qu'elle soient toute respectée. Définissons cela comme ceci: 
+  
 \begin{mydef}
-A set $\Sigma$ of FD on the relation schema $A$. The relation $R$ satisfy $\Sigma$ noted $R \models \Sigma$ if for each FD in $\Sigma$, R satisfy the FD.
+Soit un ensemble $\Sigma$ de DF sur la relation $R$. On dit que la relation $R$ satisfait $\Sigma$ noté $R \models \Sigma$ si pour chaque DF $ \tau \in \Sigma$, on a $R \models \tau$
 \end{mydef}
 
-However we can't express everything as functional dependencies. Sometimes it fails. For example, if we want to express "Nobody can die before his own birth", in this case we need to compare the birth date and the decease date. Functional dependencies can't work in this case. However, we can use the first-order logic. 
-$$\forall t_\alpha \in R, \; \neg(t_\alpha.decease\_date \leq t_\alpha.birth\_date)$$ We can express the others examples in first-order logic.
+Malheureusement les dépendances fonctionnelles sont limitées en terme de puissance, il existe de nombreuses contraintes que nous ne pouvons pas exprimer avec une DF. Par exemple, si nous souhaitons exprimer le fait que \emph{'Une personne ne peut être mort avant sa propre mort'}, nous avons besoin de comparer la $Nai\_Date$ et la $Dec\_Date$ de la personne et de s'assurer que la date de décès ne soit pas avant la date de naissance. Les dépendances fonctionnelles ne permettent pas d'utiliser des opérateurs de comparaison, il est donc nécessaire d'exprimer les contraintes d'une autre façon. Pour ce faire nous allons introduire un nouveau type de contrainte qui répondra bien à nos besoins: les \emph{denial constraints}.
+
+
+
+%Nous pouvons par exemple exprimer cela avec la logique du premier ordre. Dans le cas \emph{' Une personne ne peut être mort avant sa propre mort'} nous aurions par exemple: 
+%
+%$$ \forall t : R(t) \rightarrow \neg[t(decease\_date)\leq t(birth\_date)]$$ or
+%$$ \forall t : R(t) \rightarrow t(decease\_date) > t(birth\_date)$$
+% 
+%Nous pouvons également exprimer 
+We can express previous constraints in first-order logic:
 
 \begin{enumerate}
-\item \emph{A NISS identify a person.}: $\forall t_\alpha,t_\beta \in R$ $\neg(t_\alpha.NISS = t_\beta.NISS)$ (We suppose in this notation, we can't take $t_\alpha = t_\beta$)
-\item \emph{Two persons with the same post code lived in the same district.}: $\forall t_\alpha,t_\beta \in R$ $\neg(t_\alpha.post\_code = t_\beta.post\_code \wedge t_\alpha.district \neq t_\beta.district) $
-\item \emph{If some got a decease date, his civil status should be equal to decease.}: $\forall t_\alpha \in R$ $\neg(t_\alpha.decease\_date = $'18-05-1962'$ \wedge t_\alpha.civil\_state = decease)$.
+\item \emph{A NISS identify a person.}: 
+%$\forall t_\alpha,t_\beta \in R$ $\neg(t_\alpha.NISS = t_\beta.NISS)$
+$ \forall s \forall t : (R(S)\wedge R(t) \rightarrow s(Niss) = t(NISS) )$
+\item \emph{Two persons with the same post code live in the same district.}: $ \forall s \forall t ( R(s)\wedge R(t) \wedge s(Post\_code) = t(Post\_code) \rightarrow s(District)= t(District) )$ %$\forall t_\alpha,t_\beta \in R$ $\neg(t_\alpha.post\_code = t_\beta.post\_code \wedge t_\alpha.district \neq t_\beta.district) $
+\item \emph{If someone died the march 18$^{th}$ 1962 , his civil status should be equal to decease.}: $\forall t (R(t) \rightarrow \neg(t.Decease\_date = $'18-05-1962'$ \wedge t.Civil\_state = deceased)$.%$\forall t_\alpha \in R$ $\neg(t_\alpha.decease\_date = $'18-05-1962'$ \wedge t_\alpha.civil\_state = decease)$.
 \end{enumerate}
 
-On the main paper which this thesis is based, they define a denial constraint as \cite{main}:
+%On the main paper which this thesis is based, they define a denial constraint as \cite{main}:
+%
+%\begin{mydef}
+%Consider a relation scheme $R$ with attributes $attr(R)$. Let predicate space $\mathbb{P}$ be a set of predicate  $P$ in the form  $v_1 \phi v_2$ or $v1 \phi c$ with $v_1,v_2 \in t_x.A$ , $x \in \{\alpha,\beta\}$ , $t_\alpha,t_\beta \in R$, $A \in attr(R)$, $c$ is a constant and $\phi \in \{ =,<,>,\leq, \geq, \neq \}$ is a build-in operator.  A \textbf{Denial Constraint(DC)}:
+%
+%$$\varphi : t_\alpha,t_\beta,... \in R, \neg(P_1 \wedge ... \wedge P_m)$$
+%
+%states that for any tuples $t_\alpha,t_\beta,...$ from R, all the predicates $P_i \in pred(\varphi)$,i = 1,...,m should not be true at the same time.
+%\end{mydef}
+
+So it's possible to express more constraints with first-order logic than with FD. For this reason, it would be interesting to define another kind of constraints based on the first-order logic. We define a denial constraint as:
 
 \begin{mydef}
-Consider a relation scheme $R$ with attributes $attr(R)$. Let predicate space $\mathbb{P}$ be a set of predicate  $P$ in the form  $v_1 \phi v_2$ or $v1 \phi c$ with $v_1,v_2 \in t_x.A$ , $x \in \{\alpha,\beta\}$ , $t_\alpha,t_\beta \in R$, $A \in attr(R)$, $c$ is a constant and $\phi \in \{ =,<,>,\leq, \geq, \neq \}$ is a build-in operator.  A \textbf{Denial Constraint(DC)}:
 
-$$\varphi : t_\alpha,t_\beta,... \in R, \neg(P_1 \wedge ... \wedge P_m)$$
+Consider a relation scheme $R$ with $S$ a finite set of \emph{attribute}. A \textbf{denial constraint (DC)} over $S$ is a partial mapping from $S$ to the powerset $OP$ of $\{ <,=,> \}$. We will use the Greek letter $\varphi$ to denote a DC.
 
-states that for any tuples $t_\alpha,t_\beta,...$ from R, all the predicates $P_i \in pred(\varphi)$,i = 1,...,m should not be true at the same time.
 \end{mydef}
 
-In other words, a denial constraint is a first-order logic conjunction of predicates that shouldn't be true all in the same time. So if one of the predicates is false, the data is consider to be clean. \\
+By definition a powerset of a set $S$ denoted $\mathcal{P}(S)$ is the set of all subset of $S$. It includes $S$ itself and also the empty set. It exists different syntactic shorthands  for elements of $OP$ as you can see in table \ref{operatorTable}.
+We had to introduce 2 new operators $\top$ and $\bot$ defined as follows: For every $d_1,d_2 \in \mathbf{dom}$, $d_1\bot d_2$ is false and $d_1\top d_2$ is true. We will use the greek letter $\phi$ to denote operator.
+
+\begin{table}
+	\begin{center}
+	\begin{tabular}{|c|c|}\hline
+	Element & Abbreviation\\\hline\hline
+	$\emptyset$ & $\bot$\\\hline
+	$\{<\}$     & $<$\\\hline
+	$\{=\}$     & $=$\\\hline
+	$\{>\}$     & $>$\\\hline 
+	$\{<,=\}$   & $\leq$\\\hline 
+	$\{<,>\}$   & $\neq$\\\hline
+	$\{>,=\}$   & $\geq$\\\hline 
+	$\{<,=,>\}$ & $\top$\\\hline
+	\end{tabular}
+	\end{center}
+	\caption{Element of OP, powerset of $\{ <,=,>\}$ \label{operatorTable}}
+\end{table}
+
+
+%In other words, a denial constraint is a first-order logic conjunction of predicates that shouldn't be true all in the same time. So if one of the predicates is false, the data is consider to be clean. \\
+
+\begin{myexample}
+Let $S= \{Name,Birtday,CP,Year,Income,Tax \}$. We can have the following denial constraints over S:
+$\varphi_1 = \{(Name,=),(Birthday,=),(CP, \neq)\}$ and $\varphi_2 :\{(Income,>),(Tax,\neq)\}$
+\end{myexample}
+
+%TODO rewrite this part (copy-pasta!)
+\begin{mydef}
+Let $(\dom,\leq)$ be a totally ordered domain containing at least two distinct elements.
+A {\em tuple over $S$\/} is a total mapping from $S$ to $\dom$.
+A  {\em relation over $S$\/} is a finite set of tuples over $S$.
+Let $\varphi$ be a denial constraint over $S$.
+We say that a relation $I$ over $S$ satisfies $\varphi$,
+denoted $I\models\varphi$,
+if there exist no two tuples $s,t\in I$ such that for every attribute $A$ in the domain of $\varphi$, we have $s(A)\ \theta\ t(A)$ where $\theta=\varphi(A)$. We say that $\varphi$ is a \emph{valid} DC if $I\models\varphi$. 
+\end{mydef}
+
+\begin{myexample}
+$\{(\ic,>)$, $(\ta,\leq)\}$ is satisfied by a relation $I$ if there exist no two tuples $s,t\in I$ such that $s(\ic)>t(\ic)$ and $s(\ta)\leq t(\ta)$.
+In other words, $\{(\ic,>)$, $(\ta,\leq)\}$ is satisfied by $I$ if for all $s,t\in I$, if $s(\ic)>t(\ic)$, then $s(\ta)>t(\ta)$.
+\end{myexample}
+
+If we want to translate $\varphi_1$ into first-order logic it will be:
+\begin{displaymath}
+  \begin{split}
+    \varphi : \forall s,t : R(t) \wedge R(s) \rightarrow &(s.Name = t(Name) \wedge s(CP) = t(CP) \wedge \\
+    & s(Birthday) = t(Birthday))
+  \end{split}
+\end{displaymath}
+
+In the main article \cite{main} they defined the DC as an expression of the the form $\forall s,t \in R \neg(P_1 \wedge P_2 \wedge ... \wedge P_m)$ where $P_i$ is in the from $s(A) \phi t(A)$ or $s(A) \phi c$ or $t(a) \phi c$  and $\phi$ in one of the element of $OP$. This expression is satisfied if if all the predicates are not true at the same time. In others words, this constraints is satisfied if at least one of the $P_i$ is false.  
+
+
 
 \begin{figure}
 	\centering
@@ -285,44 +373,48 @@ In other words, a denial constraint is a first-order logic conjunction of predic
 	\caption{A denial constraint(DC) can express many type of others constraints}
 \end{figure}
 A DC can be oversimplified which means a correct data could consider as a violation. Let's take an example on the table \ref{tableMain}. If we take the following constraint:
-$$ \varphi : t_\alpha,t_\beta \in R, \neg(t_\alpha.Name = t_\beta.Name \wedge t_\alpha.CP \neq t_\beta.CP)$$
-This constraint means that any person with the same \emph{Name} should get the same cellphone number (\emph{CP}), which is incorrect because two different person can get the same name and of course different cellphone number. For example $t_1$ and $t_2$ don't respect this denial constraint. So it's considered as a violation, but we can see it's two different person because they don't have the same age(represented by a birthday data in this case). If we want a correct DC we need to check their \emph{Birthdate}:
+$$ \varphi : s,t \in R, \{(Name,=)\wedge(CP,\neq)\}$$
+%$$ \varphi : t_\alpha,t_\beta \in R, \neg(t_\alpha.Name = t_\beta.Name \wedge t_\alpha.CP \neq t_\beta.CP)$$
+This constraint means that any person with the same \emph{Name} should get the same cellphone number (\emph{CP}), which is incorrect because two different person can get the same name and of course different cellphone number. For example $t_1$ and $t_2$ don't respect this denial constraint. In this case $(t_1,t_2)$ are violation of the DC $\varphi$. But if we look closely, we can guess it's two different person with the same name. Indeed, they got two different Birthday so their age are different. If we want to improve the accuracy of this constraint, we need to check the \emph{Birthday} attribute:
 
 \begin{displaymath}
   \begin{split}
-    \varphi : t_\alpha,t_\beta \in R &\; \neg(t_\alpha.Name = t_\beta.Name \wedge t_\alpha.CP \neq t_\beta.CP \wedge \\
-    & t_\alpha.Birthday = t_\beta.Birthday)
+  %    \varphi : t_\alpha,t_\beta \in R &\; \neg(t_\alpha.Name = t_\beta.Name \wedge t_\alpha.CP \neq t_\beta.CP \wedge \\
+%    & t_\alpha.Birthday = t_\beta.Birthday)
+    \varphi : \forall s,t : R(t) \wedge R(s) \rightarrow &(s.Name = t(Name) \wedge s(CP) = t(CP) \wedge \\
+    & s(Birthday) = t(Birthday))
   \end{split}
 \end{displaymath}
 
-In the opposite of oversimplified, a DC can be overrefined which means a dirty data could be consider as a clean data. An example could be :
+
+In the opposite of oversimplified, a DC can be overrefined which means a dirty data could be considered as a clean data. An example could be :
 
 \begin{displaymath}
   \begin{split}
-    \varphi : t_\alpha,t_\beta \in R &\; \neg(t_\alpha.Name = t_\beta.Name \wedge t_\alpha.CP \neq t_\beta.CP \wedge \\
-    & t_\alpha.Birthday = t_\beta.Birthday \wedge t_\alpha.Year = t_\beta.Year)
-  \end{split}
+\varphi : \forall s,t : R(t) \wedge R(s) \rightarrow &(s.Name = t(Name) \wedge s(CP) = t(CP) \wedge \\
+    & s(Birthday) = t(Birthday)\wedge s(Year) = t(Year)
+    \end{split}
 \end{displaymath}
 
-In this case the Year information is not usefull. We don't recognize $t_5$ and $t_8$ as a violation with this constraint. The year information represents the year we took the information and of course we can take the information of the same person on two different year.
+In this case the Year information is not useful. We don't recognize $t_5$ and $t_8$ as a violation with this constraint. The year information represents the year we store the information and of course we can store the information of the same person in two different years.
 
 \subsection{Some definitions and properties}
 
-In this section we'll present some definitions and properties on the denial constraint. They are going to help us in following chapters.
+In this section we will present some definitions and properties on the denial constraint. They will help us in following chapters.
 
 \subsubsection{Trivial DC}
 
-A DC can be useless and always true. Such DCs shouldn't be present because they never identify any violations. In that case we say that the denial constraint is \emph{trivial}. We'll definie a trivial DC as:
+A DC can be useless and always true. Such DCs should not be present because they never identify any violation. In that case we say that the denial constraint is \emph{trivial}. We'll define a trivial DC as:
 
 \begin{mydef}
-	We say a denial constraint $\varphi$ is \textbf{trivial} if for any instance $I$  of $R$ we have $\varphi \models I$
+	We say a denial constraint $\varphi$ is \textbf{trivial} if for any instance $I$  of $R$ we have $I \models \varphi$
 \end{mydef}
 
 It's quite easy to discover trivial denial constraint with the following property \cite{DCs}:
 
 \begin{myprop}
 \label{trivialprop}
- $\forall P_i, P_j$ if $P_i \in Imp(P_j)$, then $\neq(P_i \wedge P_j)$ is a trivial DC.
+ $\forall P_i, P_j$ if $\overline{P_i} \in Imp(P_j)$, then $\neg(P_i \wedge P_j)$ is a trivial DC.
 \end{myprop}
 
 In \cite{main}, they said for $Imp(\phi)$:
@@ -336,13 +428,13 @@ For example if we have $x = y$ as predicate and we add $x < y$, both the predica
 
 \begin{table}[H]
 	\centering
-	\begin{tabular}{|c|c|c|c|c|c|c|}
+	\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
 	\hline
-	   $ \phi$ & = & $\neq$ & > & < & $\leq$& $\geq$\\
+	   $ \phi$ & = & $\neq$ & > & < & $\leq$& $\geq$ & $\top$ & $\bot$\\
 	   \hline
-	   $ \overline{\phi}$ & $\neq$ & = & $\leq$ & $\geq$ & < & >\\
+	   $ \overline{\phi}$ & $\neq$ & = & $\leq$ & $\geq$ & < & >  & $\bot$ & $\top$\\
 	   \hline
-	   $Imp(\phi)$ & = $\geq$,$\leq$ & $\neq$ & >,$\geq$,$\neq$ & <,$\leq$,$\neq$ & $\geq$ & $\leq$ \\
+	   $Imp(\phi)$ & = $\geq$,$\leq$ & $\neq$ & >,$\geq$,$\neq$ & <,$\leq$,$\neq$ & $\geq$ & $\leq$  & $\top$ & $\bot$\\
 	\hline
 	 
 	 \hline
@@ -357,33 +449,44 @@ It's a trivial by property \ref{trivialprop} It's quite obvious it's impossible 
 
 \subsubsection{Augmentation}
 
-Further in this report, we'll see addition and deletion operations in order to perform data repairing on these constraint. But adding predicates to valid DCs is useless because of the augmentation property \cite{DCs}:
+Further in this report, we'll see addition and deletion operations in order to perform data repairing on these constraints. But adding predicates to valid DCs is useless because of the augmentation property \cite{DCs}:
 
 \begin{myprop}
-	If $\varphi = \neg (P_1 \wedge P_2 \wedge ... \wedge P_n)$ is a valide DC, then $\varphi ' = \neg(P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q)$ is also a valide DC
+	If $\varphi = \neg (P_1 \wedge P_2 \wedge ... \wedge P_n)$ is a valid DC, then $\varphi ' = \neg(P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q)$ is also a valide DC
 \end{myprop}
 
-It's quite easy to prove this property. If $\varphi$ is valid it means every $t_\alpha \in R$ is accepted by the constraint. If it's accepted, $\forall t_\alpha$ one of the $P_i \in \varphi$ is false. So whatever $Q$ is, $t_\alpha$ will still be accepted.
+%It's quite easy to prove this property. If $\varphi$ is valid it means every $t_\alpha \in R$ is accepted by the constraint. If it's accepted, $\forall t_\alpha$ one of the $P_i \in \varphi$ is false. So whatever $Q$ is, $t_\alpha$ will still be accepted. It's independent of the value of Q. By this way, Q is useless in $\varphi$
 
+This property is quite trivial. Remember that $\varphi$ is a valid DC over $I$ means $I \models \varphi$ so $\forall t \in I$ we have $\neg (P_1 \wedge P_2 \wedge ... \wedge P_n)$ true. Then $\neg (P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q)$ is true too.
 \subsubsection{Transitivity}
 In \cite{DCs} they defined the transitivity of DCs as:
 
 \begin{myprop}
-	If $\varphi = \neg (P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q_1)$ and $\varphi ' = \neg (R_1 \wedge Q_2 \wedge ... \wedge Q_n \wedge Q_2)$ are both valid DCs and $Q_2 \in Imp(\overline{Q_1})$, \\ then $ \varphi '' = \neg(P_1 \wedge ... \wedge P_n \wedge R_1 \wedge ... \wedge R_n)$ is also a valid DC.
+	If $\varphi = \neg (P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q_1)$ and $\varphi ' = \neg (R_1 \wedge R_2 \wedge ... \wedge R_n \wedge Q_2)$ are both valid DCs and $Q_2 \in Imp(\overline{Q_1})$, \\ then $ \varphi '' = \neg(P_1 \wedge ... \wedge P_n \wedge R_1 \wedge ... \wedge R_n)$ is also a valid DC.
 \end{myprop}
 
-In other words if two \textbf{valid} DCs, each with predicates that can't be false in the same time, then merging those DCs and removing the two predicates will produce a \textbf{valid} DC.
+In other words if two \textbf{valid} DCs, each with one predicate that can't be false in the same time, then merging those DCs and removing the two predicates will produce a \textbf{valid} DC.
 
 It's possible to prove that:
 
-\begin{proof}
-	$\forall t_\alpha \in R$, we have $\varphi$ and $\varphi '$ verified.
+%\begin{proof}
+%	$\forall t_\alpha \in R$, we have $\varphi$ and $\varphi '$ verified.
+%	
+%\hspace*{0.5cm}	We have $Q_2 \in Imp(\overline{Q_1})$ so $Q_2$ and $Q_1$ can not be true or false at the same time.
+%	\begin{enumerate}
+%	 \item if $Q_1$ is false, then $Q_2$ is true . Therefore $\exists R_i\ such\ as\ R_i$ is false (because $\varphi$ should be verified). $\varphi ''$ is verified too because $R_i \in \varphi ''$
+%	 \item if $Q_1$ is true, then $Q_2$ is false . Therefore $\exists P_i\ such\ as\ P_i$ is false (because $\varphi$ should be verified). $\varphi ''$ is verified too because $P_i \in \varphi ''$
+%	\end{enumerate}
+%\end{proof}
+
+\begin{proof}~\\
+	\hspace*{0.55cm} $\varphi$ is a valid DC : $\neg (P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q_1)$ is true.
 	
-\hspace*{0.5cm}	We have $Q_2 \in Imp(\overline{Q_1})$ so $Q_2$ and $Q_1$ can not be true or false at the same time.
-	\begin{enumerate}
-	 \item if $Q_1$ is false, then $Q_2$ is true . Therefore $\exists R_i such as R_i$ is false (because $\varphi$ should be verified). $\varphi ''$ is verified too because $R_i \in \varphi ''$
-	 \item if $Q_1$ is true, then $Q_2$ is false . Therefore $\exists P_i such as P_i$ is false (because $\varphi$ should be verified). $\varphi ''$ is verified too because $P_i \in \varphi ''$
-	\end{enumerate}
+	$\varphi '$ is a valid DC : $\neg (R_1 \wedge R_2 \wedge ... \wedge R_n \wedge Q_2)$ is true.
+	
+	$Q_2 \in Imp(\overline{Q_1})$ : $Q_1 \oplus Q_2$ is true%$Q_1 \wedge Q_2$ is false 
+	
+	then $\neg (P_1 \wedge ... \wedge P_n) \vee \neg (R_1 \wedge ... \wedge R_n \wedge Q_2) \equiv \varphi'' $ is true \footnote{$\neg p \vee \neg Q \equiv \neg (p \wedge q)$}
 \end{proof}
 
 \subsubsection{Refinement}
@@ -391,31 +494,44 @@ It's possible to prove that:
 In \cite{main} they define the refinement of a DC as :
 
 \begin{mydef}
- $\varphi_2$ is a \textbf{refinement} of $\varphi_1$, denoted by $\varphi_1 \preceq \varphi_2$, if for each $ P$ : $x\phi_1 y \in pred(\varphi_1)$, there exists a $Q : x \phi_2 y \in pred(\varphi_2)$ such that $\phi_1 \in Imp(\phi_2)$
+% $\varphi_2$ is a \textbf{refinement} of $\varphi_1$, denoted by $\varphi_1 \preceq \varphi_2$, if for each $ P$ : $x\phi_1 y \in pred(\varphi_1)$, there exists a $Q : x \phi_2 y \in pred(\varphi_2)$ such that $\phi_1 \in Imp(\phi_2)$
+ $\varphi_2$ is a \textbf{refinement} of $\varphi_1$, denoted by $\varphi_1 \preceq \varphi_2$, if for each $P_i \in pred(\varphi)$ there exists $Q_j$ such that $P_i$ is implied by $Q_j$. 
 \end{mydef}
 
+\begin{myexample}
+	Let $\varphi : \neg(s.Tax \leq t.Tax \wedge s.Income > 25k)$ and $\varphi ' : \neg(s.Tax < t.Tax \wedge s.Income > 25k \wedge s.Year = t.Year)$ we have $\varphi \preceq \varphi'$ because $s.Tax \leq t.Tax$ implies $s.Tax < t.Tax$ and $s.Income > 25k$ implies $s.Income > 25k$
+\end{myexample}
+
+As we can see, if we insert an additional predicates in a DC $\varphi$ , the variant $\varphi '$ is a refinement of $\varphi$
 \begin{mydef}
  $\Sigma_2$ is a \textbf{refinement} of $\Sigma_1$, denoted by $\Sigma_1 \preceq \Sigma_2$, if for each $ \varphi_2 \in \Sigma_2$, there exists a $\varphi_2 \in \Sigma_1$ such that $\varphi_1 \preceq \varphi_2$
 \end{mydef}
 
-As we can see, if you want to change less data, you should refine your DCs with insertion or substitution. For example if our DC is $t_\alpha.Tax \leq t_\beta$ and we change it to $t_\alpha.Tax < t_\beta$ you'll change less data.
+As we can see, if you want to change less data, you should refine your DCs with insertion or substitution. For example if our DC is $t_\alpha.Tax \leq t_\beta.Tax$ and we change it to $t_\alpha.Tax < t_\beta.Tax$ you'll change less data.
 
 \chapter{Data Repairing}
 
-Errors are frequent in database. Because these anomalies can make applications unreliable, some methods detect them but don't repair the detected anomalies. But if you simple filter the dirty data you've detected, applications could still be unreliable. \cite{anodetect} Instead of only detecting errors and delete them, it's better to repair the dirty data.\\
+Errors are frequent in database and these anomalies can make applications unreliable. Some methods detect them but don't repair the detected anomalies. But if one simply filters the dirty data you've detected, applications could still be unreliable. \cite{anodetect} Instead of only detecting errors and filter them, it's better to repair the dirty data.\\
 
-The goal of data repairing is to find a modification $I'$ for I,an instance of $R$, in which all of violation in the constraints $\Sigma$ are eliminated. In other words, we want $I' \models Sigma$ ($I'$ satisfy $\Sigma$). Data repairing process follows the minimum change principle: the data repair $I'$ have to minimize the data repair cost define as \cite{main}:
 \begin{mydef}
-If $I'$ is a repair for $I$ instance of $R$ by modifying attribute values without any deletion or assertion tuples, the data repair cost is:
+We define $cell(\varphi)$ as :
+$$ cell(\varphi) = \{t.A|P : t.A \phi c \in pred(\varphi) \} \cup \{t.A,s.A|P : t.A \phi s.A \in pred(\varphi) \}$$
+\end{mydef}
+
+So $cell(\varphi)$ are all the t.A involved in $\varphi$. We can also define $cell(\Sigma)$ as $\cup_{\varphi \in \Sigma} \; cell(\varphi)$ . If t.A is not in $cell(\Sigma)$, it cannot be a violation of a constraint and therefore don't need to be repair. 
+
+The goal of data repairing is to find a modification $I'$ for an instance $I$ of $R$, in which all of the violations in the constraints set $\Sigma$ are eliminated. In other words, we want $I' \models \Sigma$ ($I'$ satisfy $\Sigma$). Data repairing process follows the minimum change principle: the data repair $I'$ have to minimize the data repair cost define as \cite{main}:
+\begin{mydef}
+If $I'$ is a repair for $I$ instance of $R$ by modifying attribute values without any deletion or insertion tuples, the data repair cost is:
 $$ \Delta(I,I') = \sum_{t \in I, A \in attr(R)} w(t.A).dist(I(t.A),I'(t.A) $$
 where :
 \begin{itemize}
-	\item $dist(I(t.A),I'(t.A))$ is the distance between two values on cell $t.A$ in $I$ and $I'$.
+	\item $dist(I(t.A),I'(t.A))$ is the distance between two values on $t.A$ in $I$ and $I'$.
 	\item $w(t.A)$ is the weight of cell $t.A$.
 \end{itemize}
 \end{mydef}
 
-We can see that the cost can be the number of cell we changed if we put:
+We can see that the cost can be the number of values in $cell(\varphi)$ we changed if we put:
 $$
 dist(I(t.A),I'(t.A)) =
 \left\{
@@ -427,15 +543,15 @@ dist(I(t.A),I'(t.A)) =
 $$
 We can put the distance for numerical values on the difference of the two values. For string values we can use the edit distance.\\
 
-The weight $w(t.A)$ can show the trust of the original value in cell which is subjective or simply be a constant if we don't have a lot of knowledge about the data.\\
+The weight $w(t.A)$ can show the trust of the original value in cell which is subjective or simply be a constant if we don't have a lot of knowledge about the data. For example in the table \ref{tablePerson}, we can expect a child attribute value to be more accurate than a Salary or Tax attribute value.\\
 
-It's important to notice it's not impossible to don't find any repair $I'$ that can eliminates all the violations. It's possible any values in $dom(A)$ can fit the constraint. In that case, we can use a \emph{fresh variable (fv)} out of the current domain $dom(A)$ in order to extend the domain. This fresh variable is a value that does not satisfy any predicate, we are sure that we can satisfy the DC. (it's satisfy if at least one of the predicates is false).\\
+It is important to notice it is possible we are not able to find any repair $I'$ that can eliminates all the violations. Sometimes there is no value in $dom(A)$ that can fit the constraint. In that case, we use a $fresh variable$ outside the $dom(A)$ in order to extend the domain. A fresh variable is a value that does not satisfy any predicate (all predicates are false), we are sure that we can satisfy the DC. (it's satisfy if at least one of the predicates is false). Each time we are not able to find a value in the $dom(A)$  to repair a cell, we put a new fresh variable $fv$\\
 
-Let's take an example on the table \ref{tableMain}. Let's say our Denial Constraint is the following one:
+Let us take an example on the table \ref{tableMain}. Let's say our Denial Constraint is the following one:
 
 $$ \varphi : t_\alpha,t_\beta \in R, \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.Tax \leq t_\beta.Tax)$$
 
-In other words, we supposed that if someone get a higher income than another person then he should paid an higher tax every year. We have $ \langle t_1,t_2 \rangle \not\models \varphi $ because $t_1$.Income < $t2.$Income and $t2$.Tax$\ \leq\ t1$.Tax. Same problem with $ \langle t_1,t_3 \rangle$, $ \langle t_1,t_5 \rangle$, ect... you can find all the violation in the figure \ref{BadTax} A repair $I'$ could be the following one:
+In other words, we supposed that if someone get a higher income than another person then he should paid an higher tax every year. We have $ \langle t_2,t_1 \rangle \not\models \varphi $ because $t_1$.Income < $t2.$Income and $t2$.Tax$\ \leq\ t1$.Tax. Same problem with $ \langle t_3,t_1 \rangle$, $ \langle t_5,t_1 \rangle$, ect... one can find all the violation in the figure \ref{BadTax} A repair $I'$ could be the following one:
 
 \begin{table}[H]
 	\centering
@@ -446,7 +562,7 @@ In other words, we supposed that if someone get a higher income than another per
 	 Tax & 0 & \color{red} $fv_1$ & \color{red} $fv_2$& 3k & \color{orange}$fv_3$& \color{orange} $fv_4$& \color{orange} $fv_5$& 21k & 21k & 40k\\
 	 \hline
 	\end{tabular}
-	\caption{\label{tableExample} Example of repair with Tax}.
+	\caption{\label{tableExample} Example of repair $I'$ with Tax for $\varphi$}.
 \end{table}
 
 
@@ -459,12 +575,12 @@ In other words, we supposed that if someone get a higher income than another per
 The reason we put $fv_1$ as Tax value for $t_2$ is because we knew the following things:
 \begin{enumerate}
 
-\item $I(t_1.Tax)=0$ so $I(t_2.Tax)>0$ because $I(t_1.Income)<I(t_2.Income)$
-\item $I(t_3.Tax)=3$ so $I(t_2.Tax)<3$ because $I(t_2.Income)<I(t_3.Income)$
+\item $I(t_1.Tax)=0$ so $I'(t_2.Tax)>0$ because $I(t_1.Income)<I(t_2.Income)$
+\item $I(t_3.Tax)=3$ so $I'(t_2.Tax)<3$ because $I(t_2.Income)<I(t_3.Income)$
 \item $dom(Tax) = \{0,3k,21k,40k\}$
 
 \end{enumerate}
-Because we had no value in the $dom(Tax)$ that would respect 1 and 2, we need to use a fresh variable $fv_1$ out of the $dom(Tax)$. The same  logic can be used to understand why we had to use $fv_2$ to $fv_5$. We could put random value instead but it could be a problem if we insert correct value in the future (These correct values could be see as dirty one).
+Because we had no values in the $dom(Tax)$ that would respect 1 and 2, we need to use a fresh variable $fv_1$ out of the $dom(Tax)$. The same  logic can be used to understand why we had to use $fv_2$ to $fv_5$. We could put random value instead but it could be a problem if we insert correct value in the future (These correct values could be see as dirty one).
 We only know that 0< $fv_1$,$fv_2$ <3k in order to respect 1 and 2. In the same idea, we have 3k < $fv_3$,$fv_4$,$fv_5$ < 21k.
 
 We can compute the repair cost for $Tax$ in this table. Let's say that:\\
@@ -480,7 +596,7 @@ $$
 \right.
 $$
 
-When we don't change anything, the distance is obviously equal to zero. $dist(a,fv)$ have to be higher than $dist(a,b)$ otherwise the cost for a non-domain value will be lower than a domain value and we want to avoid fresh variable as much as possible. If we had $dist(a,fv)$ lower than $dist(a,b)$, any repair that uses fresh variable outside the domain would be better and of course it's not a good behavior. In our example, with the value said just before, we can compute a $\Delta(I,I')$ = 7.5
+When we don't change anything, the distance is obviously equal to zero. $dist(a,fv)$ have to be higher than $dist(a,b)$ otherwise the cost for a non-domain value will be lower than a domain value and we want to avoid fresh variable as much as possible \footnote{it's always better to work with values in dom(A) when it's possible}. If we had $dist(a,fv)$ lower than $dist(a,b)$, any repair that uses fresh variable outside the domain would be better and of course it's not a good behavior. In our example, with the value said just before, we can compute a $\Delta(I,I')$ = 7.5
 
 \section{Integrity constraints variations}
 
@@ -488,34 +604,37 @@ We saw earlier that a constraint can be overrefined failing to detect some error
 
 When we perform a predicate insertion, some tuples no longer violate the DC. With this variation we can repair a oversimplified constraint but we need to be careful otherwise the DC can be useless. We need to avoid insertion which can lead to a trivial DC or insertion of predicates with obvious constants(like $t_\alpha.Salary$<0 in the table \ref{tablePerson}). \\
 
-An example of trivial DC is a DC $\varphi$ with a predicate $P_i$ : $x \phi_i y$ and we had another predicate $P_j$ : $x \phi_j y$ in the DC with $\overline{\phi_j} \in Imp(\phi_i)$. 
+An example of trivial DC is a DC $\varphi$ with a predicate $P_i$ : $x \phi_i y$ and we had another predicate $P_j$ : $x \phi_j y$ in the DC with $\overline{\phi_j} \in Imp(\phi_i)$. \\
 
-For overrefined DCs, we need to remove some predicates but we need to be careful. If too many predicates are withdraw, we can get an new oversimplified DCs. The more the predicates are deleted, the higher the data repair cost will be as stated in the Lemma1 in \cite{main}. In the other hand the more the predicates are added, the lower the data repair will be. So if you add more predicates than you remove, the changed data will be smaller than removing more predicates and deleting more. The \emph{data repair cost function} take this effect into consideration. It count positively predicate insertion and negatively predicate addition. For $\Sigma '$ a variant of $\Sigma$ in which all $\varphi ' \in \Sigma '$ are obtained by insertion or deletion of predicates for corresponding $\varphi \in \Sigma$, in \cite{main} they define the constraint variation cost:
+For overrefined DCs, we need to remove some predicates but we need to be careful. If too many predicates are withdraw, we can get an new oversimplified DCs. The more the predicates are deleted, the higher the data repair cost will be as stated in the Lemma1 in \cite{main}. In the other hand the more the predicates are added, the lower the data repair will be. So if you add more predicates than you remove, there will be less data to change. In the opposite, if you remove more predicates than you add, there will be more data to change. The \emph{data repair cost function} take this effect into consideration. It count positively predicate insertion and negatively predicate addition. For $\Sigma '$ a variant of $\Sigma$ in which all $\varphi ' \in \Sigma '$ are obtained by insertion or deletion of predicates for corresponding $\varphi \in \Sigma$, in \cite{main} they define the constraint variation cost:
 
 \begin{mydef}
 For a variant $\Sigma '$ of $\Sigma$, the contraint variation cost is defined as
 
 $$\Theta (\Sigma,\Sigma ') = \sum_{\varphi in \Sigma} edit(\varphi,\varphi ')$$
 
-\hspace*{2cm} where $\varphi '$ is a variant of $\phi$ and $edit(\varphi,\varphi ')$ is the corresponding cost.
+\hspace*{2cm} where $\varphi '$ is a variant of $\varphi$ and $edit(\varphi,\varphi ')$ is the corresponding cost.
 \end{mydef}
 
-the $edit(\varphi , \varphi ')$ indicating the cost of changing $\varphi$ to $\varphi'$ is defined as:
+the $edit(\varphi , \varphi ')$ indicates the cost of changing $\varphi$ to $\varphi'$ is defined as:
 \begin{mydef}
 $$
- edit(\varphi, \varphi') = \sum_{P \in \varphi \\ \varphi'} c(P) + \lambda \sum_{P \in \varphi' \\ \varphi} c(P)$$
+ edit(\varphi, \varphi') = \sum_{P \in \varphi \setminus \varphi'} c(P) + \lambda \sum_{P \in \varphi' \setminus \varphi} c(P)$$
  
 where $c(P)$ denote the weighted cost of predicate P and $\lambda$ is the weight of a deletion compare to an addition and -1<$\lambda$<0.
 \end{mydef}
 
 We don't have to use $\lambda$ =-1 otherwise a deletion followed by an addition would have a cost equal to 0(and it's a bad idea for predicate substitution). For example if we have:
+
 $$ \varphi : t_\alpha,t_\beta \in R, \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.Tax \leq t_\beta.Tax)$$
-This DC express the fact that if I get a higher income than someone else, i should pay a higher tax rate. We'll change this DC by deleting $\alpha.Tax \leq t_\beta.Tax$ by $\alpha.Tax < t_\beta.Tax$. It can express the fact that someone with a very low Income could get a Tax equals to 0.
+
+This DC express the fact that if I get a higher income than someone else, i should pay a higher tax rate. We'll change this DC by deleting $t_\alpha.Tax \leq t_\beta.Tax$ and add $t_\alpha.Tax < t_\beta.Tax$. It can express the fact that someone with a very low Income could get a Tax equals to 0.
+
 $$ \varphi ' : t_\alpha,t_\beta \in R, \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.Tax < t_\beta.Tax)$$
 
-The constraint variation with $\lambda$ = $\frac{1}{2}$ and $c(P)$ = 0 is : $edit(\varphi, \varphi') = c(t_\alpha.Tax < t_\beta.Tax) + \frac{1}{2} c(\alpha.Tax \leq t_\beta.Tax)$ = $\frac{1}{2}$
+The constraint variation with $\lambda$ = $\frac{1}{2}$ and $c(P)$ = 0 is : $edit(\varphi, \varphi') = c(t_\alpha.Tax < t_\beta.Tax) + \frac{1}{2} c(\alpha.Tax \leq t_\beta.Tax)$ = $\frac{1}{2}$. \\
 
-With this new constraint, we got less violations. All the violations can be found the figure \ref{GoodTax}. The modifications we made in table \ref{tableExample} changed to:
+With this new constraint, we got less violations. All the violations can be found the figure \ref{GoodTax}. The modifications we made in table \ref{tableExample} are:
 
 \begin{table}[H]
 	\centering
@@ -526,7 +645,7 @@ With this new constraint, we got less violations. All the violations can be foun
 	 Tax & 0 & 0 & 0 & \textcolor{red}{0} & 0 & 0 & 0 & 21k & 21k & 40k\\
 	 \hline
 	\end{tabular}
-	\caption{\label{tableExample} Example of repair with Tax}.
+	\caption{\label{tableExample2} Example of repair with Tax}.
 \end{table}
 
 
@@ -536,13 +655,13 @@ With this new constraint, we got less violations. All the violations can be foun
 	\caption{\label{GoodTax} All the violation for $\varphi '$}
 \end{figure}
 
-Indeed, a column with only one mistakes is more likely correct than a column with five dirty data. On our new DC, only the ($t_4.Tax$)=3k have to be changed with the value 0.
+Indeed, a repair for a column with one correction is better than the previous repair with 5 fresh variables (see table \ref{tableExample}) as a correction. On our new DC, only the ($t_4.Tax$)=3k have to be changed with the value 0. Further in this thesis, we'll see how we can reach these repairs.
 
 When we do constraint modification, we should not consider the case where we delete an entire constraint.  We should not remove all the predicates because a DC like $\neg()$ doesn't mean anything. We can't even say if it's always true or always false.
 
 \subsection{Maximal Constraint Variants}
 
-	Every constraint variant $\Sigma'$ with cost $\Theta(\Sigma,\Sigma')$ shouldn't be considered. They're some variation that we're sure they are not better. To perform a prunning of constraints variant that doesn't generate minimum data repair, we'll use the definition of refinement we explained in the previous chapter at the section \ref{RefinementSection}.
+	Every constraint variant $\Sigma'$ with cost $\Theta(\Sigma,\Sigma')$ shouldn't be considered. They're some variation that we're sure they are worst than any another? To perform a prunning of constraints variant that doesn't generate minimum data repair, we'll use the definition of refinement we explained in the previous chapter at the section \ref{RefinementSection}.
 	
 \begin{mydef}\cite{main}
  We say that a variant $\varphi '$ of a constraint $\varphi$ with $\varphi \preceq \varphi'$ is \textbf{maximal}, if there does not exist another $\varphi ''$ such that $\varphi ' \preceq \varphi ''$ and $edit(\varphi,\varphi'') = edit (\varphi,\varphi')$
@@ -554,7 +673,7 @@ For any inserted predicate $ P $ : $x \phi y \in pred(\varphi ') \setminus pred(
 
 \end{myprop}
 
-With this property we see that it's useless to insert every predicate that you're able to construct. We only have to insert predicates with operators {>,<,=} when considering variants of $\varphi$ Let's illustrate that with an example. We'll take two denial constraint on table \ref{tableMain} for this.
+This property comes from the $Imp(\varphi)$ definition. If $Varphi_1 \in Imp(\varphi_2)$ then $a\varphi_1 b$ implies $a \varphi_2 b$. $\leq \geq$ and $\neq$ are the 3 operators who implies operator that are no themselves (see table \ref{tableImp}). With this property we see that it's useless to insert every predicate that you're able to construct. We only have to insert predicates with operators {>,<,=} when considering variants of $\varphi$ Let's illustrate that with an example. We'll take two denial constraint on table \ref{tableMain} for this.
 $$\varphi_1 : \forall t_\alpha,t_\beta \in R, \neg( t_\alpha.Name = t_\beta.Name \wedge t_\alpha.Income = t_\beta.Income \wedge t_\alpha.CP \neq t_\beta.CP )$$
 $$\varphi_2 : \forall t_\alpha,t_\beta \in R, \neg( t_\alpha.Name = t_\beta.Name \wedge t_\alpha.Income \leq t_\beta.Income \wedge t_\alpha.CP \neq t_\beta.CP )$$
 
@@ -610,7 +729,7 @@ We know that $\leq \in Imp(=)$ (see table \ref{tableImp}) for Income so we have 
 We see that the refinement got a better data repair cost. It's not a coincidence because the following lemma exist: \cite{main}
 
 \begin{mylemma}
- Given two constraitn variants $\Sigma_1,\Sigma_2$ of $\Sigma$ such that $\Sigma_2$
+ Given two constraints variants $\Sigma_1,\Sigma_2$ of $\Sigma$ such that $\Sigma_2$
  is also a refinement of $\Sigma_1$, have $\Sigma \preceq \Sigma_1 \preceq \Sigma_2$, is always has $\Delta(I,I_1) \geq \Delta(I,I_2)$, where $I_1$ and $I_2$ are the minimum data repairs with regards to $\Sigma_1$ and $\Sigma_2$, respectively.
 \end{mylemma}
 
@@ -618,21 +737,21 @@ As a consequence of this Lemma, any non-maximal set of denial constraint $\Sigma
 
 \subsection{Pruning our candidates}
 
-In this subsection we'll focus on removing the constraint variant $\Sigma '$ that can't generate the minimum data repair. We are going to  consider two bounds of possible minimum data repairs cost for the instance $I$ : the lower bound noted as $\delta_l(\Sigma',I)$ and the upper bound noted $\delta_u(\Sigma,I)$. We consider the following property:
+In this subsection we'll focus on removing the constraint variant $\Sigma '$ that can't generate the minimum data repair. We already have seen that $\Sigma$ with a non maximal constraint $\varphi$ can be remove. To go further, we will  consider two bounds of possible minimum data repairs cost for the instance $I$ : the lower bound noted as $\delta_l(\Sigma',I)$ and the upper bound noted $\delta_u(\Sigma,I)$. We consider the following property:
 
 \begin{myprop}
 \label{boundRemove}
-	For two constraints variants $\Sigma$ and $\Sigma'$ for the instance $I$ of $R$, if $\delta_u(\Sigma,I) < \delta_l(\Sigma',I)$ then $\Sigma'$ can be discarded.
+	For two constraints variants $\Sigma_1$ and $\Sigma_2$ for the instance $I$ of $R$, if $\delta_u(\Sigma_1,I) < \delta_l(\Sigma_2,I)$ then $\Sigma_2$ can be discarded.
 \end{myprop}
 
-Which means the worst bound(upper) of repair for $\Sigma$ is still better than the best bound(lower) of repair for $\Sigma'$.
+It means the worst bound(upper) of repair for $\Sigma_1$ is still better than the best bound(lower) of repair for $\Sigma_2$, then $\Sigma_2$ is useless and can be ignored.
 
 \subsubsection{Conflict Graph}
 
 Now, we'll introduce the conflict graph which can represent the violations in an instance $I$ of $R$. In the first place, we need to find all the violations and we could get the data repair cost bound from them. We define the violation set as: \cite{main}
 
 \begin{mydef}
- The violation set noted as $viol(I,\varphi) = {\langle t_i,t_j \rangle | \langle t_i,t_j \rangle \not\models }$ is a set of tuple lists that violate $\varphi$. The violation set of $\Sigma$ is $viol(I,\Sigma) = \cup_{\varphi \in \Sigma}viol(I,\varphi)$.
+ The violation set noted as $viol(I,\varphi) = \{ \langle t_i,t_j,... \rangle | \langle t_i,t_j,... \rangle \not\models \varphi $ with $ t_i,t_j,... \in I \}$ is a set of tuple lists that violate $\varphi$. The violation set of $\Sigma$ is $viol(I,\Sigma) = \cup_{\varphi \in \Sigma}viol(I,\varphi)$.
 \end{mydef}
 
 \begin{figure}
@@ -641,13 +760,13 @@ Now, we'll introduce the conflict graph which can represent the violations in an
  \caption{\label{grapht4} Conflict hypergraph for $\varphi$}
 \end{figure}
 
-With the conflict hypergraph $G$ we can represent the violations in I. For each violation tuples $ \langle t_i,t_j,...\rangle \in viol(I,\varphi)$ there are an edge for $cell(t_i,t_j,...,\varphi)$ in G. A good repairing $I'$ consist in correcting the data base to be able to remove all the edge on the graph. The hypergraph of $I'$ should be empty.
+With the conflict hypergraph $G$ we can represent the violations in I. For each violation tuples $ \langle t_i,t_j,...\rangle \in viol(I,\varphi)$ there are an edge for $cell(t_i,t_j,...,\varphi)$ in G. A good repairing $I'$ consists in correcting the data base to be able to remove all the edges on the graph. The hypergraph of $I'$ should be empty.
 
 Let's take an example on the table \ref{tableMain} with a denial constraint we already used:
 
 $$\varphi': \forall t_\alpha,t_\beta \in R , \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.Tax < t_\beta.Tax)$$
 
-For this relation the violation set is:
+For this relation the violation set is (see Figure \ref{GoodTax}):
  $$ viol(I,\varphi') = \{ \langle t_5,t_4 \rangle,\langle t_6,t_4 \rangle,\langle t_7,t_4 \rangle \}$$
 
 On our hypergraph, $\langle t_5,t_4 \rangle \in viol(I,\varphi')$ consist of $cell(t_5,t_4;\varphi')$ which is equal to $\{ t_5.income,t_4.Income,t_5.Tax,t_4.Tax\}$. We want to remove a vertex, i.e eliminate a conflict. Let's first introduce some definition and a Lemma: \cite{main}
@@ -667,7 +786,7 @@ On our hypergraph, $\langle t_5,t_4 \rangle \in viol(I,\varphi')$ consist of $ce
 
 %Computing $\mathbb{V}$ is a NP-Hard problem so we need to approximate it. We'll consider an constant factor-f approximation of $\mathbb{V}$ which is $\frac{||\mathbb{V}(G)||}{||\mathbb{V}*(G)||} \leq f$. where f is the maximum degree of hyperedges and $||\mathbb{V}(G)||$ is an approximation of $||\mathbb{V}*(G)||$.
 
-In \cite{main} they define the upper and lower bound in this way :
+In \cite{main} they define the upper and lower bound of repair cost in this way :
 $$ \delta_l(\Sigma,I) = \frac{||\mathbb{V}(G)||}{Deg((\Sigma)}$$
 $$ \delta_u(\Sigma,I) = \sum_{t.A \in \mathbb{V}(G)} dist(I(t.A),fv)$$
 
@@ -688,13 +807,13 @@ So if each vertex has a weight of 1 (=$ dist(a,b)$) and if we put $\mathbb{V}(G)
 
 \section{$\theta$-tolerant model}
 
-In this section we'll talk about the $\theta$-tolerant repair model which is the main models we want to study. $\theta$ is a threshold on the variation on the set of constraint $\Sigma$, so we don't want a constraint variation cost greater than $\theta$ : $\Theta(\Sigma,\Sigma') \leq \theta$. It helps to avoid any kind of over-refinement and so don't detect some dirty data. To avoid the over-simplification and identify correct data as dirty data, the repairing should pursue the minimum change principle. We need to find a repair $I'$ of the original instance $I$ and minimize $\Delta(I,I')$.\\
+In this section we'll talk about the $\theta$-tolerant repair model which is the main models we want to study. $\theta$ is a threshold on the variation on the set of constraint $\Sigma$, so we don't want a constraint variation cost greater than $\theta$ : $\Theta(\Sigma,\Sigma') \leq \theta$. It helps to avoid any kind of over-refinement and so some undetected dirty data. To avoid the over-simplification and identify correct data as dirty data, the repairing should pursue the minimum change principle. We need to find a repair $I'$ of the original instance $I$ and minimize the repair cost $\Delta(I,I')$.\\
 
-Finding the best (minimum) $\theta$-tolerant repair is difficult, it's a NP-hard problem. An NP-hard problem is a class of decision problems which are at least as hard as the hardest problems in NP. What we have to remind of it, it's not possible to resolve it in a polynomial time. Even is the first approach we could made is to get all the constraints variant $\Sigma'$ and then compute $\Theta(\Sigma,\Sigma')$, look if it's lower than $\theta$ and then find the minimum data repair $I'$.\\
+Finding the best (minimum) $\theta$-tolerant repair is difficult, it's a NP-hard problem. An NP-hard problem is a class of decision problems which are at least as hard as the hardest problems in NP \footnote{problems whose a solution can be verified as good one in a polynomial time}. What we have to remind is it's not possible to resolve it in a polynomial time. Even is the first approach we could made is to get all the constraints variant $\Sigma'$ and then compute $\Theta(\Sigma,\Sigma')$, look if it's lower than $\theta$ and then find the minimum data repair $I'$. But this way is oviously high in complexity\\
 
 We saw that we could replace some value by a fresh variable $fv$. It's better to not turn all of them in a fresh variable mainly because $fv$ is not $dom(A)$ and also a repair like this will never return the optimal repair because we want to minimize the repair cost. \\
 
-Now, consider $\mathbb{D}$ = $\Sigma_1 ' x \Sigma_2' x ... \Sigma_{|\Sigma|}'$ where each $\Sigma_i' \in \mathbb{D}$ is a variant of $\Sigma$ obtained by previous variations. Consider those variations bounded by $\theta$ so we have $\Theta(\Sigma,\Sigma') \leq \theta$. The algorithm \ref{tetha} return the best instance $I_min$ for our set of constraint variation $\Sigma$. The algorithm is simple. For each $\Sigma_i$ , if the lower bound is lower than the previous upper bound (remember the property \ref{boundRemove}). we update the value of $\delta_{min}$ if a better repaired instance comes from $I_i$. \\
+Now, consider $\mathbb{D}$ = $\Sigma_1 ' x \Sigma_2' x ... \Sigma_{|\Sigma|}'$ where each $\Sigma_i' \in \mathbb{D}$ is a variant of $\Sigma$ obtained by previous variations. Consider those variations bounded by $\theta$ so we have $\Theta(\Sigma,\Sigma') \leq \theta$. The algorithm \ref{tetha} return the best instance $I_{min}$ for our set of constraint variation $\Sigma$. The algorithm is simple. For each $\Sigma_i$ , if the lower bound is lower than the previous upper bound (remember the property \ref{boundRemove}). we update the value of $\delta_{min}$ if a better repaired instance comes from $I_i$. \\
 
 \IncMargin{1em}
 \begin{algorithm}
@@ -730,9 +849,9 @@ To get an example , imagine we have for a $\theta$ = $\frac{1}{2}$ , a set of co
 $$\varphi': \forall t_\alpha,t_\beta \in R , \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.Tax < t_\beta.Tax)$$
 $$\varphi'': \forall t_\alpha,t_\beta \in R , \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.Tax = t_\beta.Tax)$$
 
-We already have done the conflict hypergraph for $\varphi$ in figure \ref{grapht4} we also know that $\delta(\Sigma_1,I)=1.1$
+We already have done the conflict hypergraph for $\varphi$ in figure \ref{grapht4} we also know that $\delta(\Sigma_1,I)=1.1$\\
 
-For $\Sigma2$ we obtain the hypergraph in figure \ref{graphSigma2} (and the violations in figure \ref{EqualTax}) with $\mathbb{V}(G_2)$ = $\{ t_2.Tax,t_3.Tax,t_5.Tax,t_6.Tax,t_7.Tax\}$. We have $Deg(\Sigma_2)$ = $Deg(\varphi')$ \footnote{same reasoning: 4 cells involved.}, so we have $\delta_l(\Sigma_2,I)$= $\frac{6}{2}$ = 1,5. Remember that $\delta_u(\Sigma_1,I)$ =1.1, so we have $\delta_u(\Sigma_1,I) < \delta_l(\Sigma_2,I)$ which means we can ignore $\Sigma2$ and don't call the DATAREPAIR function on it.
+For $\Sigma2$ we obtain the hypergraph in figure \ref{graphSigma2} (and the violations in figure \ref{EqualTax}) with $\mathbb{V}(G_2)$ = $\{ t_2.Tax,t_3.Tax,t_5.Tax,t_6.Tax,t_7.Tax\}$. We have $Deg(\Sigma_2)$ = $Deg(\varphi')$ \footnote{same reasoning: 4 cells involved.}, so we have $\delta_l(\Sigma_2,I)$= $\frac{6}{2}$ = 1,5. Remember that $\delta_u(\Sigma_1,I)$ =1.1, so we have $\delta_u(\Sigma_1,I) < \delta_l(\Sigma_2,I)$ which means we can ignore $\Sigma2$ and don't call the DATAREPAIR function on it. We will talk about the DATAREPAIR function later.
 
 \begin{figure}
 \centering
@@ -753,14 +872,14 @@ Let's talk about the complexity. If we say that $l$ is the maximum number involv
 
 \section{Minimum Data Repair and Violation Free}
 
-After using the $\theta$-tolerant model, we know which constraint set $\Sigma'$ derived from $\Sigma$ we have to use to perform a repairing. But we haven't see how to repair yet. In this section we'll focus on the minimum data repair $I'$ based on the $\Sigma'$. To make this we'll use the violation free to be sure we don't create any violation after correcting one data. For example, if we put $t5.Tax$ to 22, we solved the violation $ \langle t_5,t_4 \rangle$ we had with $\varphi'$ \footnote{remember the $\varphi: \forall t_\alpha,t_\beta \in R , \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.Tax < t_\beta.Tax)$ we used many times}but we introduce a new violation $\langle t_8,t_5 \rangle$.\\
+After using the $\theta$-tolerant model, we know which constraint set $\Sigma'$ derived from $\Sigma$ we have to use to perform a repairing. But we haven't see how to repair yet. In this section we'll focus on the minimum data repair $I'$ based on the $\Sigma'$. To make this we'll use the violation free principle to be sure we don't create any violation after correcting one data. For example, if we put $t5.Tax$ to 22, we solved the violation $ \langle t_5,t_4 \rangle$ we had with $\varphi'$ \footnote{remember the $\varphi: \forall t_\alpha,t_\beta \in R , \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.Tax < t_\beta.Tax)$ we used many times}but we introduce a new violation $\langle t_8,t_5 \rangle$.\\
 
 Remember we already said that finding a minimum repairing is NP-hard problem. For this reason we need to make some approximation in order to repair. For the following explanation and definition we'll note $\mathbb{C}$ the selected cells $\mathbb{V}(G)$
 
 \subsection{Suspect identification}
 
 \begin{mydef} \cite{main}
-	The suspect set $susp(\mathbb{C},\varphi)$ of a $\varphi$ is a set of tuple lists $\langle t_i,t_j,...:\varphi \rangle$ satisfying all the predicates in $\varphi$ which do not involve cells in$\mathbb{C}$.
+	The suspect set $susp(\mathbb{C},\varphi)$ of a $\varphi$ is a set of tuple lists $\langle t_i,t_j,...:\varphi \rangle$ satisfying all the predicates in $\varphi$ which do not involve cells in $\mathbb{C}$.
 \end{mydef}
 
 and they satisfy the suspect condition:
@@ -775,12 +894,12 @@ sc(t_\alpha,t_\beta,...:\varphi) &= \{I(v_1)\phi c| P: v_1 \phi c \in pred(\varp
 Any violation is of course in the suspect list, which lead to the trivial lemma:
 
 \begin{mylemma}
-	For any $\mathbb{C}$, it always has $viol(I,\varphi) \subseteq susp(\mathbb{C},\varphi$
+	For any $\mathbb{C}$, it always has $viol(I,\varphi) \subseteq susp(\mathbb{C},\varphi)$
 \end{mylemma}
 
 And by this way, if we catch all the suspect, we also get all the violation.\\
 
-To explain it, let's return on the example $\varphi'$ related with the hypergraph at figure \ref{grapht4}. We will change only $t_4.Tax$ as we made in the figure \ref{tableExample}. So we have $\mathbb{C}$ =  $\{ t_4.Tax \}$ and $susp(\mathbb{C},\varphi') = \{\langle t_4 , t_1\rangle , 
+To explain it, let's return on the example $\varphi'$ related with the hypergraph at figure \ref{grapht4}. We will change only $t_4.Tax$ as we made in the table \ref{tableExample}. So we have $\mathbb{C}$ =  $\{ t_4.Tax \}$ and $susp(\mathbb{C},\varphi') = \{\langle t_4 , t_1\rangle , 
 \langle t_4 , t_2\rangle,
 \langle t_4 , t_3\rangle,
 \langle t_5 , t_4\rangle,
@@ -788,17 +907,21 @@ To explain it, let's return on the example $\varphi'$ related with the hypergrap
 \langle t_7 , t_4\rangle,
 \langle t_8 , t_4\rangle,
 \langle t_9 , t_4\rangle,
-\langle t_{10} , t_4\rangle \}$ If we get $\langle t_4 , t_1\rangle$ ,   we have $t_4.Income > t_1.Income$ but there is a chance that any change on $t_4.Tax$ leads to a new violation($I'(t_4.Tax)<I(t_1.Tax) $. This is the reason why it's on the suspect list. In the figure \ref{fig3} we have a graph with cells not in $\mathbb{C}$ are circle and cell in $\mathbb{C}$ are squares. Red arrow are predicates that are not respected and blue arrows are respected predicates.
+\langle t_{10} , t_4\rangle \}$ If we get $\langle t_4 , t_1\rangle$ ,   we have $t_4.Income > t_1.Income$ but there is a chance that any change on $t_4.Tax$ leads to a new violation($I'(t_4.Tax)<I(t_1.Tax) $. This is the reason why it's on the suspect list. In the figure \ref{fig3} we have a graph in which every cells not in $\mathbb{C}$ are represented by circles and cell in $\mathbb{C}$ are represented by squares. Red arrows are respected predicates and blue arrows are respected predicates.
+
 
 \begin{figure}
 	\centering
 	\includegraphics[scale=1]{img/fig3}
-	\caption{\label{fig3}Suspect condition represented by blue arrows and repair context represented by red arrow (with inverse operator)}
+	\caption{\label{fig3}Suspect condition} 
+	represented by blue arrows and repair \\
+	context represented by red arrows \\
+	 (with inverse operator).
 \end{figure}
 
 \subsection{Repair context over suspects}
 
-We can now define a repair context. The repair contest of a suspect tuple is something that makes sure the suspect will not satisfy the predicates declared on $\mathbb{C}$. The reason why we need it is because a denial constraint needs at least one false predicate for every rows of the database. The repair context takes the inverse operator of predicates in $\mathbb{C}$. In \cite{main}, the repair context $rc(t_i,t_j,...:\varphi)$ of a suspect $\langle t_i,t_j,... \rangle $is defined as:
+We can now define a repair context. The repair contest of a suspect tuple is something that makes sure the suspects will not satisfy the predicates declared on $\mathbb{C}$. The reason why we need it is because a denial constraint needs at least one false predicate for every rows of the database. The repair context takes the inverse operator of predicates in $\mathbb{C}$. In \cite{main}, the repair context $rc(t_i,t_j,...:\varphi)$ of a suspect $\langle t_i,t_j,... \rangle $is defined as:
 
 \begin{mydef}
 	\begin{displaymath}
@@ -816,9 +939,9 @@ We can now define a repair context. The repair contest of a suspect tuple is som
 Any assignment that satisfies all the repair contexts forms a valid repair $I'$ without introducing any new violations, i.e, $I' \preceq \Sigma$
 \end{myprop}
 
-If we continue with our previous example with $\varphi'$, we have $rc(t_4,t_1:\varphi')$ = $\{I'(t_4.Tax \geq I(t_1.Tax)\}$ , $\geq$ is the inverse operator of $<$, and we only consider predicates of $\varphi'$ with cells from $\mathbb{C}$ which are red arrows on the figure \ref{fig3}. We also have $rc(t_5,t_4:\varphi')$ = $\{I'(t_5.Tax \geq I(t_4.Tax)\}$. With both of these repair constraint we have $0 = t_1.Tax \leq t_4.Tax \leq t_5.Tax =0$ which lead to only one possible value : $t_4.Tax =0$. Remember that previously we put a fresh variable $fv$ instead of 0 (see the table \ref{tableExample} in the previous chapter).\\
+If we continue with our previous example with $\varphi'$, we have $rc(t_4,t_1:\varphi')$ = $\{I'(t_4.Tax \geq I(t_1.Tax)\}$ , $\geq$ is the inverse operator of $<$ and we only consider predicates of $\varphi'$ with cells from $\mathbb{C}$ which are red arrows on the figure \ref{fig3}. We also have $rc(t_5,t_4:\varphi')$ = $\{I'(t_5.Tax \geq I(t_4.Tax)\}$. With both of these repair constraint we have $0 = t_1.Tax \leq t_4.Tax \leq t_5.Tax =0$ which lead to only one possible value : $t_4.Tax =0$. Remember that previously we put a fresh variable $fv$ instead of 0 (see the table \ref{tableExample} in the previous chapter).\\
 
-We want a repair cost as small as possible, which leads to to minimize the repair cost under repair cost constraint:
+We want a repair cost as small as possible, which leads to to minimize the repair cost under repair cost constraint. We have to solve the following problem:
 \begin{displaymath}
 \begin{split}
 & \hspace*{1cm} \min \sum_{t_i.A \in \mathbb{C}} dst(I(t_i.A),I'(t_i.A)) \\
@@ -826,15 +949,18 @@ We want a repair cost as small as possible, which leads to to minimize the repai
 \end{split}
 \end{displaymath}
 
-But it could be possible that we can't assign any value (in our domain) that can fit all the repair context. In these case can't put any value except a fresh variable. If a cell is assigned by a fresh variable $fv$ we can remove every repair context with this cell. The reason is that $fv$ are defined as a way they don't satisfy any kind of predicates which include predicates in repair context. If we can solved our problems i.e we can't found value in dom(A) for a repaired instance $I'$, we'll assign a fresh variable until the problems is solvable. It's better to start by cells with the largest number of appearance in predicates in the repair context. We can say $I'(t.A)$ = $fv$ if $rc(t.A,\Sigma)$ which represent all the repair context declared between a constant or between $t.A$ and $v_i \not\in \mathbb{C}$.\\
+But it could be possible we can't assign any value (in our domain) that can fit all the repair context. In these case, we can't put any value except a fresh variable. If we decide to assign a fresh variable $fv$ to a cell can remove every repair context with this cell. The reason is that $fv$ are defined as a way they don't satisfy any kind of predicates which include predicates in repair context. If we are not able to solve our problems i.e we can't found value in dom(A) for a repaired instance $I'$, we'll assign a fresh variable until the problems is solvable. It's better to start by cells with the largest number of appearance in predicates in the repair context. We can say $I'(t.A)$ = $fv$ if $rc(t.A,\Sigma)$ which represent all the repair context declared between a constant or between $t.A$ and $v_i \not\in \mathbb{C}$.\\
 
-If we come back to one of our first example : $\varphi : t_\alpha,t_\beta \in R, \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.Tax \leq t_\beta.Tax)$  For $t_2$ we have $rc(t_2.Tax,\{ \varphi \}) = \{ I'(t_2.Tax) > I(t_1.Tax),I(t_4.Tax) > I'(t_2.Tax),I(t_8.Tax) > I'(t_2.Tax),I(t_9.Tax) > I'(t_2.Tax),I(t_10.Tax) > I'(t_2.Tax) \{$ In the same we we did for $\varphi'$, here we have $0 = I(t_1.Tax)< I'(t_2.Tax) < I(t_4.Tax) = 3k$ and there is no value who respect it in dom(A) = $\{ 0,3k,21k,40 \}$
+If we come back to one of our first example : $\varphi : t_\alpha,t_\beta \in R, \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.Tax \leq t_\beta.Tax)$  For $t_2$ we have $rc(t_2.Tax,\{ \varphi \}) = \{ I'(t_2.Tax) > I(t_1.Tax),I(t_4.Tax) > I'(t_2.Tax),I(t_8.Tax) > I'(t_2.Tax),I(t_9.Tax) > I'(t_2.Tax),I(t_{10}.Tax) > I'(t_2.Tax) \}$ In the same way we did for $\varphi'$, here we have $0 = I(t_1.Tax)< I'(t_2.Tax) < I(t_4.Tax) = 3k$ and there is no value who respect it in dom(A) = $\{ 0,3k,21k,40 \}$. The only possible solution in this case is to assign a fresh variable $fv$ to $t2.Tax$. When we do this, we can remove every red arrows related from the hypergraph. But we didn't solve all of the repair contexts.
 \section{Other repairing}
+TODO
 \subsection{Holistic data repair}
 \subsection{...}
 
 \chapter{Implementation and comparison with others models}
+TODO
 \chapter{Conclusion}
+TODO
 
 \bibliographystyle{plain}
 
