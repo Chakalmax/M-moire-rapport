@@ -187,7 +187,7 @@ La première base de données est tirée de l'article principal utilisés dans l
 	\centering
 	\begin{tabular}{|c|c c c c c c|}
 	\hline
-	    & Nom & Anniversaire & Num\_Tel & Année & Revenu & Taxe\\
+	    & Nom & Anniversaire & NumTel & Année & Revenu & Taxe\\
 	\hline
 	 t1 & Ayres & 8-8-1984 & 322-573 & 2007 & 21k & 0\\
 	 t2 & Ayres & 5-1-1960 & ***-389 & 2007 & 22k & 0 \\
@@ -281,20 +281,12 @@ Dans cette section nous allons définir ce qu'est une denial constraint. Nous al
 Considérons un schéma de relation $R$ avec un ensemble $S$ fini d'\emph{attribut}. Une \emph{denial constraint (DC)} sur l'ensemble $S$ est une fonction partielle qui associe l'ensemble $S$ vers le powerset $OP$ de $\{ <,=,> \}$. Nous utiliserons la lettre grecque $\varphi$ pour représenter une DC
 \end{mydef}
 
-Par définition le powerset d'un ensemble $S$ noté $\mathcal{P}(S)$ est l'ensemble de tous les sous-ensemble de $S$. Cela inclut l'ensemble $S$ lui même mais aussi l'ensemble vide $\emptyset$. Par exemple le powerset de $OP$ est $\mathcal{P}(OP)$ = $\{ \emptyset, \{<\} , \{=\}, \{>\}, \{<,=\}, \{=,>\}, \{<,>\}, \{<,=,>\} \}$. Il existe différentes abréviations pour les éléments de $OP$, ceux-ci étant répertorié dans la table \ref{operatorTable}. Nous avons eu besoin d'introduire 2 nouveaux opérateur $\top$ et $\bot$, chacun étant l'abréviation pour l'ensemble $\{<,=,>\}$ et $\emptyset$ respectivement. Nous les définissons comme tel: $ \forall a,b \in \mathbf{dom}$,nous avons $d_1 \bot d_2$ est toujours faux et $d_1 \top d_2$ est toujours vrai. Nous utiliserons la lettre grecque $\phi$ pour représenter un opérateur.\\
-
-Pour chaque opérateur dans $OP$ nous pouvons définir son inverse, sa réciproque et son implication. Les valeurs de l'inverse, la réciproque et l'implication de chaque élément de $OP$ se trouve également à la table \ref{operatorTable}.
 \begin{mydef}
-Soit $\phi$ un élément de $OP$
-
-L'inverse de $\phi$ noté $\overline{\phi}$ est égal à $\{<,=,>\}\setminus \emptyset$
-
-La réciproque de $\phi$ noté $\hat{\phi}$ s'obtient en inter-changeant < et > dans $\phi$
-
-L'implication de $\phi$ noté $Imp(\phi)$ est un ensemble d'élément de $OP$ tel que pour n'importe quelle valeur a et b, si $a \phi_2 b$ \textbf{implique}\footnote{Tout tuple qui satisfait $a \phi_2 b$ satisfait $a \phi_1 b$} \textbf{toujours} $a \phi_1  b$ alors $\phi_2       \in Imp(\phi_1)$.
+ Soit $(\dom,\leq)$ un domaine totalement ordonné contenant au moins deux éléments distincts. Un \emph{tuple sur $S$} est une fonction totale de S à $\dom$. Une \emph{relation sur S} est un ensemble fini de tuples sur $S$. 
 \end{mydef}
 
-Notons que $\forall \phi_1,\phi_2$, si $\phi_2 \in Imp(\phi_1)$ alors $\phi$ est un sous ensemble de $\phi_2$. Par exemple $\neq \in Imp(>)$ et $\{ > \} \in \{<,> \}$.
+Par définition le powerset d'un ensemble $S$ noté $\mathcal{P}(S)$ est l'ensemble de tous les sous-ensemble de $S$. Cela inclut l'ensemble $S$ lui même mais aussi l'ensemble vide $\emptyset$. Par exemple le powerset de $OP$ est $\mathcal{P}(OP)$ = $\{ \emptyset, \{<\} , \{=\}, \{>\}, \{<,=\}, \{=,>\}, \{<,>\}, \{<,=,>\} \}$. Il existe différentes abréviations pour les éléments de $OP$, ceux-ci étant répertorié dans la table \ref{operatorTable}. Nous avons eu besoin d'introduire 2 nouveaux opérateur $\top$ et $\bot$, chacun étant l'abréviation pour l'ensemble $\{<,=,>\}$ et $\emptyset$ respectivement. Nous les définissons comme tel: $ \forall a,b \in \mathbf{dom}$,nous avons $d_1 \bot d_2$ est toujours faux et $d_1 \top d_2$ est toujours vrai. Nous utiliserons la lettre grecque $\phi$ ou $\theta$ pour représenter un opérateur.\\
+
 \begin{table}
 	\begin{center}
 	\begin{tabular}{|c|c|c|c|c|}\hline
@@ -312,168 +304,93 @@ Notons que $\forall \phi_1,\phi_2$, si $\phi_2 \in Imp(\phi_1)$ alors $\phi$ est
 	\caption{Element de OP, le powerset of $\{ <,=,>\}$ \label{operatorTable}}
 \end{table}
 
-Une DC est un fonction partielle de l'ensemble $S$ des attributs vers $OP$. Reprenons nos exemples sur les DF et essayons de les exprimer en terme de DC. Pour notre table \ref{tablePerson}, nous avons l'ensemble $S=\{NISS, Nom, Prénom, Nai\_Date, Dec\_Date, Etat\_Civil, Ville, Code\_Post, Salaire, Taxe, Enfant \}$.
-\begin{itemize}
-\item \emph{Un NISS identifie une personne.}: $\{ (NISS,=), (Nom,\neq) (Prénom\neq), (Nai\_Date\neq), (Dec\_Date\neq), (Etat\_Civil\neq), (Ville\neq), (Code\_Post\neq), (Salaire\neq), (Taxe\neq), (Enfant\neq) \}$
-\end{itemize}
-We can express previous constraints in first-order logic:
-
-\begin{enumerate}
-\item \emph{A NISS identify a person.}: 
-%$\forall t_\alpha,t_\beta \in R$ $\neg(t_\alpha.NISS = t_\beta.NISS)$
-$ \forall s \forall t : (R(S)\wedge R(t) \rightarrow s(Niss) = t(NISS) )$
-\item \emph{Two persons with the same post code live in the same district.}: $ \forall s \forall t ( R(s)\wedge R(t) \wedge s(Post\_code) = t(Post\_code) \rightarrow s(District)= t(District) )$ %$\forall t_\alpha,t_\beta \in R$ $\neg(t_\alpha.post\_code = t_\beta.post\_code \wedge t_\alpha.district \neq t_\beta.district) $
-\item \emph{If someone died the march 18$^{th}$ 1962 , his civil status should be equal to decease.}: $\forall t (R(t) \rightarrow \neg(t.Decease\_date = $'18-05-1962'$ \wedge t.Civil\_state = deceased)$.%$\forall t_\alpha \in R$ $\neg(t_\alpha.decease\_date = $'18-05-1962'$ \wedge t_\alpha.civil\_state = decease)$.
-\end{enumerate}
-
-%On the main paper which this thesis is based, they define a denial constraint as \cite{main}:
-%
-%\begin{mydef}
-%Consider a relation scheme $R$ with attributes $attr(R)$. Let predicate space $\mathbb{P}$ be a set of predicate  $P$ in the form  $v_1 \phi v_2$ or $v1 \phi c$ with $v_1,v_2 \in t_x.A$ , $x \in \{\alpha,\beta\}$ , $t_\alpha,t_\beta \in R$, $A \in attr(R)$, $c$ is a constant and $\phi \in \{ =,<,>,\leq, \geq, \neq \}$ is a build-in operator.  A \textbf{Denial Constraint(DC)}:
-%
-%$$\varphi : t_\alpha,t_\beta,... \in R, \neg(P_1 \wedge ... \wedge P_m)$$
-%
-%states that for any tuples $t_\alpha,t_\beta,...$ from R, all the predicates $P_i \in pred(\varphi)$,i = 1,...,m should not be true at the same time.
-%\end{mydef}
-
-So it's possible to express more constraints with first-order logic than with FD. For this reason, it would be interesting to define another kind of constraints based on the first-order logic. We define a denial constraint as:
+Expliquons maintenant la sémantique qui se cache derrière la denial constraint.
 
 \begin{mydef}
-
-Consider a relation scheme $R$ with $S$ a finite set of \emph{attribute}. A \textbf{denial constraint (DC)} over $S$ is a partial mapping from $S$ to the powerset $OP$ of $\{ <,=,> \}$. We will use the Greek letter $\varphi$ to denote a DC.
-
+On dit qu'une relation $I$ sur $S$ \emph{satisfait} la DC $\varphi$, noté $I \models \varphi$ si il \textbf{n'existe pas} deux tuples $s,t \in I$ tel que pour chaque attribut $A$ dans le domaine de $\varphi$, nous avons $s(A)\theta t(A)$ avec $\theta =  \varphi(A)$ 
 \end{mydef}
 
-By definition a powerset of a set $S$ denoted $\mathcal{P}(S)$ is the set of all subset of $S$. It includes $S$ itself and also the empty set. It exists different syntactic shorthands  for elements of $OP$ as you can see in table \ref{operatorTable}.
-We had to introduce 2 new operators $\top$ and $\bot$ defined as follows: For every $d_1,d_2 \in \mathbf{dom}$, $d_1\bot d_2$ is false and $d_1\top d_2$ is true. We will use the greek letter $\phi$ to denote operator.
+Prenons un exemple sur la table \ref{tableMain}, nous avons $S=\{Nom,Anniversaire,NumTel,Année,Revenu,Taxe \}$ Une DC pour S est $\varphi =\{(Nom,=),(Anniversaire,=),(NumTel,\neq),(Annee,\top),(Revenu,\top) ,(Taxe,\top) \}$. Celle-ci est satisfaite par la relation $I$ si il n'existe pas deux tuples $s,t\in I$ tel que $s(Nom) = t(Nom) \wedge s(Anniversaire) = t(Anniversaire) \wedge s(NumTel) \neq t(NumTel) \wedge s(Annee) \top y(Annee) \wedge s(Revenu) \top t(Revenu) \wedge s(Taxe) \top t(Taxe)$.\\
 
-\begin{table}
-	\begin{center}
-	\begin{tabular}{|c|c|}\hline
-	Element & Abbreviation\\\hline\hline
-	$\emptyset$ & $\bot$\\\hline
-	$\{<\}$     & $<$\\\hline
-	$\{=\}$     & $=$\\\hline
-	$\{>\}$     & $>$\\\hline 
-	$\{<,=\}$   & $\leq$\\\hline 
-	$\{<,>\}$   & $\neq$\\\hline
-	$\{>,=\}$   & $\geq$\\\hline 
-	$\{<,=,>\}$ & $\top$\\\hline
-	\end{tabular}
-	\end{center}
-	\caption{Element of OP, powerset of $\{ <,=,>\}$ \label{operatorTable}}
-\end{table}
+Soit $\varphi$ une DC sur $S$ . Nous appellerons \emph{prédicat} $P$ chaque chaque couple $(A,\varphi(A))$ de $\varphi$ avec $A\in S$. Soit $pred(\varphi)$ l'ensemble des prédicats de la DC $\varphi$. Soit $I$ une relation sur $S$. Dès lors on peut dire que $\varphi$ est satisfaite si au moins un des prédicats est faux. Si un prédicat $P$ a pour opérateur $\top$ alors $P$ sera toujours vrai pour tout $t,s \in I$. Dès lors à l'avenir, nous ne noterons plus les prédicats ayant $top$ pour opéraeur par facilité syntaxique. L'exemple précédent s'écrira désormais$\varphi =\{(Nom,=),(Anniversaire,=)$. Si un prédicat a pour opérateur $\bot$, il sera toujours faux. Dès lors $I \not\models \varphi$. La DC $\varphi = \{(A_1,\top),(A_2,\top),...(A_n,\top)\} \equiv \{ \}$ n'est satisfaite par aucune relation excepté par une relation vide.\\
 
+ Si nous prenons I comme étant la table \ref{tableMain}, nous avons $I \not\models \varphi$. En effet prenons $s=t_2$ et $t=t_3$ nous avons bien $t_2(Nom) = t_3(Nom) \wedge t_2(Anniversaire) = t_2(Anniversaire) \wedge y_2(NumTel) \neq t_3(NumTel)$. On dit que $\langle t_2,t_3 \rangle$ \emph{viole} la contrainte $\varphi$\\ 
 
-%In other words, a denial constraint is a first-order logic conjunction of predicates that shouldn't be true all in the same time. So if one of the predicates is false, the data is consider to be clean. \\
-
-\begin{myexample}
-Let $S= \{Name,Birtday,CP,Year,Income,Tax \}$. We can have the following denial constraints over S:
-$\varphi_1 = \{(Name,=),(Birthday,=),(CP, \neq)\}$ and $\varphi_2 :\{(Income,>),(Tax,\neq)\}$
-\end{myexample}
-
-%TODO rewrite this part (copy-pasta!)
+Pour chaque opérateur dans $OP$ nous pouvons définir son inverse, sa réciproque et son implication. Les valeurs de l'inverse, la réciproque et l'implication de chaque élément de $OP$ se trouve également à la table \ref{operatorTable}.
 \begin{mydef}
-Let $(\dom,\leq)$ be a totally ordered domain containing at least two distinct elements.
-A {\em tuple over $S$\/} is a total mapping from $S$ to $\dom$.
-A  {\em relation over $S$\/} is a finite set of tuples over $S$.
-Let $\varphi$ be a denial constraint over $S$.
-We say that a relation $I$ over $S$ satisfies $\varphi$,
-denoted $I\models\varphi$,
-if there exist no two tuples $s,t\in I$ such that for every attribute $A$ in the domain of $\varphi$, we have $s(A)\ \theta\ t(A)$ where $\theta=\varphi(A)$. We say that $\varphi$ is a \emph{valid} DC if $I\models\varphi$. 
+Soit $\phi$ un élément de $OP$
+
+L'inverse de $\phi$ noté $\overline{\phi}$ est égal à $\{<,=,>\}\setminus \emptyset$
+
+La réciproque de $\phi$ noté $\hat{\phi}$ s'obtient en inter-changeant < et > dans $\phi$
+
+L'implication de $\phi$ noté $Imp(\phi)$ est un ensemble d'élément de $OP$ tel que pour n'importe quelle valeur a et b, si $a \phi_2 b$ \textbf{implique}\footnote{Tout tuple qui satisfait $a \phi_2 b$ satisfait $a \phi_1 b$} \textbf{toujours} $a \phi_1  b$ alors $\phi_2       \in Imp(\phi_1)$.
 \end{mydef}
 
-\begin{myexample}
-$\{(\ic,>)$, $(\ta,\leq)\}$ is satisfied by a relation $I$ if there exist no two tuples $s,t\in I$ such that $s(\ic)>t(\ic)$ and $s(\ta)\leq t(\ta)$.
-In other words, $\{(\ic,>)$, $(\ta,\leq)\}$ is satisfied by $I$ if for all $s,t\in I$, if $s(\ic)>t(\ic)$, then $s(\ta)>t(\ta)$.
-\end{myexample}
+Notons que $\forall \phi_1,\phi_2$, si $\phi_2 \in Imp(\phi_1)$ alors $\phi$ est un sous ensemble de $\phi_2$. Par exemple $\neq \in Imp(>)$ et $\{ > \} \in \{<,> \}$.\\
 
-If we want to translate $\varphi_1$ into first-order logic it will be:
-\begin{displaymath}
-  \begin{split}
-    \varphi : \forall s,t : R(t) \wedge R(s) \rightarrow &(s.Name = t(Name) \wedge s(CP) = t(CP) \wedge \\
-    & s(Birthday) = t(Birthday))
-  \end{split}
-\end{displaymath}
+Une DC peut être \emph{sur-simplifiée} ce qui veut dire qu'une donnée correcte peut être considérée comme une violation. Prenons un exemple sur la table \ref{tableMain} avec la denial constraint suivante:
 
-In the main article \cite{main} they defined the DC as an expression of the the form $\forall s,t \in R \neg(P_1 \wedge P_2 \wedge ... \wedge P_m)$ where $P_i$ is in the from $s(A) \phi t(A)$ or $s(A) \phi c$ or $t(a) \phi c$  and $\phi$ in one of the element of $OP$. This expression is satisfied if if all the predicates are not true at the same time. In others words, this constraints is satisfied if at least one of the $P_i$ is false.  
+$$\varphi_2 = (Nom,=)(NumTel,\neq) $$
 
+Cette contrainte veut dire que si une personne possède le même nom qu'une autre, alors elle ne peut pas avoir un numéro de téléphone différent. Ceci est biensur incorrect, en effet deux personnes différentes ne peuvent avoir le même numero de téléphone. Le nom seul ne suffit pas à identifier si deux personne sont identiques. Prenons par exemples $t_1$ et $t_2$, ils ne satisfont pas $\varphi_2$. Si l'on regarde de plus prêt, on peut facilement comprendre qu'il s'agit de deux personnes différentes. Ces deux personnes n'ont pas le même age i.e elles ont une date d'$Anniversaire$ différent. Si nous souhaitons améliorer la précision de la contrainte et éviter que $\langle t_1,t_2\rangle$ soit considérer comme une violation, nous avons besoins de regarder l'attribut $Anniversaire$. Une meilleure DC serait:
 
+$$\varphi_2' = (Nom,=),(Anniversaire,=),(NumTel,\neq) $$
 
+Une DC peut être également \emph{sur-raffiné} ce qui entraine qu'une donnée erronée peut être considérée comme correcte par la DC. Prenons un exemple sur la table \ref{tableMain} avec la denial constraint suivante:
+
+$$\varphi_2' = (Nom,=),(Anniversaire,=),(NumTel,\neq),(Année,=) $$
+
+Dans ce cas, l'information $Année$ n'est pas utile pour distingué deux personne différente. Dans la table, l'attribut année correspond à l'année où les autres attributs ont été encodés. Un même personne peut être encodé deux fois à deux années différentes. Avec cette DC on ne reconnait pas $\langle t_5,t_8 \rangle0$ comme étant une violation.
+
+%\newpage
+%----------\\
+%Une DC est un fonction partielle de l'ensemble $S$ des attributs vers $OP$. Reprenons nos exemples sur les DF et essayons de les exprimer en terme de DC. Pour notre table \ref{tablePerson}, nous avons l'ensemble $S=\{NISS, Nom, Prénom, Nai\_Date, Dec\_Date, Etat\_Civil, Ville, Code\_Post, Salaire, Taxe, Enfant \}$.
+%\begin{itemize}
+%\item \emph{Un NISS identifie une personne.}: $\{ (NISS,=), (Nom,\neq) (Prénom,\neq), (Nai\_Date,\neq), (Dec\_Date,\neq), (Etat\_Civil,\neq), (Ville,\neq), (Code\_Post,\neq), (Salaire,\neq), (Taxe,\neq), (Enfant,\neq) \}$
+%\item \emph{Deux personnes avec le même code postal vivent dans la même ville.}: $\{ (NISS,\top), (Nom,\top) (Prénom,\top), (Nai\_Date,\top), (Dec\_Date,\top), (Etat\_Civil,\top), (Ville,\neq), (Code\_Post,=), (Salaire,\top), (Taxe,\top), (Enfant,\top) \}$ . On peut également l'écrire $\{ (Ville,\neq), (Code\_Post,=) \}$
+%\end{itemize}
+%---------
+ 
 \begin{figure}
 	\centering
 	\includegraphics[scale=1]{img/quadran.png}
 	\caption{A denial constraint(DC) can express many type of others constraints}
 \end{figure}
-A DC can be oversimplified which means a correct data could consider as a violation. Let's take an example on the table \ref{tableMain}. If we take the following constraint:
-$$ \varphi : s,t \in R, \{(Name,=)\wedge(CP,\neq)\}$$
-%$$ \varphi : t_\alpha,t_\beta \in R, \neg(t_\alpha.Name = t_\beta.Name \wedge t_\alpha.CP \neq t_\beta.CP)$$
-This constraint means that any person with the same \emph{Name} should get the same cellphone number (\emph{CP}), which is incorrect because two different person can get the same name and of course different cellphone number. For example $t_1$ and $t_2$ don't respect this denial constraint. In this case $(t_1,t_2)$ are violation of the DC $\varphi$. But if we look closely, we can guess it's two different person with the same name. Indeed, they got two different Birthday so their age are different. If we want to improve the accuracy of this constraint, we need to check the \emph{Birthday} attribute:
-
-\begin{displaymath}
-  \begin{split}
-  %    \varphi : t_\alpha,t_\beta \in R &\; \neg(t_\alpha.Name = t_\beta.Name \wedge t_\alpha.CP \neq t_\beta.CP \wedge \\
-%    & t_\alpha.Birthday = t_\beta.Birthday)
-    \varphi : \forall s,t : R(t) \wedge R(s) \rightarrow &(s.Name = t(Name) \wedge s(CP) = t(CP) \wedge \\
-    & s(Birthday) = t(Birthday))
-  \end{split}
-\end{displaymath}
 
 
-In the opposite of oversimplified, a DC can be overrefined which means a dirty data could be considered as a clean data. An example could be :
+\subsection{Quelques défintion et propriétés}
 
-\begin{displaymath}
-  \begin{split}
-\varphi : \forall s,t : R(t) \wedge R(s) \rightarrow &(s.Name = t(Name) \wedge s(CP) = t(CP) \wedge \\
-    & s(Birthday) = t(Birthday)\wedge s(Year) = t(Year)
-    \end{split}
-\end{displaymath}
+Dans cette sous-section, nous allons définir quelques notions et propriétés sur les DC qui ne serviront dans les chapitres qui suivront.
+\subsubsection{Satisfiabilité}
 
-In this case the Year information is not useful. We don't recognize $t_5$ and $t_8$ as a violation with this constraint. The year information represents the year we store the information and of course we can store the information of the same person in two different years.
+\begin{mydef}
+Soit $\varphi$ DC sur $S$. On dit que $\varphi$ est \emph{satisfiable} si elle peut être satisfaite par une relation non vide sur $S$, i.e Si $\exists I$ over $S$ avec $I$ non vide tel que $I \models \varphi$, alors $\varphi$ est \emph{satisfiable}.
 
-\subsection{Some definitions and properties}
+Si $\varphi$ n'est pas satisfiable, nous dirons qu'il est \emph{insatisfiable} 
+\end{mydef}
 
-In this section we will present some definitions and properties on the denial constraint. They will help us in following chapters.
+\subsubsection{Implication logique}
+
+\begin{mydef}
+Soit $\varphi_1,\varphi_2$ deux DC sur $S$. On dit que $\varphi_1$ \emph{implique} $\varphi_2$, que l'on note $\varphi_1 \models\varphi_2$, si pour chaque relation $I$ sur $S$, si $I \models \varphi_2$ alors on a $I \models \varphi_1$. On dira aussi que $\varphi_2$ est \emph{plus faible} que $\varphi_1$ ou bien que $\varphi_1$ est \emph{plus fort} que $\varphi_2$
+\end{mydef}
 
 \subsubsection{Trivial DC}
 
-A DC can be useless and always true. Such DCs should not be present because they never identify any violation. In that case we say that the denial constraint is \emph{trivial}. We'll define a trivial DC as:
-
+Une DC peut être inutile et toujours vraie. De telles DC ne devraint pas être présentes dans la base de données puisqu'ils ne détecteront jamais aucune violation. Dans ce cas on dira que le DC est \emph{triviale}. 
 \begin{mydef}
-	We say a denial constraint $\varphi$ is \textbf{trivial} if for any instance $I$  of $R$ we have $I \models \varphi$
+	Une DC $\varphi$ est dite \emph{triviale} si $\forall I$ sur S, on a $I \models \varphi$
 \end{mydef}
 
 It's quite easy to discover trivial denial constraint with the following property \cite{DCs}:
 
 \begin{myprop}
 \label{trivialprop}
- $\forall P_i, P_j$ if $\overline{P_i} \in Imp(P_j)$, then $\neg(P_i \wedge P_j)$ is a trivial DC.
+Soit $\varphi$ une denial constraint sur S. Alors, $\varphi$ est triviale si et seulement $\exists P_i \in pred(\varphi)$ tel que l'opérateur $\theta_i = \bot$ 
 \end{myprop}
 
-In \cite{main}, they said for $Imp(\phi)$:
 
-\begin{mydef} For any two values a and b, if $a \phi_2 b$ always implies\footnote{any tuples who satisfy $a\phi_2 b$ satisfy $a\phi_1 b$} $a \phi_1 b$, it means $\phi_2 \in Imp(\phi_1)$.
-\end{mydef}
-
-With this definition, we see that if $P_i$ is true, $P_j$ is false and vice versa.\\
-
-For example if we have $x = y$ as predicate and we add $x < y$, both the predicates can't be true at the same time. Table \ref{tableImp} show for each $\phi$ the correspondent $Imp(\phi)$.
-
-\begin{table}[H]
-	\centering
-	\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
-	\hline
-	   $ \phi$ & = & $\neq$ & > & < & $\leq$& $\geq$ & $\top$ & $\bot$\\
-	   \hline
-	   $ \overline{\phi}$ & $\neq$ & = & $\leq$ & $\geq$ & < & >  & $\bot$ & $\top$\\
-	   \hline
-	   $Imp(\phi)$ & = $\geq$,$\leq$ & $\neq$ & >,$\geq$,$\neq$ & <,$\leq$,$\neq$ & $\geq$ & $\leq$  & $\top$ & $\bot$\\
-	\hline
-	 
-	 \hline
-	\end{tabular}
-	\caption{\label{tableImp} Table of operator, their opposite and their implication}.
-\end{table}
 
 If we say for data the table \ref{tableMain}:
 $$\varphi : t_\alpha,t_\beta \in R \; \neg(t_\alpha.Tax = t_\beta.Tax \wedge t_\alpha.Tax < t_\beta.Tax)$$ 
@@ -541,6 +458,8 @@ As we can see, if we insert an additional predicates in a DC $\varphi$ , the var
 \end{mydef}
 
 As we can see, if you want to change less data, you should refine your DCs with insertion or substitution. For example if our DC is $t_\alpha.Tax \leq t_\beta.Tax$ and we change it to $t_\alpha.Tax < t_\beta.Tax$ you'll change less data.
+
+\subsection{Différence par rapport à l'article de base}
 
 \chapter{Data Repairing}
 
