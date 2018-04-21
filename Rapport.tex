@@ -22,20 +22,12 @@
 
 \DeclareFloatingEnvironment[placement={!ht},name=List]{mylist}
 \theoremstyle{definition}
-\newtheorem{mydef}{Definition}
-\newtheorem{myprop}{Property}
-\newtheorem{mylemma}{Lemma}
-\newtheorem{myexample}{Example}
+\newtheorem{mydef}{Définition}
+\newtheorem{myprop}{Propriété}
+\newtheorem{mylemma}{Lemme}
+\newtheorem{myexample}{Exemple}
 
 \newcommand{\dom}{\mathbf{dom}}
-\newcommand{\att}[1]{{\mathsf{#1}}}
-\newcommand{\na}{\att{Name}}
-\newcommand{\cp}{\att{CP}}
-\newcommand{\bd}{\att{Birthday}}
-\newcommand{\yr}{\att{Year}}
-\newcommand{\ta}{\att{Tax}}
-\newcommand{\ic}{\att{Income}}
-\newcommand{\lrformula}[1]{\left({#1}\right)}
 
 \def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
 \let\endchangemargin=\endlist 
@@ -312,7 +304,7 @@ On dit qu'une relation $I$ sur $S$ \emph{satisfait} la DC $\varphi$, noté $I \m
 
 Prenons un exemple sur la table \ref{tableMain}, nous avons $S=\{Nom,Anniversaire,NumTel,Année,Revenu,Taxe \}$ Une DC pour S est $\varphi =\{(Nom,=),(Anniversaire,=),(NumTel,\neq),(Annee,\top),(Revenu,\top) ,(Taxe,\top) \}$. Celle-ci est satisfaite par la relation $I$ si il n'existe pas deux tuples $s,t\in I$ tel que $s(Nom) = t(Nom) \wedge s(Anniversaire) = t(Anniversaire) \wedge s(NumTel) \neq t(NumTel) \wedge s(Annee) \top y(Annee) \wedge s(Revenu) \top t(Revenu) \wedge s(Taxe) \top t(Taxe)$.\\
 
-Soit $\varphi$ une DC sur $S$ . Nous appellerons \emph{prédicat} $P$ chaque chaque couple $(A,\varphi(A))$ de $\varphi$ avec $A\in S$. Soit $pred(\varphi)$ l'ensemble des prédicats de la DC $\varphi$. Soit $I$ une relation sur $S$. Dès lors on peut dire que $\varphi$ est satisfaite si au moins un des prédicats est faux. Si un prédicat $P$ a pour opérateur $\top$ alors $P$ sera toujours vrai pour tout $t,s \in I$. Dès lors à l'avenir, nous ne noterons plus les prédicats ayant $top$ pour opéraeur par facilité syntaxique. L'exemple précédent s'écrira désormais$\varphi =\{(Nom,=),(Anniversaire,=)$. Si un prédicat a pour opérateur $\bot$, il sera toujours faux. Dès lors $I \not\models \varphi$. La DC $\varphi = \{(A_1,\top),(A_2,\top),...(A_n,\top)\} \equiv \{ \}$ n'est satisfaite par aucune relation excepté par une relation vide.\\
+Soit $\varphi$ une DC sur $S$ . Nous appellerons \emph{prédicat} $P$ de $\varphi$ l'expression de la forme $(A,\theta)$ avec $A\in S$ que l'on appelle attribut du prédicat et $\theta = \varphi(A)$ que l'on appelle opérateur du prédicat. Soit $pred(\varphi)$ l'ensemble des prédicats de la DC $\varphi$. Soit $I$ une relation sur $S$. Dès lors on peut dire que $\varphi$ est satisfaite si au moins un des prédicats est faux. Si un prédicat $P$ a pour opérateur $\top$ alors $P$ sera toujours vrai pour tout $t,s \in I$. Dès lors à l'avenir, nous ne noterons plus les prédicats ayant $top$ pour opéraeur par facilité syntaxique. L'exemple précédent s'écrira désormais$\varphi =\{(Nom,=),(Anniversaire,=)$. Si un prédicat a pour opérateur $\bot$, il sera toujours faux. Dès lors $I \not\models \varphi$. La DC $\varphi = \{(A_1,\top),(A_2,\top),...(A_n,\top)\} \equiv \{ \}$ n'est satisfaite par aucune relation excepté par une relation vide.\\
 
  Si nous prenons I comme étant la table \ref{tableMain}, nous avons $I \not\models \varphi$. En effet prenons $s=t_2$ et $t=t_3$ nous avons bien $t_2(Nom) = t_3(Nom) \wedge t_2(Anniversaire) = t_2(Anniversaire) \wedge y_2(NumTel) \neq t_3(NumTel)$. On dit que $\langle t_2,t_3 \rangle$ \emph{viole} la contrainte $\varphi$\\ 
 
@@ -370,6 +362,19 @@ Soit $\varphi$ DC sur $S$. On dit que $\varphi$ est \emph{satisfiable} si elle p
 Si $\varphi$ n'est pas satisfiable, nous dirons qu'il est \emph{insatisfiable} 
 \end{mydef}
 
+Il est intéressant de savoir à l'avance si une une denial constraint est satisfiable ou pas. Le lemme 
+
+\begin{mylemma}\label{satisLemma}
+	Soit $\varphi$ une denial constraint sur $S$, alors $\varphi$ est satisfiable si et seulement si il existe un prédicat $P_i \in pred (\varphi)$ de la forme $(A_i,\theta_i)$ tel que $\theta_i$ ne contient pas $=$, i.e
+\end{mylemma}
+\begin{proof}~\\
+\alinea \framebox{$\implies$} Supposons que pour tout $P \in pred(\varphi)$, $\theta$ contient $=$. Alors pour chaque tuple $s$ sur $S$, pour chaque $P_i \in pred(\varphi)$ on a $s(A_i) \theta_i s(A_i)$. Il s'ensuit que toute relation non vide ne satisfait pas $\varphi$
+
+\framebox{$\impliedby$} Supposons $B \in S$ tel que $B$ ne contient pas $=$. Alors pour chaque tuple $s$ sur $S$, nous avons que $s(B)\ \theta s(B)$ avec $\theta=\varphi(B)$ faux. Il s'ensuit que n'importe quelle relation avec exactement un tuple satisfait $\varphi$.
+
+\end{proof}
+
+
 \subsubsection{Implication logique}
 
 \begin{mydef}
@@ -383,6 +388,20 @@ Une DC peut être inutile et toujours vraie. De telles DC ne devraint pas être 
 	Une DC $\varphi$ est dite \emph{triviale} si $\forall I$ sur S, on a $I \models \varphi$
 \end{mydef}
 
+\begin{mylemma}
+Soit $\varphi$ une denial constraint sur $S$. alors $\varphi$ est triviale si et seulement si $\varphi(A) = \bot$ pour un prédicat $P=(A,\theta) \in pred(\varphi)$.
+\end{mylemma}
+\begin{proof}
+~\\
+\alinea \framebox{$\implies$}
+Supposons que pour chaque prédicat $P=(A,\theta) \in pred(\varphi)$. Soit $s,t$ deux tuples tel que pour chaque $P=(B,\theta)$, nous avons $s(B)\ \theta\ t(B)$ vrai.
+Puisque $\theta \neq \bot$ et que $\dom$ contient au moins deux éléments, $s,t$ peuvent être construit. Dès lors $\{s,t\}$ ne satisfont pas $\varphi$ puisque $\varphi$ n'est pas triviale.
+
+\framebox{$\impliedby$}
+Supposons qu'il existe un prédicat $P=(A,\theta) \in pred (\varphi)$ tel que $\theta = \bot$.
+Puisque $s(A) \bot t(A)$ est faux pour tout tuples $s,t$ sur $S$, aucune relation ne peut contenu deux tuples $s,t$ tel que $s(A) \bot t(A)$ est vrai.
+\end{proof}
+
 It's quite easy to discover trivial denial constraint with the following property \cite{DCs}:
 
 \begin{myprop}
@@ -392,10 +411,7 @@ Soit $\varphi$ une denial constraint sur S. Alors, $\varphi$ est triviale si et 
 
 
 
-If we say for data the table \ref{tableMain}:
-$$\varphi : t_\alpha,t_\beta \in R \; \neg(t_\alpha.Tax = t_\beta.Tax \wedge t_\alpha.Tax < t_\beta.Tax)$$ 
-
-It's a trivial by property \ref{trivialprop} It's quite obvious it's impossible that two persons have the same tax rate and one's tax rate is greater than the other. For the rest of this study we won't consider trivial DCs
+%TODO : trouver un exemple
 
 \subsubsection{Augmentation}
 
