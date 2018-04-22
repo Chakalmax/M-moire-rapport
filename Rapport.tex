@@ -357,7 +357,7 @@ Dans cette sous-section, nous allons définir quelques notions et propriétés s
 \subsubsection{Satisfiabilité}
 
 \begin{mydef}
-Soit $\varphi$ DC sur $S$. On dit que $\varphi$ est \emph{satisfiable} si elle peut être satisfaite par une relation non vide sur $S$, i.e Si $\exists I$ over $S$ avec $I$ non vide tel que $I \models \varphi$, alors $\varphi$ est \emph{satisfiable}.
+Soit $\varphi$ DC sur $S$. On dit que $\varphi$ est \emph{satisfiable} si elle peut être satisfaite par une relation non vide sur $S$, i.e si $\exists I$ over $S$ avec $I$ non vide tel que $I \models \varphi$, alors $\varphi$ est \emph{satisfiable}.
 
 Si $\varphi$ n'est pas satisfiable, nous dirons qu'il est \emph{insatisfiable} 
 \end{mydef}
@@ -365,7 +365,7 @@ Si $\varphi$ n'est pas satisfiable, nous dirons qu'il est \emph{insatisfiable}
 Il est intéressant de savoir à l'avance si une une denial constraint est satisfiable ou pas. Le lemme 
 
 \begin{mylemma}\label{satisLemma}
-	Soit $\varphi$ une denial constraint sur $S$, alors $\varphi$ est satisfiable si et seulement si il existe un prédicat $P_i \in pred (\varphi)$ de la forme $(A_i,\theta_i)$ tel que $\theta_i$ ne contient pas $=$, i.e
+	Soit $\varphi$ une denial constraint sur $S$, alors $\varphi$ est satisfiable si et seulement si il existe un prédicat $P_i \in pred (\varphi)$ de la forme $(A_i,\theta_i)$ tel que $\theta_i$ ne contient pas $=$, i.e $\theta_i \not\in \{ \{=\},\{<,=\},\{=,>\},\{<,=,>\},\} $ 
 \end{mylemma}
 \begin{proof}~\\
 \alinea \framebox{$\implies$} Supposons que pour tout $P \in pred(\varphi)$, $\theta$ contient $=$. Alors pour chaque tuple $s$ sur $S$, pour chaque $P_i \in pred(\varphi)$ on a $s(A_i) \theta_i s(A_i)$. Il s'ensuit que toute relation non vide ne satisfait pas $\varphi$
@@ -378,10 +378,50 @@ Il est intéressant de savoir à l'avance si une une denial constraint est satis
 \subsubsection{Implication logique}
 
 \begin{mydef}
-Soit $\varphi_1,\varphi_2$ deux DC sur $S$. On dit que $\varphi_1$ \emph{implique} $\varphi_2$, que l'on note $\varphi_1 \models\varphi_2$, si pour chaque relation $I$ sur $S$, si $I \models \varphi_2$ alors on a $I \models \varphi_1$. On dira aussi que $\varphi_2$ est \emph{plus faible} que $\varphi_1$ ou bien que $\varphi_1$ est \emph{plus fort} que $\varphi_2$
+Soit $\varphi_1,\varphi_2$ deux DC sur $S$. On dit que $\varphi_1$ \emph{implique (logiquement)} $\varphi_2$, que l'on note $\varphi_1 \models\varphi_2$, si pour chaque relation $I$ sur $S$, si $I \models \varphi_2$ alors on a $I \models \varphi_1$. On dira aussi que $\varphi_2$ est \emph{plus faible} que $\varphi_1$ ou bien que $\varphi_1$ est \emph{plus fort} que $\varphi_2$
 \end{mydef}
 
-\subsubsection{Trivial DC}
+\begin{myexample}
+%Soit $S=\{Nom,Anniversaire,NumTel,Année,Revenu,Taxe \}$ et deux DC $\varphi_1 = \{ (Salaire,\leq)(Taxe,\geq) \}$ et $\varphi_2 = \{ (Salaire,<)(Taxe,>) \}$$ Prenons une relation I qui satisfait $\varphi_1$
+Soit $S=\{A,B\}$.
+Soit $\varphi_1=\{(A,\leq),(B,\neq)\}$ et $\varphi_2=\{(A,<),(B,>)\}$.
+Alors $\varphi_1$ implique $\varphi_2$.
+En effet, soit $I$ une relation qui satisfait $\varphi_1$.
+Alors pour tout tuples $s,t\in I$, on a $s(A)>t(A)$ ou bien $s(B)=t(B)$ (ou éventuellement les deux en même temps).
+Il s'ensuit que pour tout tuples $s,t\in I$, on a $s(A)\geq t(A)$ ou bien $s(B)\leq t(B)$ (ou les deux en même temps).
+Dès lors, $I$ ne contient pas deux tuples $s,t$ tel que  $s(A)<t(A)$ et $s(B)>t(B)$.
+On a donc $I$ qui satisfait $\varphi_2$.
+D'un autre côté, $\varphi_2$ n'implique pas $\varphi_1$.
+En effet, considérons la relation $I$ suivante.
+$$
+\begin{array}{c|cc}
+I & A & B\\\cline{2-3}
+  & 1 & 2\\
+  & 1 & 3
+\end{array}  
+$$
+Dès lors, nous avons $I\models\varphi_2$, mais $I\not\models\varphi_1$.
+\end{myexample}
+
+\begin{mylemma}\label{lem:characterization}
+Soit $\varphi_1$ et $\varphi_2$ deux denial constraints sur $S$.
+Si $\varphi_2(A)\subseteq\varphi_1(A)$ $\forall A\in S$, alors $\varphi_1\models\varphi_2$.
+\end{mylemma}
+\begin{proof}
+Supposons que $\varphi_2(A)\subseteq\varphi_1(A)$ pour tout $A\in S$.
+Soit $I$ une relation sur $S$ tel que $I\models\varphi_1$.
+Nous avons besoin de démontrer que $I\models\varphi_2$.
+Soit $s,t\in I$.
+Puisque $I\models\varphi_1$, nous pouvons supposer l'existence d'un $A\in S$ tel que $s(A)\ \theta\ t(A)$ est faux, avec $\theta=\varphi(A)$. 
+Puisque $\varphi_2(A)\subseteq\varphi_1(A)$,
+alors nous aurons $s(A)\ \theta'\ t(A)$ est faux, avec $\theta'=\varphi_2(A)$.
+\end{proof}
+
+\begin{myexample}
+ $\{(A,=)\}\models\{(A,\leq)\}$. car $\{=\} \subseteq \{<,=\} \equiv \leq$
+\end{myexample}
+
+\subsubsection{Trivialité}
 
 Une DC peut être inutile et toujours vraie. De telles DC ne devraint pas être présentes dans la base de données puisqu'ils ne détecteront jamais aucune violation. Dans ce cas on dira que le DC est \emph{triviale}. 
 \begin{mydef}
@@ -402,58 +442,47 @@ Supposons qu'il existe un prédicat $P=(A,\theta) \in pred (\varphi)$ tel que $\
 Puisque $s(A) \bot t(A)$ est faux pour tout tuples $s,t$ sur $S$, aucune relation ne peut contenu deux tuples $s,t$ tel que $s(A) \bot t(A)$ est vrai.
 \end{proof}
 
-It's quite easy to discover trivial denial constraint with the following property \cite{DCs}:
-
-\begin{myprop}
-\label{trivialprop}
-Soit $\varphi$ une denial constraint sur S. Alors, $\varphi$ est triviale si et seulement $\exists P_i \in pred(\varphi)$ tel que l'opérateur $\theta_i = \bot$ 
-\end{myprop}
-
-
-
 %TODO : trouver un exemple
 
 \subsubsection{Augmentation}
 
-Further in this report, we'll see addition and deletion operations in order to perform data repairing on these constraints. But adding predicates to valid DCs is useless because of the augmentation property \cite{DCs}:
-
+Dans les chapitres suivants, nous verrons la modification de DC afin d'améliorer des denials contraints pour qu'elles puissent détecter les données erronées de manière correcte. Pour ce faire nous aurons besoins de modifié des prédicats et donc de changer les opérateurs de ceux ci. Mais modifié un opérateur $\top$ est inutile par la propriétés suivante:
+5
 \begin{myprop}
-	If $\varphi = \neg (P_1 \wedge P_2 \wedge ... \wedge P_n)$ is a valid DC, then $\varphi ' = \neg(P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q)$ is also a valide DC
+%	If $\varphi = \neg (P_1 \wedge P_2 \wedge ... \wedge P_n)$ is a valid DC, then $\varphi ' = \neg(P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q)$ is also a valide DC
+	Soit une DC $\varphi$ sur S et une relation $I$ tel que $I \models \varphi$. Si il existe un prédicat $P_i = (A_i,\theta_i) \in pred(\varphi)$ tel que $\theta_i = \top$ alors la DC $\varphi'$ tel que $\varphi' = \varphi$ à l'exception du prédicat $P_i' =(A_i,\theta_i)$ et $\theta_i \neq \top$, on a $I \models \varphi'$
 \end{myprop}
 
-%It's quite easy to prove this property. If $\varphi$ is valid it means every $t_\alpha \in R$ is accepted by the constraint. If it's accepted, $\forall t_\alpha$ one of the $P_i \in \varphi$ is false. So whatever $Q$ is, $t_\alpha$ will still be accepted. It's independent of the value of Q. By this way, Q is useless in $\varphi$
 
-This property is quite trivial. Remember that $\varphi$ is a valid DC over $I$ means $I \models \varphi$ so $\forall t \in I$ we have $\neg (P_1 \wedge P_2 \wedge ... \wedge P_n)$ true. Then $\neg (P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q)$ is true too.
+
+Cette propriété est triviale. Souvenons nous que $\varphi$ est un DC tel que $I \models \varphi$ donc $\forall t \in I$ on a $\varphi$ vrai. Imaginons que $\varphi$ contient le prédicat de la forme $(A,\top)$ Prenons $\varphi'$ une DC qui est la variante de $\varphi$ tel que $\varphi =  \varphi'$ à l'exception du prédicat $(A,\top)$ qui devient $(A,\theta)$ avec $ \theta \neq \top$. Puisque $\varphi$ était satisfaite par $I$, il y avait déjà un autre prédicat de $\varphi$ qui était faut $\forall t \in I$. Donc $\varphi'$ est satisfaite pour qu'importe la valeur de $(A,\theta)$.
+
 \subsubsection{Transitivity}
-In \cite{DCs} they defined the transitivity of DCs as:
-
-\begin{myprop}
-	If $\varphi = \neg (P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q_1)$ and $\varphi ' = \neg (R_1 \wedge R_2 \wedge ... \wedge R_n \wedge Q_2)$ are both valid DCs and $Q_2 \in Imp(\overline{Q_1})$, \\ then $ \varphi '' = \neg(P_1 \wedge ... \wedge P_n \wedge R_1 \wedge ... \wedge R_n)$ is also a valid DC.
-\end{myprop}
-
-In other words if two \textbf{valid} DCs, each with one predicate that can't be false in the same time, then merging those DCs and removing the two predicates will produce a \textbf{valid} DC.
-
-It's possible to prove that:
-
-%\begin{proof}
-%	$\forall t_\alpha \in R$, we have $\varphi$ and $\varphi '$ verified.
+%In \cite{DCs} they defined the transitivity of DCs as:
+%
+%\begin{myprop}
+%	If $\varphi = \neg (P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q_1)$ and $\varphi ' = \neg (R_1 \wedge R_2 \wedge ... \wedge R_n \wedge Q_2)$ are both valid DCs and $Q_2 \in Imp(\overline{Q_1})$, \\ then $ \varphi '' = \neg(P_1 \wedge ... \wedge P_n \wedge R_1 \wedge ... \wedge R_n)$ is also a valid DC.
+%\end{myprop}
+%
+%In other words if two \textbf{valid} DCs, each with one predicate that can't be false in the same time, then merging those DCs and removing the two predicates will produce a \textbf{valid} DC.
+%
+%It's possible to prove that:
+%
+%\begin{proof}~\\
+%	\hspace*{0.55cm} $\varphi$ is a valid DC : $\neg (P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q_1)$ is true.
 %	
-%\hspace*{0.5cm}	We have $Q_2 \in Imp(\overline{Q_1})$ so $Q_2$ and $Q_1$ can not be true or false at the same time.
-%	\begin{enumerate}
-%	 \item if $Q_1$ is false, then $Q_2$ is true . Therefore $\exists R_i\ such\ as\ R_i$ is false (because $\varphi$ should be verified). $\varphi ''$ is verified too because $R_i \in \varphi ''$
-%	 \item if $Q_1$ is true, then $Q_2$ is false . Therefore $\exists P_i\ such\ as\ P_i$ is false (because $\varphi$ should be verified). $\varphi ''$ is verified too because $P_i \in \varphi ''$
-%	\end{enumerate}
+%	$\varphi '$ is a valid DC : $\neg (R_1 \wedge R_2 \wedge ... \wedge R_n \wedge Q_2)$ is true.
+%	
+%	$Q_2 \in Imp(\overline{Q_1})$ : $Q_1 \oplus Q_2$ is true%$Q_1 \wedge Q_2$ is false 
+%	
+%	then $\neg (P_1 \wedge ... \wedge P_n) \vee \neg (R_1 \wedge ... \wedge R_n \wedge Q_2) \equiv \varphi'' $ is true \footnote{$\neg p \vee \neg Q \equiv \neg (p \wedge q)$}
 %\end{proof}
 
-\begin{proof}~\\
-	\hspace*{0.55cm} $\varphi$ is a valid DC : $\neg (P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q_1)$ is true.
-	
-	$\varphi '$ is a valid DC : $\neg (R_1 \wedge R_2 \wedge ... \wedge R_n \wedge Q_2)$ is true.
-	
-	$Q_2 \in Imp(\overline{Q_1})$ : $Q_1 \oplus Q_2$ is true%$Q_1 \wedge Q_2$ is false 
-	
-	then $\neg (P_1 \wedge ... \wedge P_n) \vee \neg (R_1 \wedge ... \wedge R_n \wedge Q_2) \equiv \varphi'' $ is true \footnote{$\neg p \vee \neg Q \equiv \neg (p \wedge q)$}
-\end{proof}
+\begin{myprop}
+	Soit $\varphi$ et $\varphi'$ deux DC sur $S$ et $I$ une relation sur $S$. Si $\varphi \{P_1,P_2,...,P_{i-1},P_i\}$ satisfaite par $I$ et $\varphi ' = \{P_i',P_{i+1},...,P_n \}$ satisfaite par $I$, avec $P_j$ prédicat de la forme $(A_j,\theta_j)$ et $\theta_i' \in Imp(\overline{\theta_i})$, alors $\varphi'' = \{P_1,P_2,...,P_{i-1},P_{i+1},...,P_n\}$ est également satisfaite par $I$
+\end{myprop}
+
+En d'autre mots, il est possible de fusionner deux denial constraint satisfaite par $I$ si ces deux contraintes possède chacune un prédicat et ceux-ci ne peuvent pas être faux en même temps. Alors la fusion de ces deux contraintes sans les deux prédicats est toujours satisfaite.
 
 \subsubsection{Refinement}
 \label{RefinementSection}
@@ -479,16 +508,24 @@ As we can see, if you want to change less data, you should refine your DCs with 
 
 \chapter{Data Repairing}
 
-Errors are frequent in database and these anomalies can make applications unreliable. Some methods detect them but don't repair the detected anomalies. But if one simply filters the dirty data you've detected, applications could still be unreliable. \cite{anodetect} Instead of only detecting errors and filter them, it's better to repair the dirty data.\\
+Les erreurs sont fréquentes dans les bases de données et ces anomalies nuisent à la fiabilité de certaines applications les utilisant. Il existe des méthodes dont le but est de détecter ces erreurs mais ces méthodes ne réparent pas les erreurs. A la place, les applications pourront filtrer les données et ignorer les erreurs détectées mais les applications peuvent toujours être non fiable \cite{anodetect}. Au lieu de simplement détecter les erreurs et les filtrer, il est préférable de réparer les données erronées.\\
 
+Dans le chapitre précédent nous avons vu comment détecter des erreurs au moyen de denial constraints. Nous avons aussi discuter brièvement de la sur-simplification ou du sur-raffinement de ces DC. Nous allons maintenant aborder la réparation des données mais aussi la réparation des DC.\\
+
+%\begin{mydef}
+%We define $cell(\varphi)$ as :
+%$$ cell(\varphi) = \{t.A|P : t.A \phi c \in pred(\varphi) \} \cup \{t.A,s.A|P : t.A \phi s.A \in pred(\varphi) \}$$
+%\end{mydef}
+%
+%So $cell(\varphi)$ are all the t.A involved in $\varphi$. We can also define $cell(\Sigma)$ as $\cup_{\varphi \in \Sigma} \; cell(\varphi)$ . If t.A is not in $cell(\Sigma)$, it cannot be a violation of a constraint and therefore don't need to be repair. 
+
+Le but d'une réparation de donnée est de trouver une instance $I'$ qui est une modification d'une instance $I$ de $S$ pour laquelle il y a au moins un tuple $t$ contenant une donnée erronée.
 \begin{mydef}
-We define $cell(\varphi)$ as :
-$$ cell(\varphi) = \{t.A|P : t.A \phi c \in pred(\varphi) \} \cup \{t.A,s.A|P : t.A \phi s.A \in pred(\varphi) \}$$
+	Soit $\Sigma$ un ensemble de DC pour une relation $I$ sur $S$. On dit que $I$ satisfait $\Sigma$ noté $I \models \Sigma$ si pour chaque DC $\varphi$ avec $\varphi \in \Sigma$, nous avons $I \models \varphi$
 \end{mydef}
 
-So $cell(\varphi)$ are all the t.A involved in $\varphi$. We can also define $cell(\Sigma)$ as $\cup_{\varphi \in \Sigma} \; cell(\varphi)$ . If t.A is not in $cell(\Sigma)$, it cannot be a violation of a constraint and therefore don't need to be repair. 
+Donc lorsque l'on parle de réparation de donnée, on cherche à trouver $I'$ tel que $I' \models \Sigma$ c'est à dire une nouvelle instance où toutes les violations dans le set de contrainte $\Sigma$ sont éliminées. La réparation de donnée suit le principe du changement minimum: La nouvelle instance $I'$ doit minimiser le coût de réparation de donnée défini comme étant:
 
-The goal of data repairing is to find a modification $I'$ for an instance $I$ of $R$, in which all of the violations in the constraints set $\Sigma$ are eliminated. In other words, we want $I' \models \Sigma$ ($I'$ satisfy $\Sigma$). Data repairing process follows the minimum change principle: the data repair $I'$ have to minimize the data repair cost define as \cite{main}:
 \begin{mydef}
 If $I'$ is a repair for $I$ instance of $R$ by modifying attribute values without any deletion or insertion tuples, the data repair cost is:
 $$ \Delta(I,I') = \sum_{t \in I, A \in attr(R)} w(t.A).dist(I(t.A),I'(t.A) $$
