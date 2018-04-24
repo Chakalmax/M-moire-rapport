@@ -519,44 +519,70 @@ Dans le chapitre précédent nous avons vu comment détecter des erreurs au moye
 %
 %So $cell(\varphi)$ are all the t.A involved in $\varphi$. We can also define $cell(\Sigma)$ as $\cup_{\varphi \in \Sigma} \; cell(\varphi)$ . If t.A is not in $cell(\Sigma)$, it cannot be a violation of a constraint and therefore don't need to be repair. 
 
-Le but d'une réparation de donnée est de trouver une instance $I'$ qui est une modification d'une instance $I$ de $S$ pour laquelle il y a au moins un tuple $t$ contenant une donnée erronée.
-\begin{mydef}
-	Soit $\Sigma$ un ensemble de DC pour une relation $I$ sur $S$. On dit que $I$ satisfait $\Sigma$ noté $I \models \Sigma$ si pour chaque DC $\varphi$ avec $\varphi \in \Sigma$, nous avons $I \models \varphi$
-\end{mydef}
-
-Donc lorsque l'on parle de réparation de donnée, on cherche à trouver $I'$ tel que $I' \models \Sigma$ c'est à dire une nouvelle instance où toutes les violations dans le set de contrainte $\Sigma$ sont éliminées. La réparation de donnée suit le principe du changement minimum: La nouvelle instance $I'$ doit minimiser le coût de réparation de donnée défini comme étant:
+Le but d'une réparation de donnée est de trouver une instance $I'$ qui est une modification d'une instance $I$ de $S$ pour laquelle il y a au moins un tuple $t$ contenant une donnée erronée.\\
 
 \begin{mydef}
-If $I'$ is a repair for $I$ instance of $R$ by modifying attribute values without any deletion or insertion tuples, the data repair cost is:
-$$ \Delta(I,I') = \sum_{t \in I, A \in attr(R)} w(t.A).dist(I(t.A),I'(t.A) $$
-where :
-\begin{itemize}
-	\item $dist(I(t.A),I'(t.A))$ is the distance between two values on $t.A$ in $I$ and $I'$.
-	\item $w(t.A)$ is the weight of cell $t.A$.
-\end{itemize}
+	Soit $\Sigma$ un ensemble de DC sur $S$. Soit une relation $I$ sur $S$. On dit que $I$ \emph{satisfait} $\Sigma$ noté $I \models \Sigma$ si pour chaque DC $\varphi$ avec $\varphi \in \Sigma$, nous avons $I \models \varphi$
 \end{mydef}
 
-We can see that the cost can be the number of values in $cell(\varphi)$ we changed if we put:
+\begin{mydef}
+	Soit $\Sigma$ un ensemble de DC sur $S$. Soit une relation $I$ sur $S$. Une \emph{réparation de $I$} est une fonction $f$ de domaine $I$ qui attribue à chaque tuple $t$ de $I$ un nouveau tuple $f(t)$ tel que $f(t) \models \Sigma$. L'ensemble d'arrivée de $f$ est noté $I'=f(I)$. On a donc $I' \models \Sigma$
+\end{mydef}
+
+Donc lorsque l'on parle de réparation de donnée, on cherche à trouver $I'$ tel que $I' \models \Sigma$ c'est à dire une nouvelle instance où toutes les violations dans le set de contrainte $\Sigma$ sont éliminées. Nous allons considérer que lors d'une réparation, nous ne supprimons pas de tuples mais nous pouvons que le modifier. Nous n'ajoutons pas de tuples à la relation non plus. Cela peut conduire à avoir deux tuples avec les mêmes valeurs une fois la réparation effectuée.\\
+
+Il est important de noté que si on a un tuple $t \in I$ tel que $I \models \Sigma$ alors il n'est pas nécessaire de le modifié et donc nous avons la propriété suivante:
+
+\begin{myprop}
+	Soit $\Sigma$ un ensemble de DC sur $S$. Soit une relation $I$ sur $S$ et $f(I) = I'$ une réparation de $I$. Si on a un tuple $t \in I$ tel que $t \models \Sigma$ alors nous avons $f(t) = t$. Sinon $f(t) \neq t$.
+\end{myprop}
+
+
+
+%Lors d'une réparation de donnée, un tuple $t \in I$ ne respectant pas une ensemble de DC $\Sigma$ devra être une modifié en un tuple $t'$ tel que $t' \models \Sigma$. Il faudra pouvoir aisément le lien entre un tuple de la relation $I$ et sa réparation dans $I$. C'est pourquoi à chaque tuple sera associé un identifiant de tuple $i$ avec $ i \in \{1,2,...,|I|\}$. Un tuple $t$ dont l'identifiant est $i$ sera désormais dénoté $t_i$ et sa réparation sera $t_i'$.\\
+
+La réparation de donnée suit le principe du changement minimum: La nouvelle instance $I'$ doit minimiser le coût de réparation de donnée défini comme étant:
+
+\begin{mydef}
+ Soit $I$ une relation sur $S$ et $f(I)$ une réparation de $I$, alors le coût de réparation est le suivant:
+ $$ \Delta(I,I') = \sum_{t \in I, A \in S} w(t.A).dist(t.A,f(t).A) $$
+ où:
+ \begin{itemize}
+ 	\item $dist(t.A,f(t).A)$ est la distance entre la valeur $t.A$ et sa réparation $f(t.A)$.
+ 	\item $w(t.A)$ est un poid sur l'attribut $A$.
+ \end{itemize}
+\end{mydef}
+
+Dans le coût nous avons un poid $w(t.A)$ pour un attribut $A \in S$ et un tuple $t \in I$. Ce poid correspond à la confiance que l'on a en la valeur de $t$ pour l'attribut $A$. On peut grâce à cette valeur influencer la réparation de données pour privilégier la réparation d'une valeur plutôt qu'une autre. Pour pouvoir assigner une valeur à $w(t.A)$, il faut avoir une bonne connaissance du contexte de la base de donnée d'origine.Il est courant d'avoir la même valeur pour $w(t.A)$ et $w(s.A)$ avec $s,t \in I$ car en général on a connaissance de la confiance pour un attribut en particulier par chaque valeur du tuple. Par exemple pour la table \ref{tablePerson}, nous pouvons supposer qu'une valeur pour l'attribut \emph{Enfant} est plus susceptible d'être précise que la valeur pour l'attribut \emph{Salaire} ou \emph{Taxe}. Lorsqu'on manque de connaissance sur la base de donnée, on fixe le même poid à chaque attribut.\\
+
+Le coût de réparation peut être le nombre de valeur de $I$ que l'on a changé si nous décidons que:
 $$
-dist(I(t.A),I'(t.A)) =
+dist(t.A,f(t).A) =
 \left\{
 	\begin{array}{ll}
-	  1 \; if I(t.A) \neq I'(t.A)\;(the\ value\ changed) \\
-	  0 \; otherwhise\;(no\ changes\ were\ made)
+	  1 \; Si t.A \neq f(t).A \;(La\ valeur\ a\ chang\'e) \\
+	  0 \; Sinon\;(aucun\ changement\ n'est\ fait)
 	\end{array}
 \right.
 $$
-We can put the distance for numerical values on the difference of the two values. For string values we can use the edit distance.\\
+Nous pouvons aussi décider que la distance est égale à la différence entre les deux valeurs dans le cas d'un attribut numérique. Pour un attribut de type chaine de caractère nous pouvons utiliser la distance d'édition \footnote{Le nombre minimum d'opération nécessaire pour transformer la chaine de caractère initiale en la chaine de caractère cible}\\.
 
-The weight $w(t.A)$ can show the trust of the original value in cell which is subjective or simply be a constant if we don't have a lot of knowledge about the data. For example in the table \ref{tablePerson}, we can expect a child attribute value to be more accurate than a Salary or Tax attribute value.\\
+Pour réparer une donnée, nous devons remplacer sa valeur par une autre plus adéquate. Mais quel valeur choisir? Dans l'article de référence principal \cite{main}, si la valeur $t.A$ est erronée, il essaye de trouver une valeur pour $f(t).A$ qui soit dans le $\dom (A)$ et qui respectent les contraintes. Si ce n'est pas possible ils attribuent une \emph{variable fraiche $fv$} à $t.A$. \\
 
-It is important to notice it is possible we are not able to find any repair $I'$ that can eliminates all the violations. Sometimes there is no value in $dom(A)$ that can fit the constraint. In that case, we use a $fresh variable$ outside the $dom(A)$ in order to extend the domain. A fresh variable is a value that does not satisfy any predicate (all predicates are false), we are sure that we can satisfy the DC. (it's satisfy if at least one of the predicates is false). Each time we are not able to find a value in the $dom(A)$  to repair a cell, we put a new fresh variable $fv$\\
+\begin{mydef}
+Une \emph{variable fraiche}$fv$ est une valeur qui ne satisfait aucun prédicat c'est à dire : soit $\varphi$ une DC sur $S$ et $I$ une relation sur $S$. Une variable fraiche $fv$ pour $A \in S$ est une valeur tel que $fv \not\in \dom(A)$ le prédicat $(A,\theta_A) \in pred(\varphi)$ est toujours faux quelque soit l'opérateur $\theta_A$ donc pour tout tuple $t$ avec $t \in I$, si $t.A = fv$ alors $t \models \varphi$.
+\end{mydef}
 
-Let us take an example on the table \ref{tableMain}. Let's say our Denial Constraint is the following one:
+Nous allons procéder de manière un peu différente par rapport à l'article de référence \cite{main}. Nous allons automatiquement attribué une nouvelle valeur $fv$ pour chaque donnée erronée. Par la suite, nous allons essayer de trouver une valeur adéquate pour remplacer la valeur fraiche $fv$ si possible. Une des motivations derrière ce changement vient du fait qu'après une réparation, certaines valeur du domaine n'y figure plus (ces valeurs étaient erronées). De plus il n'est pas pertinent de croire que si une valeur du domaine peut réparé une valeur erronée, alors elle est forcément la bonne valeur. Une valeur en dehors du domaine peut tout aussi bien convenir.\\
 
-$$ \varphi : t_\alpha,t_\beta \in R, \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.Tax \leq t_\beta.Tax)$$
+Notons toutefois que la variable fraiche $fv_{t.A}$ et la valeur fraiche $fv_{s.A}$ peuvent être différente ou identique et ce pour tout tuple $s,t \in I$. Par défaut nous considérons que toutes les variables fraiches sont différentes.\\
 
-In other words, we supposed that if someone get a higher income than another person then he should paid an higher tax every year. We have $ \langle t_2,t_1 \rangle \not\models \varphi $ because $t_1$.Income < $t2.$Income and $t2$.Tax$\ \leq\ t1$.Tax. Same problem with $ \langle t_3,t_1 \rangle$, $ \langle t_5,t_1 \rangle$, ect... one can find all the violation in the figure \ref{BadTax} A repair $I'$ could be the following one:
+Prenons un exemple avec comme relation $I$ la table \ref{tableMain}. Supposons que notre denial constraint est la suivante:
+
+$$ \varphi = \{(Revenu,>),(Taxe,\leq)\}$$
+
+En d'autre terme, on suppose par cette contrainte que si une personne perçoit un revenu annuel plus élevé qu'une seconde personne, alors cette première personne doit payer un montant plus élevé de taxe par an. Nous avons $(t_2,t_1) \not\models \varphi$ parce que $t_2.Revenu\ >\ t_1.Revenu$ et $t_2.Taxe\ \leq\ t_1.Taxe$. Nous avons également $(t_3,t_1) \not\models \varphi,(t_5,t_1) \not\models \varphi,...$. Toutes les violations de $\varphi$ peuvent être trouvé à la figure \ref{BadTax}. Une réparation $I'$ de $I$ pourrait être le suivant:
+
 
 \begin{table}[H]
 	\centering
@@ -564,48 +590,58 @@ In other words, we supposed that if someone get a higher income than another per
 	\hline
 	   & $t_1$ & $t_2$ & $t_3$ &$t_4$ &$t_5$ &$t_6$ &$t_7$ &$t_18$ &$t_9$ &$t_10$ \\
 	\hline
-	 Tax & 0 & \color{red} $fv_1$ & \color{red} $fv_2$& 3k & \color{orange}$fv_3$& \color{orange} $fv_4$& \color{orange} $fv_5$& 21k & 21k & 40k\\
+	 Taxe & 0 & \color{red} $fv_1$ & \color{red} $fv_2$& 3k & \color{orange}$fv_3$& \color{orange} $fv_4$& \color{orange} $fv_5$& 21k & 21k & 40k\\
 	 \hline
 	\end{tabular}
-	\caption{\label{tableExample} Example of repair $I'$ with Tax for $\varphi$}.
+	\caption{\label{tableExample} Exemple de réparation $I'$ pour l'attribut} 
+	Tax for $\varphi$.
 \end{table}
 
 
 \begin{figure}
 	\centering
 	\includegraphics[scale=1]{img/TaxBad}
-	\caption{\label{BadTax} All the violation for $\varphi$}
+	\caption{\label{BadTax} Toutes les violations pour $\varphi$}
 \end{figure}
 
-The reason we put $fv_1$ as Tax value for $t_2$ is because we knew the following things:
+Nous avons mit $fv_1$ comme variable fraiche pour $t_2$. Bien que ce soit une variable fraiche, nous savons plusieurs chose à propos d'elle. En effet nous savons les choses suivantes:
 \begin{enumerate}
 
-\item $I(t_1.Tax)=0$ so $I'(t_2.Tax)>0$ because $I(t_1.Income)<I(t_2.Income)$
-\item $I(t_3.Tax)=3$ so $I'(t_2.Tax)<3$ because $I(t_2.Income)<I(t_3.Income)$
-\item $dom(Tax) = \{0,3k,21k,40k\}$
+\item $I(t_1.Tax)=0$ donc $I'(t_2.Tax)>0$ car $I(t_1.Income)<I(t_2.Income)$
+\item $I(t_4.Tax)=3$ donc $I'(t_2.Tax)<3$ car $I(t_2.Income)<I(t_4.Income)$
 
 \end{enumerate}
-Because we had no values in the $dom(Tax)$ that would respect 1 and 2, we need to use a fresh variable $fv_1$ out of the $dom(Tax)$. The same  logic can be used to understand why we had to use $fv_2$ to $fv_5$. We could put random value instead but it could be a problem if we insert correct value in the future (These correct values could be see as dirty one).
-We only know that 0< $fv_1$,$fv_2$ <3k in order to respect 1 and 2. In the same idea, we have 3k < $fv_3$,$fv_4$,$fv_5$ < 21k.
 
-We can compute the repair cost for $Tax$ in this table. Let's say that:\\
+Nous avons assigner une variable fraiche $fv_1$ comme valeur pour $t_2.Tax$ mais nous savons quand même que $0<fv_1<3k$ i.e $fv_1 \in ]0,3k[$ grâce à 1 et 2. Nous pouvons utiliser la même logique pour connaitre les valeurs possible pour pouvoir dire que $fv_2 = fv_1$,$3k<fv_3<21k$,$fv_4 = fv_3$ et $fv_3<fv_5<21k$. Maintenant que nous avons identifié les valeurs erronées et identifié un ensemble de valeur pour remplacer les variables fraiches, il reste à savoir quel valeur finale on peut prendre. Pour cela nous avons plusieurs solution possible.\\
+\begin{itemize}
+	\item Prendre une valeur de $\dom(A)$. C'est la solution envisagée dans le principal article de référence que nous utilisons. Il ne sera pas toujours possible de prendre une valeur dans le domaine, par exemple il n'y a pas de valeur dans le $dom(Taxe)= \{0,3k,21k,40k\}$ qui puisse satisfaire la condition $fv_1$. Cette pratique n'est pas la plus logique puisque même si nous avions une valeur dans $\dom(Taxe)$ qui puisse satisfaire $fv_1$, il y a plusieurs valeurs en dehors de $\dom(Taxe)$ qui sont tout aussi correcte.
+	\item Prendre une valeur aléatoire mais respectant les conditions sur la variable fraiche. C'est une très mauvaise idée puisque nous avons une chance de s'éloigner de la vraie valeur. Cela peut impacter énormément l'ajout de tuple dans la relation après que la réparation soit effectuée. Ces nouveaux tuples malgré qui soient correcte pourraient être perçu comme contenant des donnée erronées.
+	\item Garder les variables fraiches dans la base de données tout en conservant les informations que l'on connait à propos de celles-ci. Si nous n'avons qu'une seule valeur possible alors nous privilégions cette valeur à $fv$. Cette solution est celle qui respectera le mieux l'intégrité des données. Le seul problème qu'apporte cette solution est que de nombreuses applications ne pourront plus fonctionner avec de telles variables. Les informations que l'on connait sur elles peuvent changer au fur et à mesure que la relation se remplit.
+\end{itemize}
+
+Nous pouvons calculer coût de réparation pour la relation de la table \ref{tableMain} en considérant les distances suivantes:\\
 
 $$
-\forall a,b \in dom(A) \ with \ a \neq b.
+\forall a \in dom(A) \ avec \ a \neq b.
 \left\{
 	\begin{array}{ll}
 	   dist(a,a)=0\\
 	   dist(a,b)=1\\
 	   dist(a,fv)=1.5\\
+	   dist(fv,fv)=1.5\\
+	   dist(fv,b)=1\\
 	\end{array}
 \right.
 $$
 
-When we don't change anything, the distance is obviously equal to zero. $dist(a,fv)$ have to be higher than $dist(a,b)$ otherwise the cost for a non-domain value will be lower than a domain value and we want to avoid fresh variable as much as possible \footnote{it's always better to work with values in dom(A) when it's possible}. If we had $dist(a,fv)$ lower than $dist(a,b)$, any repair that uses fresh variable outside the domain would be better and of course it's not a good behavior. In our example, with the value said just before, we can compute a $\Delta(I,I')$ = 7.5
+Lorsqu'on ne change pas la valeur, la distance est bien évidement égale à zéro. $dist(a,fv)$ soit être supérieure à $dist(a,b)$ pour privilégier les valeurs aux variables fraiches. $dist(fv,fv)$ représente le fait qu'on avait déjà une variable fraiche venant d'une réparation antérieure, et qu'on garde une variable fraiche. $dist(fv,b)$ représente le changement d'une variable fraiche venant d'une réparation antérieure et on change la change par une valeur fixe. Cela peut arriver lorsque l'on possède de plus amples informations sur la valeur fraiche, grâce à de nouveaux tuples dans la relation. Nous avons besoin que $dist(fv,fv) > dist(fv,b)$ pour favoriser la correction par une vraie valeur quand c'est possible. Dans l'exemple précédent, avec les valeurs susmentionné, nous pouvons calculer un coût de réparation $\Delta(I,I')$ = 7,5.
 
-\section{Integrity constraints variations}
 
-We saw earlier that a constraint can be overrefined failing to detect some error or in the opposite a constraint can be oversimplified leading to consider some good data as an error. Because constraints can be inaccurate we need to modify them. We'll consider two types of constraint variance: predicate deletion and in the opposite predicate insertion.\\
+\section{Variation sur les denial constraints}
+
+Nous avons vu précédemment qu'une denial constraint peut être sur-raffiné, échouant donc dans la détection d'erreurs. Une DC peut aussi être sur-simplifiée ce qui conduit à considérer des données correctes comme étant erronées. Parce que ces contraintes peuvent être imprécise et inexacte, nous avons besoin de les modifier.
+
+Lorsque nous modifions une DC, il faut faire attention à ne pas la rendre triviale. Nous avons vu dans le chapitre précédent que ce genre de contrainte étaient car elles ne considéraient aucun tuple comme étant une violation. Considérons le treillis suivant pour un attribut $A$ de $S$.
 
 When we perform a predicate insertion, some tuples no longer violate the DC. With this variation we can repair a oversimplified constraint but we need to be careful otherwise the DC can be useless. We need to avoid insertion which can lead to a trivial DC or insertion of predicates with obvious constants(like $t_\alpha.Salary$<0 in the table \ref{tablePerson}). \\
 
