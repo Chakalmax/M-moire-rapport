@@ -428,7 +428,7 @@ Une DC peut être inutile et toujours vraie. De telles DC ne devraint pas être 
 	Une DC $\varphi$ est dite \emph{triviale} si $\forall I$ sur S, on a $I \models \varphi$
 \end{mydef}
 
-\begin{mylemma}
+\begin{mylemma} \label{trivialLemma}
 Soit $\varphi$ une denial constraint sur $S$. alors $\varphi$ est triviale si et seulement si $\varphi(A) = \bot$ pour un prédicat $P=(A,\theta) \in pred(\varphi)$.
 \end{mylemma}
 \begin{proof}
@@ -639,10 +639,19 @@ Lorsqu'on ne change pas la valeur, la distance est bien évidement égale à zé
 
 \section{Variation sur les denial constraints}
 
-Nous avons vu précédemment qu'une denial constraint peut être sur-raffiné, échouant donc dans la détection d'erreurs. Une DC peut aussi être sur-simplifiée ce qui conduit à considérer des données correctes comme étant erronées. Parce que ces contraintes peuvent être imprécise et inexacte, nous avons besoin de les modifier.
+Nous avons vu précédemment qu'une denial constraint peut être sur-raffiné, échouant donc dans la détection d'erreurs. Une DC peut aussi être sur-simplifiée ce qui conduit à considérer des données correctes comme étant erronées. Parce que ces contraintes peuvent être imprécise et inexacte, nous avons besoin de les modifier.\\
 
-Lorsque nous modifions une DC, il faut faire attention à ne pas la rendre triviale. Nous avons vu dans le chapitre précédent que ce genre de contrainte étaient car elles ne considéraient aucun tuple comme étant une violation. Considérons le treillis suivant pour un attribut $A$ de $S$.
+Lorsque nous modifions une DC, il faut faire attention à ne pas la rendre triviale. Nous avons vu dans le chapitre précédent que ce genre de contrainte étaient car elles ne considéraient aucun tuple comme étant une violation. Considérons le treillis tel qu'illustrer à la figure \ref{treillis} pour un attribut $A$ de $S$. Chaque nœud du treillis représente un prédicat différent pour $A$, donc $A$ associé à un opérateur, un des éléments du powerset de $OP$. Descendre dans une branche du treillis consiste à ajouter un élément de $OP$ à l'opérateur. Par exemple passer de $(A,<)$ à $(A,\leq)$ consiste à ajouter l'opérateur $=$ à $<$. Lorsque l'on monte dans le treillis, on retire un élément de $OP$ à l'opérateur. Par exemple, passer de $(A, \geq)$ à $(A,=)$ consiste à retirer l'opérateur $>$ à $\geq$.\\
 
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.5]{img/treillis}
+	\caption{\label{treillis} Treillis pour un prédicat d'attribut $A$}
+\end{figure}
+
+Dans notre treillis nous avons 8 nœuds. Pour une DC sur un ensemble $S$ de taille 1, nous avons 8 variantes de DC différentes. Pour un $S$ de taille $n$ nous avons $8^n$ variations. Ce nombre est très important et envisager toutes les variations de contraintes serait coûteux en terme de complexité. Nous avons besoin de limiter le nombre de variations à considérer. Pour ce faire, nous allons utiliser des propriétés sur les DC pour limiter le nombre de contraintes à considérer.\\
+
+Nous savons déjà par le chapitre précédent que les contraintes triviales sont inutiles. En effet, une contrainte triviale sera toujours vraie et donc considérera tous les tuples comme étant correct. Le Lemme \ref{trivialLemma} nous permet de rejeter toutes les DC dont au moins un des prédicats est de la forme $(A,\bot)$.
 When we perform a predicate insertion, some tuples no longer violate the DC. With this variation we can repair a oversimplified constraint but we need to be careful otherwise the DC can be useless. We need to avoid insertion which can lead to a trivial DC or insertion of predicates with obvious constants(like $t_\alpha.Salary$<0 in the table \ref{tablePerson}). \\
 
 An example of trivial DC is a DC $\varphi$ with a predicate $P_i$ : $x \phi_i y$ and we had another predicate $P_j$ : $x \phi_j y$ in the DC with $\overline{\phi_j} \in Imp(\phi_i)$. \\
