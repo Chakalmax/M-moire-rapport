@@ -484,27 +484,25 @@ Cette propriété est triviale. Souvenons nous que $\varphi$ est un DC tel que $
 
 En d'autre mots, il est possible de fusionner deux denial constraint satisfaite par $I$ si ces deux contraintes possède chacune un prédicat et ceux-ci ne peuvent pas être faux en même temps. Alors la fusion de ces deux contraintes sans les deux prédicats est toujours satisfaite.
 
-\subsubsection{Refinement}
-\label{RefinementSection}
-In \cite{main} they define the refinement of a DC as :
+\subsubsection{Raffinement}
+\label{RaffinementSection}
+Dans l'article \cite{main} ils définissent le raffinement d'une denial constraint comme étant:
 
 \begin{mydef}
 % $\varphi_2$ is a \textbf{refinement} of $\varphi_1$, denoted by $\varphi_1 \preceq \varphi_2$, if for each $ P$ : $x\phi_1 y \in pred(\varphi_1)$, there exists a $Q : x \phi_2 y \in pred(\varphi_2)$ such that $\phi_1 \in Imp(\phi_2)$
- $\varphi_2$ is a \textbf{refinement} of $\varphi_1$, denoted by $\varphi_1 \preceq \varphi_2$, if for each $P_i \in pred(\varphi)$ there exists $Q_j$ such that $P_i$ is implied by $Q_j$. 
+ $\varphi_2$ est un \textbf{raffinement} de $\varphi_1$, noté $\varphi_1 \preceq \varphi_2$, Si pour chaque prédicat $(A,\theta_A) \in pred(\varphi_1)$ on a un prédicat $(A,\theta_A') \in pred(\varphi_2)$ tel que $\theta_A'$ implique $\theta_A$ ($\theta_A' \in Imp(\theta_A)$) 
 \end{mydef}
 
 \begin{myexample}
-	Let $\varphi : \neg(s.Tax \leq t.Tax \wedge s.Income > 25k)$ and $\varphi ' : \neg(s.Tax < t.Tax \wedge s.Income > 25k \wedge s.Year = t.Year)$ we have $\varphi \preceq \varphi'$ because $s.Tax \leq t.Tax$ implies $s.Tax < t.Tax$ and $s.Income > 25k$ implies $s.Income > 25k$
+	Soit $\varphi_1 = \{(Taxe,\leq),(Revenu,<) \}$ et $\varphi_2 = \{(Taxe,<),(Revenu,<),(Ann\'ee,=) \}$ nous avons $\varphi_2 \preceq \varphi_1$ car $\varphi_1(Taxe) \in Imp(\varphi_2(Taxe))$ et $\varphi_1(Revenu) \in Imp(\varphi_2(Revenu))$ et $\varphi_1(Ann\'ee) \in Imp(\varphi_2(Ann\'ee))$
 \end{myexample}
 
-As we can see, if we insert an additional predicates in a DC $\varphi$ , the variant $\varphi '$ is a refinement of $\varphi$
+Notons que $\varphi$ est raffinement de lui même et que remplacer l'opérateur $\top$ d'un prédicat par n'importe quel autre
 \begin{mydef}
- $\Sigma_2$ is a \textbf{refinement} of $\Sigma_1$, denoted by $\Sigma_1 \preceq \Sigma_2$, if for each $ \varphi_2 \in \Sigma_2$, there exists a $\varphi_2 \in \Sigma_1$ such that $\varphi_1 \preceq \varphi_2$
+ $\Sigma_2$ est \textbf{raffinement} de $\Sigma_1$, noté $\Sigma_1 \preceq \Sigma_2$, si pour chaque $ \varphi_2 \in \Sigma_2$, Il existe un $\varphi_2 \in \Sigma_1$ tel que $\varphi_1 \preceq \varphi_2$
 \end{mydef}
 
-As we can see, if you want to change less data, you should refine your DCs with insertion or substitution. For example if our DC is $t_\alpha.Tax \leq t_\beta.Tax$ and we change it to $t_\alpha.Tax < t_\beta.Tax$ you'll change less data.
-
-\subsection{Différence par rapport à l'article de base}
+Si nous voulons changer moins de données, nous pouvons raffiner nos DC. Dans notre exemple précédent, la nouvelle denial constraint est plus faible que la précédente, diminuant le nombre de tuples détecté comme étant une violation.
 
 \chapter{Data Repairing}
 
@@ -577,6 +575,7 @@ Nous allons procéder de manière un peu différente par rapport à l'article de
 
 Notons toutefois que la variable fraiche $fv_{t.A}$ et la valeur fraiche $fv_{s.A}$ peuvent être différente ou identique et ce pour tout tuple $s,t \in I$. Par défaut nous considérons que toutes les variables fraiches sont différentes.\\
 
+\begin{myexample}
 Prenons un exemple avec comme relation $I$ la table \ref{tableMain}. Supposons que notre denial constraint est la suivante:
 
 $$ \varphi = \{(Revenu,>),(Taxe,\leq)\}$$
@@ -635,56 +634,22 @@ $$
 $$
 
 Lorsqu'on ne change pas la valeur, la distance est bien évidement égale à zéro. $dist(a,fv)$ soit être supérieure à $dist(a,b)$ pour privilégier les valeurs aux variables fraiches. $dist(fv,fv)$ représente le fait qu'on avait déjà une variable fraiche venant d'une réparation antérieure, et qu'on garde une variable fraiche. $dist(fv,b)$ représente le changement d'une variable fraiche venant d'une réparation antérieure et on change la change par une valeur fixe. Cela peut arriver lorsque l'on possède de plus amples informations sur la valeur fraiche, grâce à de nouveaux tuples dans la relation. Nous avons besoin que $dist(fv,fv) > dist(fv,b)$ pour favoriser la correction par une vraie valeur quand c'est possible. Dans l'exemple précédent, avec les valeurs susmentionné, nous pouvons calculer un coût de réparation $\Delta(I,I')$ = 7,5.
-
+\end {myexample}
 
 \section{Variation sur les denial constraints}
 
-Nous avons vu précédemment qu'une denial constraint peut être sur-raffiné, échouant donc dans la détection d'erreurs. Une DC peut aussi être sur-simplifiée ce qui conduit à considérer des données correctes comme étant erronées. Parce que ces contraintes peuvent être imprécise et inexacte, nous avons besoin de les modifier.\\
+Nous avons vu précédemment qu'une denial constraint peut être sur-raffiné, échouant donc dans la détection d'erreurs. Une DC peut aussi être sur-simplifiée ce qui conduit à considérer des données correctes comme étant erronées. Parce que ces contraintes peuvent être imprécise et inexacte, nous avons besoin de les modifier. En modifiant ces contraintes nous pouvons obtenir une meilleure réparation\\
 
-Lorsque nous modifions une DC, il faut faire attention à ne pas la rendre triviale. Nous avons vu dans le chapitre précédent que ce genre de contrainte étaient car elles ne considéraient aucun tuple comme étant une violation. Considérons le treillis tel qu'illustrer à la figure \ref{treillis} pour un attribut $A$ de $S$. Chaque nœud du treillis représente un prédicat différent pour $A$, donc $A$ associé à un opérateur, un des éléments du powerset de $OP$. Descendre dans une branche du treillis consiste à ajouter un élément de $OP$ à l'opérateur. Par exemple passer de $(A,<)$ à $(A,\leq)$ consiste à ajouter l'opérateur $=$ à $<$. Lorsque l'on monte dans le treillis, on retire un élément de $OP$ à l'opérateur. Par exemple, passer de $(A, \geq)$ à $(A,=)$ consiste à retirer l'opérateur $>$ à $\geq$.\\
+\begin{myexample}
+Par exemple prenons la DC suivante:
 
-\begin{figure}
-	\centering
-	\includegraphics[scale=0.5]{img/treillis}
-	\caption{\label{treillis} Treillis pour un prédicat d'attribut $A$}
-\end{figure}
+$$ \varphi = \{(Revenu,>),(Taxe,\leq) \} $$
 
-Dans notre treillis nous avons 8 nœuds. Pour une DC sur un ensemble $S$ de taille 1, nous avons 8 variantes de DC différentes. Pour un $S$ de taille $n$ nous avons $8^n$ variations. Ce nombre est très important et envisager toutes les variations de contraintes serait coûteux en terme de complexité. Nous avons besoin de limiter le nombre de variations à considérer. Pour ce faire, nous allons utiliser des propriétés sur les DC pour limiter le nombre de contraintes à considérer.\\
+La denial constraint $\varphi$ exprime le fait que si je reçoit un revenu plus élevé qu'une autre personne, alors je dois payer un montant de taxe strictement plus élevé. Nous allons modifier $\varphi$ pour obtenir une nouvelle denial constraint $\varphi'$ en changeant le prédicat $(Taxe,\leq)$ en $(Taxe,<)$. Dès lors maintenant $\varphi'$ exprime le fait que si je reçoit un revenu plus élevé qu'une autre personne, alors je dois payer un montant de taxe plus élevé ou équivalent. Cela permet d'exempté de taxe plusieurs personnes ayant un Revenu faible, mais différent les uns des autres. 
 
-Nous savons déjà par le chapitre précédent que les contraintes triviales sont inutiles. En effet, une contrainte triviale sera toujours vraie et donc considérera tous les tuples comme étant correct. Le Lemme \ref{trivialLemma} nous permet de rejeter toutes les DC dont au moins un des prédicats est de la forme $(A,\bot)$.
-When we perform a predicate insertion, some tuples no longer violate the DC. With this variation we can repair a oversimplified constraint but we need to be careful otherwise the DC can be useless. We need to avoid insertion which can lead to a trivial DC or insertion of predicates with obvious constants(like $t_\alpha.Salary$<0 in the table \ref{tablePerson}). \\
+$$ \varphi' = \{(Revenu,>),(Taxe,<) \} $$
 
-An example of trivial DC is a DC $\varphi$ with a predicate $P_i$ : $x \phi_i y$ and we had another predicate $P_j$ : $x \phi_j y$ in the DC with $\overline{\phi_j} \in Imp(\phi_i)$. \\
-
-For overrefined DCs, we need to remove some predicates but we need to be careful. If too many predicates are withdraw, we can get an new oversimplified DCs. The more the predicates are deleted, the higher the data repair cost will be as stated in the Lemma1 in \cite{main}. In the other hand the more the predicates are added, the lower the data repair will be. So if you add more predicates than you remove, there will be less data to change. In the opposite, if you remove more predicates than you add, there will be more data to change. The \emph{data repair cost function} take this effect into consideration. It count positively predicate insertion and negatively predicate addition. For $\Sigma '$ a variant of $\Sigma$ in which all $\varphi ' \in \Sigma '$ are obtained by insertion or deletion of predicates for corresponding $\varphi \in \Sigma$, in \cite{main} they define the constraint variation cost:
-
-\begin{mydef}
-For a variant $\Sigma '$ of $\Sigma$, the contraint variation cost is defined as
-
-$$\Theta (\Sigma,\Sigma ') = \sum_{\varphi in \Sigma} edit(\varphi,\varphi ')$$
-
-\hspace*{2cm} where $\varphi '$ is a variant of $\varphi$ and $edit(\varphi,\varphi ')$ is the corresponding cost.
-\end{mydef}
-
-the $edit(\varphi , \varphi ')$ indicates the cost of changing $\varphi$ to $\varphi'$ is defined as:
-\begin{mydef}
-$$
- edit(\varphi, \varphi') = \sum_{P \in \varphi \setminus \varphi'} c(P) + \lambda \sum_{P \in \varphi' \setminus \varphi} c(P)$$
- 
-where $c(P)$ denote the weighted cost of predicate P and $\lambda$ is the weight of a deletion compare to an addition and -1<$\lambda$<0.
-\end{mydef}
-
-We don't have to use $\lambda$ =-1 otherwise a deletion followed by an addition would have a cost equal to 0(and it's a bad idea for predicate substitution). For example if we have:
-
-$$ \varphi : t_\alpha,t_\beta \in R, \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.Tax \leq t_\beta.Tax)$$
-
-This DC express the fact that if I get a higher income than someone else, i should pay a higher tax rate. We'll change this DC by deleting $t_\alpha.Tax \leq t_\beta.Tax$ and add $t_\alpha.Tax < t_\beta.Tax$. It can express the fact that someone with a very low Income could get a Tax equals to 0.
-
-$$ \varphi ' : t_\alpha,t_\beta \in R, \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.Tax < t_\beta.Tax)$$
-
-The constraint variation with $\lambda$ = $\frac{1}{2}$ and $c(P)$ = 0 is : $edit(\varphi, \varphi') = c(t_\alpha.Tax < t_\beta.Tax) + \frac{1}{2} c(\alpha.Tax \leq t_\beta.Tax)$ = $\frac{1}{2}$. \\
-
-With this new constraint, we got less violations. All the violations can be found the figure \ref{GoodTax}. The modifications we made in table \ref{tableExample} are:
+Avec cette nouvelle contrainte, nous avons moins de violations détectée. Toutes les violations peuvent être trouvées à la figure $\ref{GoodTax}$. Les modifications que nous avons faites dans la table \ref{tableExample} sont:
 
 \begin{table}[H]
 	\centering
@@ -692,7 +657,7 @@ With this new constraint, we got less violations. All the violations can be foun
 	\hline
 	   & $t_1$ & $t_2$ & $t_3$ &$t_4$ &$t_5$ &$t_6$ &$t_7$ &$t_18$ &$t_9$ &$t_10$ \\
 	\hline
-	 Tax & 0 & 0 & 0 & \textcolor{red}{0} & 0 & 0 & 0 & 21k & 21k & 40k\\
+	 Taxe & 0 & 0 & 0 & \textcolor{red}{$fv_1$} & 0 & 0 & 0 & 21k & 21k & 40k\\
 	 \hline
 	\end{tabular}
 	\caption{\label{tableExample2} Example of repair with Tax}.
@@ -705,37 +670,95 @@ With this new constraint, we got less violations. All the violations can be foun
 	\caption{\label{GoodTax} All the violation for $\varphi '$}
 \end{figure}
 
-Indeed, a repair for a column with one correction is better than the previous repair with 5 fresh variables (see table \ref{tableExample}) as a correction. On our new DC, only the ($t_4.Tax$)=3k have to be changed with the value 0. Further in this thesis, we'll see how we can reach these repairs.
+Contrairement à la réparation de $\varphi$ qui proposait une correction avec 5 variables fraiches (voir table \ref{tableExample}), nous avons ici qu'une seule variable fraiche. De plus nous savons certaines choses à propos de cette variable fraiche:
 
-When we do constraint modification, we should not consider the case where we delete an entire constraint.  We should not remove all the predicates because a DC like $\neg()$ doesn't mean anything. We can't even say if it's always true or always false.
+\begin{enumerate}
 
-\subsection{Maximal Constraint Variants}
+\item $t_1.Tax=0$ donc $f(t_4).Tax \geq 0$ car $t_1.Income<t_4.Income$
+\item $t_5.Tax=0$ donc $f(t_4).Tax \leq 0$ car $t_4.Income < It_5.Income$
 
-	Every constraint variant $\Sigma'$ with cost $\Theta(\Sigma,\Sigma')$ shouldn't be considered. They're some variation that we're sure they are worst than any another? To perform a prunning of constraints variant that doesn't generate minimum data repair, we'll use the definition of refinement we explained in the previous chapter at the section \ref{RefinementSection}.
-	
-\begin{mydef}\cite{main}
- We say that a variant $\varphi '$ of a constraint $\varphi$ with $\varphi \preceq \varphi'$ is \textbf{maximal}, if there does not exist another $\varphi ''$ such that $\varphi ' \preceq \varphi ''$ and $edit(\varphi,\varphi'') = edit (\varphi,\varphi')$
+\end{enumerate}
+
+Nous avons donc $0 \leq fv_1 \geq 0$, dès lors la seule possibilité que nous avons est que $fv_1 = 0$. Nous avons donc un coût de réparation de $\Delta(I,I') = 1$ en reprenant les valeurs de distances de l'exemple. \ref{Example1}.
+
+\end{myexample}
+
+Nous voyons donc que la modification de la contrainte conduit à un coût de réparation plus faible. Mais modifié une contrainte doit aussi avoir un coût. En effet , si on ne donne pas de coût à la modification d'une contrainte, il suffirait de sur-raffiné toutes nos contraintes pour détecter moins de violation et donc faire moins de modification. Nous allons aussi considérer que l'on ne rajoute pas DC ni n'en retire de $\Sigma$ pour obtenir $\Sigma'$.
+
+Lorsque nous modifions une DC, il faut faire attention à ne pas la rendre triviale. Nous avons vu dans le chapitre précédent que ce genre de contrainte étaient inutiles car elles ne considéraient aucun tuple comme étant une violation. Considérons le treillis tel qu'illustrer à la figure \ref{treillis} pour un attribut $A$ de $S$. Chaque nœud du treillis représente un prédicat différent pour $A$, donc $A$ associé à un opérateur, un des éléments du powerset de $OP$. Descendre dans une branche du treillis consiste à ajouter un élément de $OP$ à l'opérateur. Par exemple passer de $(A,<)$ à $(A,\leq)$ consiste à ajouter l'opérateur $=$ à $<$. Lorsque l'on monte dans le treillis, on retire un élément de $OP$ à l'opérateur. Par exemple, passer de $(A, \geq)$ à $(A,=)$ consiste à retirer l'opérateur $>$ à $\geq$.\\
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.5]{img/treillis}
+	\caption{\label{treillis} Treillis pour un prédicat d'attribut $A$}
+\end{figure}
+
+% déplacer section suivante$
+Nous devons modifier nos DC de tel manière à ce que une contrainte sur-raffinée ou sur-simplifiée ne le soit plus. Pour les DC sur-raffinée, nous avons besoin de supprimer certains prédicats, i.e pour certains attributs $A$ de $S$, nous devons passer d'un $\varphi(A)\neq \top$ à $\varphi(A) = \top$. Mais nous devons faire attention à ne pas retire trop de prédicats, sinon elle risque de devenir sur-simplifiée.  Si la DC est sur-simplifiée, nous avons besoin d'ajouter des prédicats, i.e pour certains attribut $A$ de $S$, nous devons passer d'un $\varphi(A) = \top$ à un $\varphi(A) \neq \top$. Plus nous changeons de prédicats, plus le \emph{coût de variation des contraintes} sera important. Le \emph{coût de variation des contraintes} se définit comme tel: 
+
+\begin{mydef}
+Soit $\Sigma$ un ensemble de DC sur un ensemble $S$. Pour une variante $\Sigma '$ de $\Sigma$, la fonction de calcul du \emph{coût de variations des contraintes} de $\Sigma$ est:
+
+$$\Theta (\Sigma,\Sigma ') = \sum_{\varphi in \Sigma} edit(\varphi,\varphi ')$$
+
+\hspace*{2cm} avec $\varphi '$ est une variante de $\varphi$ et $edit(\varphi,\varphi ')$ est le coût pour changer $\varphi$ en $\varphi'$.
+\end{mydef}
+
+La fonction $edit(\varphi , \varphi ')$ qui indique le coût pour changer $\varphi$ en $\varphi'$ est défini comme étant:
+
+\begin{mydef}
+$$
+ edit(\varphi, \varphi') = \sum_{A \in S} path(\varphi(A),\varphi'(A))$$
+ 
+avec $path(\varphi(A),\varphi'(A)$ le coût du chemin emprunté dans le treillis.
+\end{mydef}
+
+Si nous considérons notre treillis comme un graphe, il reste maintenant à trouver le poids de chacun des arcs de ce graphe.
+
+
+
+\subsection{Limitation de nos candidats}
+
+
+Dans notre treillis nous avons 8 nœuds. Pour une DC sur un ensemble $S$ de taille 1, nous avons 8 variantes de DC différentes. Pour un $S$ de taille $n$ nous avons $8^n$ variations. Ce nombre est très important et envisager toutes les variations de contraintes serait coûteux en terme de complexité. Nous avons besoin de limiter le nombre de variations à considérer. Pour ce faire, nous allons utiliser des propriétés sur les DC pour limiter le nombre de contraintes à considérer.\\
+
+Nous savons déjà par le chapitre précédent que les contraintes triviales sont inutiles. En effet, une contrainte triviale sera toujours vraie et donc considérera tous les tuples comme étant corrects. Le Lemme \ref{trivialLemma} nous permet de rejeter toutes les DC dont au moins un des prédicats est de la forme $(A,\bot)$.\\
+
+Nous avons également besoin que la denial constraint soit satisfiable. Si une DC n'est pas satisfiable alors elle possède uniquement des prédicats avec l'opérateur $\top$ ou $=$. Nous pouvons donc rejeter toutes les DC ne possédant aucun opérateur parmi $\{ \leq,\geq,\neq,<,> \}$\\
+
+\subsection{Denial constraints maximales}
+
+Nous avons besoin également que les DC soit \emph{maximale}. Dans \cite{main} ils définissent une DC maximale comme étant:
+
+\begin{mydef}
+ La variante $\varphi'$ d'une DC $\varphi$ est dite \emph{maximale} si  $\varphi \preceq \varphi'$ \footnote{voir définition du raffinement section \ref{RaffinementSection}} est qu'il n'existe pas de DC $\varphi''$ tel que $\varphi' \preceq \varphi'$
 \end{mydef}
 
 \begin{myprop}\cite{main}
-
-For any inserted predicate $ P $ : $x \phi y \in pred(\varphi ') \setminus pred(\varphi)$, if $\phi \in \{\leq,\geq,\neq \}$, then $\varphi '$ is not maximal.
+\label{maxprop}
+Soit $\varphi$ une DC sur $S$. Soit $\varphi'$ une variante de $\varphi$ sur $S$. Pour chaque attribut $A$ de $S$ tel que $\varphi(A) = \top$, si $\varphi'(A) \in \{\neq,\leq,\geq \}$ alors $\varphi'$ n'est pas maximal.
 
 \end{myprop}
 
-This property comes from the $Imp(\varphi)$ definition. If $Varphi_1 \in Imp(\varphi_2)$ then $a\varphi_1 b$ implies $a \varphi_2 b$. $\leq \geq$ and $\neq$ are the 3 operators who implies operator that are no themselves (see table \ref{tableImp}). With this property we see that it's useless to insert every predicate that you're able to construct. We only have to insert predicates with operators {>,<,=} when considering variants of $\varphi$ Let's illustrate that with an example. We'll take two denial constraint on table \ref{tableMain} for this.
-$$\varphi_1 : \forall t_\alpha,t_\beta \in R, \neg( t_\alpha.Name = t_\beta.Name \wedge t_\alpha.Income = t_\beta.Income \wedge t_\alpha.CP \neq t_\beta.CP )$$
-$$\varphi_2 : \forall t_\alpha,t_\beta \in R, \neg( t_\alpha.Name = t_\beta.Name \wedge t_\alpha.Income \leq t_\beta.Income \wedge t_\alpha.CP \neq t_\beta.CP )$$
+Cette propriété vient de la définition de $Imp(\varphi)$. Soit $\varphi_1, \varphi_2$ deux DC sur $S$ Soit une relation $I$ sur $S$. Pour deux tuples $s,t \in I$ et un attribut $A$ de $S$, si $Varphi_1 \in Imp(\varphi_2)$ alors $s.A \varphi_1(A) t.A$ implique $s.A \varphi_2(A) t.A$. $\leq \geq$ et $\neq$ sont les 3 opérateurs qui impliquent d'autres opérateurs que eux même comme on peut le voir à la table \ref{operatorTable}(c'est également le cas pour l'opérateur $\top$, mais celui-ci est exclus de la propriété).\\
 
+Grâce à cette propriété, nous savons maintenant qu'il est inutile de considérer toutes les insertion \footnote{Par insertion de prédicats, comprenons ici que nous passons de $\varphi(A) = \top$ à $\varphi(A) \neq \top$} de prédicats possible. Nous avons seulement besoin d'insérer des prédicats avec les opérateur $\{<,=,>\}$ lorsque que l'on considère les variantes de $\varphi$. Illustrons cela avec un exemple. 
+\begin{myexample}
+Nous allons prendre deux DC sur la relation de la table \ref{tableMain}:
+$$ \varphi_1 : \{(Nom,=),(Revenu,=),(Numtel,\neq) \}$$
 
-We know that $\leq \in Imp(=)$ (see table \ref{tableImp}) for Income so we have $\varphi_2 \preceq \varphi_1$. By the last property we know that $\varphi_2$ is not maximal because it contains $\leq$ operator. In this scenario the data repair cost is 7 for $\varphi_2$ and $\varphi$ will get a data repair cost equal to 3. 
+$$ \varphi_2 : \{(Nom,=),(Revenu,\leq),(Numtel,\neq) \}$$
+
+\end{myexample}
+
+Nous savons que $\leq \in Imp(=)$ (voir table \ref{operatorTable}) donc nous avons $\varphi_2 \preceq \varphi_1$. Grâce à la propriété \ref{maxprop}, $\varphi_2$ n'est pas une denial constraint maximale parce qu'elle contient l'opérateur $\leq$. Dans ce scénario, nous pouvons calculer un coût de réparation pour l'attribut $NumTel$ de 7 pour la DC $\varphi_2$ et la DC $\varphi$ aura un coût de réparation de $Numtel$ de valeur 3.
 
 \begin{table}[H]
 	\parbox{.45\linewidth}{
 	\centering
 	\begin{tabular}{|c|c c c|}
 	\hline
-	    & Name & Cellphone Number & Income\\
+	    & Nom & NumTel & Revenu\\
 	\hline
 	 t1 & Ayres & \color{red}564-389 & \color{red}22k\\
 	 t2 & Ayres & \color{red}564-389 & 22k\\
@@ -749,14 +772,14 @@ We know that $\leq \in Imp(=)$ (see table \ref{tableImp}) for Income so we have 
 	 t10 & Dustin & \color{red}824-870 & \color{red}100k\\
 	 \hline
 	\end{tabular}
-	\caption{Correction with $\varphi_2$: 7 changes needed only for the collumn CP.}.
+	\caption{Correction avec $\varphi_2$: 7 changement nécessaire dans la colonne $NumTel$}.
 	}
 	\hfill
 	\parbox{.45\linewidth}{
 	\centering
 	\begin{tabular}{|c|c c c|}
 	\hline
-	    & Name & Cellphone Number & Income\\
+	    & Nom & NumTel & Revenu\\
 	\hline
 	 t1 & Ayres & 322-573 & 21k\\
 	 t2 & Ayres & \color{red} 564-389 & 22k\\
@@ -770,23 +793,23 @@ We know that $\leq \in Imp(=)$ (see table \ref{tableImp}) for Income so we have 
 	 t10 & Dustin & 387-215 & 150k\\
 	 \hline
 	\end{tabular}
-	\caption{Correction with $\varphi_1$ : only 3 changes are needed.}.
+	\caption{Correction avec $\varphi_1$ : seulement 3 changements sont nécessaires.}.
 	}
 \end{table}
 
 
 
-We see that the refinement got a better data repair cost. It's not a coincidence because the following lemma exist: \cite{main}
+Nous voyons que la DC raffinée a un coût de réparation plus faible. Ce n'est pas une coincidence puisque le Lemme suivant existe: \cite{main}
 
 \begin{mylemma}
- Given two constraints variants $\Sigma_1,\Sigma_2$ of $\Sigma$ such that $\Sigma_2$
- is also a refinement of $\Sigma_1$, have $\Sigma \preceq \Sigma_1 \preceq \Sigma_2$, is always has $\Delta(I,I_1) \geq \Delta(I,I_2)$, where $I_1$ and $I_2$ are the minimum data repairs with regards to $\Sigma_1$ and $\Sigma_2$, respectively.
+ Soit $\Sigma$ un ensemble de DC sur $S$ et $I$ une relation sur $S$. Soit 2 variantes de $\Sigma$ noté $\Sigma_1,\Sigma_2$ et $\Sigma_2$ est un raffinement de $\Sigma$. Si $\Sigma \preceq \Sigma_1$ et $\Sigma_1 \preceq \Sigma_2$ alors $\Delta(I,I_1) \geq \Delta(I,I_2)$ avec $I_1$ la relation résultante de la réparation avec $\Sigma_1$ et $I_2$ la relation résultante de la réparation avec $\Sigma_2$.
 \end{mylemma}
 
-As a consequence of this Lemma, any non-maximal set of denial constraint $\Sigma$ can be removed from the possibilities of good repair
+Comme conséquence à ce Lemme, toutes les ensemble de denial constraint $\Sigma$ qui ne sont pas maximal ne donneront pas la meilleure réparation..
 
-\subsection{Pruning our candidates}
+\subsection{Limitation par bornes}
 
+Nous avons vu précédemment que pour une seule denial constraint, nous avons $8^{|S|}$ variantes possibles. Nous avons donné des pistes pour limité le nombre de candidats. Pour continuer dans cette lancée, nous allons consi
 In this subsection we'll focus on removing the constraint variant $\Sigma '$ that can't generate the minimum data repair. We already have seen that $\Sigma$ with a non maximal constraint $\varphi$ can be remove. To go further, we will  consider two bounds of possible minimum data repairs cost for the instance $I$ : the lower bound noted as $\delta_l(\Sigma',I)$ and the upper bound noted $\delta_u(\Sigma,I)$. We consider the following property:
 
 \begin{myprop}
@@ -1002,10 +1025,24 @@ We want a repair cost as small as possible, which leads to to minimize the repai
 But it could be possible we can't assign any value (in our domain) that can fit all the repair context. In these case, we can't put any value except a fresh variable. If we decide to assign a fresh variable $fv$ to a cell can remove every repair context with this cell. The reason is that $fv$ are defined as a way they don't satisfy any kind of predicates which include predicates in repair context. If we are not able to solve our problems i.e we can't found value in dom(A) for a repaired instance $I'$, we'll assign a fresh variable until the problems is solvable. It's better to start by cells with the largest number of appearance in predicates in the repair context. We can say $I'(t.A)$ = $fv$ if $rc(t.A,\Sigma)$ which represent all the repair context declared between a constant or between $t.A$ and $v_i \not\in \mathbb{C}$.\\
 
 If we come back to one of our first example : $\varphi : t_\alpha,t_\beta \in R, \neg(t_\alpha.Income > t_\beta.Income \wedge t_\alpha.Tax \leq t_\beta.Tax)$  For $t_2$ we have $rc(t_2.Tax,\{ \varphi \}) = \{ I'(t_2.Tax) > I(t_1.Tax),I(t_4.Tax) > I'(t_2.Tax),I(t_8.Tax) > I'(t_2.Tax),I(t_9.Tax) > I'(t_2.Tax),I(t_{10}.Tax) > I'(t_2.Tax) \}$ In the same way we did for $\varphi'$, here we have $0 = I(t_1.Tax)< I'(t_2.Tax) < I(t_4.Tax) = 3k$ and there is no value who respect it in dom(A) = $\{ 0,3k,21k,40 \}$. The only possible solution in this case is to assign a fresh variable $fv$ to $t2.Tax$. When we do this, we can remove every red arrows related from the hypergraph. But we didn't solve all of the repair contexts.
-\section{Other repairing}
-TODO
-\subsection{Holistic data repair}
-\subsection{...}
+
+\section{Différence par rapport à l'article de base}
+
+Dans ce chapitre, nous parlerons des différences entre l'article de référence sur le modèle $\theta$-tolérant et ce mémoire. Certaines notions et définitions ont été revues, et le traitement théorique a été amélioré. Certaines erreurs ont été corrigées notamment des erreurs concernant les variations de contraintes et coût de réparation de la base de donnée.\\
+
+Pour la rédaction de ce mémoire, nous nous sommes inspiré de deux articles. Le premier est un article sur le modèle $\theta$-tolérant que nous aborderons au prochain chapitre, le second est un article qui porte sur les denial constraints. Ils utilisent une approche différente et une définition différente de la notre. Dans \cite{main,DCs} ils définissent une DC comme étant:
+
+\begin{mydef}
+	Considérons un schéma de relation $R$ avec comme attributs $att(R)$. Soit l'espace de prédicat $\mathbb{P}$ qui est un ensemble de prédicat P de la forme $v_1 \phi v_2$ ou $v_1 \phi c$ avec $v_1,v_2\ \in \ t_x.A,\ x \in \{\alpha,\beta \}$, $t_\alpha,t_\beta \in$ $R$, $A \in attr(R)$, $c$ une constante et $\phi$ $\in \{=,<,>,\leq,\geq,\neq \} $ est un opérateur. Une \emph{denial constraint} (DC)
+	$$ \varphi : t_\alpha,t_\beta,... \in R,\neq(P_1 \wedge P_2 \wedge ... \wedge P_m)$$
+	signifie que pour tout tuples $t_\alpha,t_\beta$ dans $R$, tous les prédicats $P_i \in pred (\varphi)$ , $i$ = 1,....,$m$, ne devraient pas être tous vrai en même temps. 
+\end{mydef}
+
+Une DC peut donc être vue comme une conjonction de prédicats et l'un de ses prédicats doit être faux afin que la DC soit vraie, i.e si pour deux tuples chaque prédicats est vrai, alors il y a au moins une donnée erronée dans l'un des deux tuples.\\
+
+La définition bien qu'étant différente d'un point syntaxique, elle représente toutes les deux la même chose. Cette définition-ci permet en plus de comparé un attribut à une constante. Bien qu'il puisse être intéressant d'avoir des denial contraints qui fixe un salaire minimum par exemple $t.Revenu > 10k$ ou exprime le fait qu'un revenu ou une taxe ne peut être négative $t.Revenu >0 \wedge t.Taxe >0$ cela apporte plusieurs problèmes.\\
+
+Dans notre définition, nous avons un nombre de prédicats maximum qui est la norme de $S$. Ici nous ne sommes pas limité et ce à cause des constantes. Et cela peut avoir des problèmes lorsque l'on tente de changer une DC lors de la réparation. Et malgré que cela puisse être un problème, ce n'est jamais abordé dans \cite{main}.
 
 \chapter{Implementation and comparison with others models}
 TODO
