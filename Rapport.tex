@@ -316,16 +316,16 @@ Par définition l'ensemble puissance d'un ensemble $S$ noté $\mathcal{P}(S)$ es
 
 \begin{table}
 	\begin{center}
-	\begin{tabular}{|c|c|c|c|c|}\hline
-	$\theta$ & Abréviation & $\bar{\theta}$ & $\hat{\theta}$ & implication\\\hline\hline
-	$\emptyset$ & $\bot$ & $\top$ & $\bot$ & $\{\bot\}$\\\hline
-	$\{<\}$     & $<$ & $\geq$ & $>$ & $\{<,\leq,\neq, \top \}$\\\hline
-	$\{=\}$     & $=$ & $\neq$ & $=$ & $\{=,\leq,\geq, \top \}$\\\hline
-	$\{>\}$     & $>$ & $\leq$ & $<$ & $\{ >,\geq,\neq,\top \}$\\\hline 
-	$\{<,=\}$   & $\leq$ & $>$ & $\geq$ & $\{\leq, \top \}$\\\hline 
-	$\{<,>\}$   & $\neq$ & $=$ & $\neq$ & $\{\neq, \top \}$\\\hline
-	$\{>,=\}$   & $\geq$ & $<$& $\leq$ & $\{\geq, \top \}$\\\hline 
-	$\{<,=,>\}$ & $\top$ & $\bot$ & $\top$ & $\{\top \}$\\\hline
+	\begin{tabular}{|c|c|c|c|}\hline
+	$\theta$ & Abréviation & $\bar{\theta}$ & $\hat{\theta}$ \\\hline\hline
+	$\emptyset$ & $\bot$ & $\top$ & $\bot$ \\\hline
+	$\{<\}$     & $<$ & $\geq$ & $>$ \\\hline
+	$\{=\}$     & $=$ & $\neq$ & $=$ \\\hline
+	$\{>\}$     & $>$ & $\leq$ & $<$ \\\hline 
+	$\{<,=\}$   & $\leq$ & $>$ & $\geq$ \\\hline 
+	$\{<,>\}$   & $\neq$ & $=$ & $\neq$ \\\hline
+	$\{>,=\}$   & $\geq$ & $<$& $\leq$ \\\hline 
+	$\{<,=,>\}$ & $\top$ & $\bot$ & $\top$ \\\hline
 	\end{tabular}
 	\end{center}
 	\caption{Element de OP, l'ensemble des parties de $\{ <,=,>\}$ \label{operatorTable}}
@@ -344,13 +344,11 @@ Notons que les tuples $s$ et $t$ ne doivent pas forcément être distinct.  La r
 Prenons un exemple sur la table \ref{tableMain}, nous avons $S=\{Nom, Anniversaire, NumTel,$ $Annee, Revenu, Taxe \}$ Une DC pour S est $\varphi =\{(Nom,=),(Anniversaire,=),(NumTel,\neq),(Annee,\top),(Revenu,\top) ,(Taxe,\top) \}$. Celle-ci est satisfaite par la relation $I$ si il n'existe pas deux tuples $s,t\in I$ tel que $s(Nom) = t(Nom) \wedge s(Anniversaire) = t(Anniversaire) \wedge s(NumTel) \neq t(NumTel) \wedge s(Annee) \top y(Annee) \wedge s(Revenu) \top t(Revenu) \wedge s(Taxe) \top t(Taxe)$.
 \end{myexample}
 
-Lorsqu'une relation $I$ sur $S$ ne satisfait pas une DC $\varphi$, on dit que $I$ \emph{viole} $\varphi$ que l'on note $I \not\models \varphi$. \\%En se référant à la définition \ref{defSatis}, nous avons au moins deux tuples $s,t \in I$ tel que pour chaque attribute $A$ dans le domaine $\varphi$, nous avons $s(A) \theta t(A)$ avec $\theta$ = $\varphi(A)$.
+Lorsqu'une relation $I$ sur $S$ ne satisfait pas une DC $\varphi$, on dit que $I$ \emph{viole} $\varphi$ que l'on note $I \not\models \varphi$. Chaque élément de $\varphi$ est appelé un prédicat. Pour chaque prédicat $(A,\theta)$, on appelle $A$ l'attribut du prédicat, et $\theta$ l'opérateur du prédicat.  Soit $I$ une relation sur $S$ et $\varphi$ une DC. Dès lors on peut dire que $I \models \varphi$ si pour tout $s,t \in I$ au moins un des prédicats est faux pour $\{s,t\}$ i.e pour au moins un prédicat $(A,\theta_A)$ on a $s.A \theta_A t.A$ qui est faux. Si un prédicat $P$ a pour opérateur $\top$ alors $P$ sera toujours vrai pour tout $t,s \in I$. Dès lors à l'avenir, nous ne noterons plus les prédicats ayant $\top$ pour opérateur par facilité syntaxique. L'exemple précédent s'écrira désormais $\varphi =\{(Nom,=),(Anniversaire,=,?(NumTel,\neq)\}$. Si un prédicat a pour opérateur $\bot$, il sera toujours faux. Dès lors $I \models \varphi$. Notons que la relation vide est la seule relation qui satisfait la DC $\varphi = \{(A_1,\top),(A_2,\top),...(A_n,\top)\} \equiv \{ \}$.\\
 
-Soit $\varphi$ une DC sur $S$ . Nous appellerons \emph{prédicat} $P$ de $\varphi$ l'expression de la forme $(A,\theta)$ avec $A\in S$ que l'on appelle attribut du prédicat et $\theta = \varphi(A)$ que l'on appelle opérateur du prédicat. Soit $pred(\varphi)$ l'ensemble des prédicats de la DC $\varphi$. Soit $I$ une relation sur $S$. Dès lors on peut dire que $\varphi$ est satisfaite si au moins un des prédicats est faux. Si un prédicat $P$ a pour opérateur $\top$ alors $P$ sera toujours vrai pour tout $t,s \in I$. Dès lors à l'avenir, nous ne noterons plus les prédicats ayant $\top$ pour opérateur par facilité syntaxique. L'exemple précédent s'écrira désormais $\varphi =\{(Nom,=),(Anniversaire,=)?(NumTel,\neq)$. Si un prédicat a pour opérateur $\bot$, il sera toujours faux. Dès lors $I \not\models \varphi$. Notons que la DC $\varphi = \{(A_1,\top),(A_2,\top),...(A_n,\top)\} \equiv \{ \}$ n'est satisfaite par aucune relation excepté par une relation vide.\\
+ Si nous prenons l'instance $I$ comme étant la table \ref{tableMain}, nous avons $I \not\models \varphi$. En effet prenons $s=t_2$ et $t=t_3$ nous avons bien $t_2(Nom) = t_3(Nom) \wedge t_2(Anniversaire) = t_2(Anniversaire) \wedge y_2(NumTel) \neq t_3(NumTel)$. On dit que $\{ t_2,t_3 \}$ \emph{viole} la contrainte $\varphi$\\ 
 
- Si nous prenons l'instance I comme étant la table \ref{tableMain}, nous avons $I \not\models \varphi$. En effet prenons $s=t_2$ et $t=t_3$ nous avons bien $t_2(Nom) = t_3(Nom) \wedge t_2(Anniversaire) = t_2(Anniversaire) \wedge y_2(NumTel) \neq t_3(NumTel)$. On dit que $\langle t_2,t_3 \rangle$ \emph{viole} la contrainte $\varphi$\\ 
-
-Pour chaque opérateur dans $OP$ nous pouvons définir son inverse, sa réciproque et son implication. Les valeurs de l'inverse, la réciproque et l'implication de chaque élément de $OP$ se trouve également à la table \ref{operatorTable}.
+Pour chaque opérateur dans $OP$ nous pouvons définir son inverseet sa réciproque. Les valeurs de l'inverse et de la réciproque de chaque élément de $OP$ se trouve également à la table \ref{operatorTable}.
 \begin{mydef}
 Soit $\phi$ un élément de $OP$
 
@@ -358,10 +356,7 @@ L'inverse de $\phi$ noté $\overline{\phi}$ est égal à $\{<,=,>\}\setminus \ph
 
 La réciproque de $\phi$ noté $\hat{\phi}$ s'obtient en inter-changeant < et > dans $\phi$
 
-L'implication de $\phi$ noté $Imp(\phi)$ est un ensemble d'élément de $OP$ tel que pour n'importe quelle valeur a et b, si $a \phi_2 b$ \textbf{implique}\footnote{Tout tuple qui satisfait $a \phi_2 b$ satisfait $a \phi_1 b$} \textbf{toujours} $a \phi_1  b$ alors $\phi_2       \in Imp(\phi_1)$.
 \end{mydef}
-
-Notons que $\forall \phi_1,\phi_2$, si $\phi_2 \in Imp(\phi_1)$ alors $\phi$ est un sous ensemble de $\phi_2$. Par exemple $\neq \in Imp(>)$ et $\{ > \} \in \{<,> \}$.\\
 
 Une DC peut être \emph{sur-simplifiée} ce qui veut dire qu'une donnée correcte peut être considérée comme une violation. Prenons un exemple sur la table \ref{tableMain} avec la denial constraint suivante:
 
