@@ -27,6 +27,7 @@
 \newtheorem{myprop}{Propriété}
 \newtheorem{mylemma}{Lemme}
 \newtheorem{myexample}{Exemple}
+\newtheorem{mycorollaire}{Corollaire}
 
 \newcommand{\dom}{\mathbf{dom}}
 \newcommand{\C}{\mathbb{C}}
@@ -166,7 +167,7 @@ Malheureusement, il se peut que ces contraintes soient elles aussi erronées. A 
 \begin{table}
 \centering
 \begin{tabular}{c|c c c c c}
- & Nome & Année & Salaire (\texteuro) & Grade & Bureau\\
+ & Nome & Année & Salaire (\texteuro\,) & Grade & Bureau\\
  \hline
  $t_1$ & Dupont & 2012 & 23.000 & ouvrier & 1B18 \\
  $t_2$ & Dupont & 2013 & 24.000 & ouvrier & 1B14 \\
@@ -183,13 +184,13 @@ Malheureusement, il se peut que ces contraintes soient elles aussi erronées. A 
 \end{table}
 
 
-Par exemple, durant mon stage en entreprise, j'ai pu travailler sur un projet associé de près à une base de données ayant un problème de données erronées. Cela a eu un énorme impact sur une partie de mon projet. La réparation de ces données est prévue pour le courant de l'année 2018.\\
+%Par exemple, durant mon stage en entreprise, j'ai pu travailler sur un projet associé de près à une base de données ayant un problème de données erronées. Cela a eu un énorme impact sur une partie de mon projet. La réparation de ces données est prévue pour le courant de l'année 2018.\\
 
 Le terme \emph{Data repairing} ou réparation de données signifie réparer les données mais aussi les contraintes d'intégrité. Il serait naïf de penser que l'on puisse supprimer chaque ligne qui possède au moins une donnée erronée. La perte d'information serait importante parce qu'une telle pratique demanderait d'effacer une ligne complète de la table et ce malgré qu'il n'y ait qu'une seule erreur dans la ligne. Par exemple, si nous avons une base de données des employés d'une entreprise et la contrainte "Le salaire d'un employé augmente chaque année". Cette contrainte n'est pas respectée à la table \ref{exampleIntro}. En effet, si nous prenons l'année 2016, nous voyons que monsieur Dupont gagne moins d'argent qu'en 2015 et 2014. Si nous supprimons l'année 2016, nous perdons l'information concernant le bureau que monsieur Dupont occupait.\\
 
-En outre, les contraintes d'intégrité peuvent aussi être erronées ce qui veut dire que l'on pourrait supprimer une ligne ne contenant que des données correctes. Reprenons la contrainte "Le salaire d'un employé augmente chaque année". Cette contrainte n'est pas respecté à la table \ref{exampleIntro} car en 2017 Dupont gagnait 44.000 \texteuro et en 2018, il gagnait 28.000 \texteuro de salaire annuel. Nous avons l'une des deux lignes de la table qui contient une donnée erronée. Mais c'est sans compter sur le fait que monsieur Dupont a perdu son grade de chef. Du coup la contrainte est peut être erronée et la contrainte "Le salaire d'un employé augmente chaque année à condition de garder son grade" est correcte. Dans ce cas ci, l'erreur ne vient pas des données mais de la contrainte. Pour cette raison, nous avons besoin de techniques afin de réparer à la fois les données et les contraintes, ce sans perdre trop d'informations tout en évitant d'échouer dans la détection d'erreurs dans les données.\\
+En outre, les contraintes d'intégrité peuvent aussi être erronées ce qui veut dire que l'on pourrait supprimer une ligne ne contenant que des données correctes. Reprenons la contrainte "Le salaire d'un employé augmente chaque année". Cette contrainte n'est pas respectée à la table \ref{exampleIntro} car en 2017 Dupont gagnait 44.000\texteuro\, et en 2018, il gagnait 28.000\texteuro\,  de salaire annuel. Nous avons l'une des deux lignes de la table qui contient une donnée erronée. Mais c'est sans compter sur le fait que monsieur Dupont a perdu son grade de chef. Du coup la contrainte est peut-être erronée et la contrainte "Le salaire d'un employé augmente chaque année à condition de garder son grade" est correcte. Dans ce cas ci, l'erreur ne vient pas des données mais de la contrainte. Pour cette raison, nous avons besoin de techniques afin de réparer à la fois les données et les contraintes, ce sans perdre trop d'informations tout en évitant d'échouer dans la détection d'erreurs dans les données.\\
 
-Dans cette thèse de mémoire, nous allons analyser le \emph{modèle de réparation $\theta$-tolérant} comme il a été introduit dans un article scientifique\cite{main}. Nous allons faire varier nos contraintes et chacune de nos variations aura un coût que nous devrons déterminer. Le coût de toutes ces variations ne devra pas excéder $\theta$. Le nouvel ensemble de contraintes sera utilisé pour la réparation des données.\\
+Dans cette thèse de mémoire, nous allons analyser le \emph{modèle de réparation $\theta$-tolérant} comme il a été introduit dans un article scientifique de Shaoxu \textsc{Song}, Han \textsc{Zhu} et Jianmin \textsc{Wang}\cite{main}. Nous allons faire varier nos contraintes et chacune de nos variations aura un coût que nous devrons déterminer. Le coût de toutes ces variations ne devra pas excéder $\theta$. Le nouvel ensemble de contraintes sera utilisé pour la réparation des données.\\
 
 Dans un premier temps, nous allons introduire le concept de \emph{denial constraint}, une forme de contraintes d'intégrité qui va nous aider à définir et comprendre le concept du modèle de réparation $\theta$-tolérant. Nous allons également introduire quelques bases de données que nous utiliserons pour illustrer les différentes notions que nous allons aborder. Ensuite, nous allons présenter des techniques pour faire varier nos denial constraint en respectant le modèle de réparation $\theta$-tolérant. Puis, puisque nous resterons critique par rapport au papier scientifique de référence, nous expliquerons en quoi notre démarche est différente et pourquoi nous avons choisi de modifier certaines approches et certains concepts. Enfin, nous terminerons avec une implémentation du modèle $\theta$-tolérant et analyserons ses performances avec quelques exemples.
 
@@ -296,14 +297,14 @@ Si pour chaque paire de tuples de la relation $R$, la DF $\tau$ est respectée, 
 Soit un ensemble $\Sigma$ de DF sur la relation $R$. On dit que la relation $R$ satisfait $\Sigma$ noté $R \models \Sigma$ si pour chaque DF $ \tau \in \Sigma$, on a $R \models \tau$
 \end{mydef}
 
-Malheureusement, les dépendances fonctionnelles sont limitées en terme de puissance. En effet, il existe de nombreuses contraintes que nous ne pouvons pas exprimer avec une DF. Par exemple, si nous souhaitons exprimer le fait que \emph{`La date de naissance d'une personne doit être antérieure à sa data de décès'}, nous avons besoin de comparer la $Nai\_Date$ et la $Dec\_Date$ de la personne et de s'assurer que la date de décès ne soit antérieure à la date de naissance. Les dépendances fonctionnelles ne permettent pas d'utiliser des opérateurs de comparaison, il est donc nécessaire d'exprimer les contraintes d'une autre façon. Pour ce faire, nous allons introduire un nouveau type de contrainte qui répondra bien à nos besoins: les \emph{denial constraints}.
+Malheureusement, les dépendances fonctionnelles sont limitées en terme de puissance. En effet, il existe de nombreuses contraintes que nous ne pouvons pas exprimer avec une DF. Par exemple, si nous souhaitons exprimer le fait que \emph{`La date de naissance d'une personne doit être antérieure à sa date de décès'}, nous avons besoin de comparer la $Nai\_Date$ et la $Dec\_Date$ de la personne et de s'assurer que la date de décès ne soit antérieure à la date de naissance. Les dépendances fonctionnelles ne permettent pas d'utiliser des opérateurs de comparaison, il est donc nécessaire d'exprimer les contraintes d'une autre façon. Pour ce faire, nous allons introduire un nouveau type de contrainte qui répondra bien à nos besoins: les \emph{denial constraints}.
 
-\section{Les Denials constraints}
+\section{Les Denial constraints}
 
 Dans cette section, nous allons définir ce qu'est une denial constraint. Nous allons aussi expliquer son utilisation dans les bases de données et nous allons également lister et expliquer plusieurs propriétés que peuvent avoir ces contraintes. Commençons d'abord par définir la denial constraint
 
 \begin{mydef}
-Considérons un ensemble $S$ fini d'\emph{attribut}. Une \emph{denial constraint (DC)} sur l'ensemble $S$ est une fonction partielle de $S$ vers l'ensemble des parties(aussi appelé ensemble puissance) de $\{ <,=,> \}$ noté $OP$. Nous utiliserons la lettre grecque $\varphi$ pour représenter une DC. Chaque parties de $OP$ se nomme \emph{opérateur}.
+Considérons un ensemble $S$ fini d'\emph{attribut}. Une \emph{denial constraint (DC)} sur l'ensemble $S$ est une fonction partielle de $S$ vers l'ensemble des parties(aussi appelé ensemble puissance) de $\{ <,=,> \}$ noté $OP$. Nous utiliserons la lettre grecque $\varphi$ pour représenter une DC. Chaque élément de $OP$ se nomme \emph{opérateur}.
 \end{mydef}
 
 \begin{mydef}
@@ -348,25 +349,29 @@ Lorsqu'une relation $I$ sur $S$ ne satisfait pas une DC $\varphi$, on dit que $I
 
  Si nous prenons l'instance $I$ comme étant la table \ref{tableMain}, nous avons $I \not\models \varphi$. En effet prenons $s=t_2$ et $t=t_3$ nous avons bien $t_2(Nom) = t_3(Nom) \wedge t_2(Anniversaire) = t_2(Anniversaire) \wedge y_2(NumTel) \neq t_3(NumTel)$. On dit que $\{ t_2,t_3 \}$ \emph{viole} la contrainte $\varphi$\\ 
 
-Pour chaque opérateur dans $OP$ nous pouvons définir son inverseet sa réciproque. Les valeurs de l'inverse et de la réciproque de chaque élément de $OP$ se trouve également à la table \ref{operatorTable}.
+Pour chaque opérateur dans $OP$ nous pouvons définir son inverse et sa réciproque. Les valeurs de l'inverse et de la réciproque de chaque élément de $OP$ se trouve également à la table \ref{operatorTable}.
 \begin{mydef}
-Soit $\phi$ un élément de $OP$
-
-L'inverse de $\phi$ noté $\overline{\phi}$ est égal à $\{<,=,>\}\setminus \phi$
-
-La réciproque de $\phi$ noté $\hat{\phi}$ s'obtient en inter-changeant < et > dans $\phi$
+Soit $\theta$ un élément de $OP$. L'\emph{inverse} de $\phi$ noté $\overline{\theta}$ est égal à $\{<,=,>\}\setminus \theta$.
 
 \end{mydef}
+
+\begin{mydef}
+
+Soit $\rho \mathrel{\mathop:}= \{ (<,>),(=,=),(>,<) \}$ une permutation de $\{<,=,> \}$. Pour tout $\theta \in OP$, nous pouvons définir la \emph{réciproque} de $\theta$ comme étant $\hat{\theta} \mathrel{\mathop:}= \{ \rho(e) | e \in \theta \}$
+\end{mydef}
+
+Notons que pour une DC $\varphi$ sur $S$, nous pouvons définir $\hat{\varphi}$ une DC $S$ tel que $\hat{\varphi}$ et $\varphi$ ont le même domaine et pour tout $A \in S$, si $\varphi(A) = \theta$ alors $\hat{\varphi} = \hat{\theta}$. Notons également que nous avons $\hat{\hat{\varphi}}$ = $\varphi$.\\
 
 Une DC peut être \emph{sur-simplifiée} ce qui veut dire qu'une donnée correcte peut être considérée comme une violation. Prenons un exemple sur la table \ref{tableMain} avec la denial constraint suivante:
 
 $$\varphi_2 = (Nom,=)(NumTel,\neq) $$
 
-Cette contrainte veut dire que si une personne possède le même nom qu'une autre, alors elle ne peut pas avoir un numéro de téléphone différent. Ceci est bien sur incorrect. En effet, deux personnes différentes ne peuvent avoir le même numero de téléphone. Dans notre relation, le nom seul ne suffit pas à identifier si deux personne sont identiques. Prenons par exemples $t_1$ et $t_2$, ils ne satisfont pas $\varphi_2$. Si l'on regarde de plus près, on peut facilement comprendre qu'il s'agit de deux personnes différentes. Ces deux personnes n'ont pas le même age i.e elles ont une date d'$Anniversaire$ différent. Si nous souhaitons améliorer la précision de la contrainte et éviter que $\langle t_1,t_2\rangle$ soit considéré comme une violation, nous avons besoin de regarder l'attribut $Anniversaire$. Une meilleure DC serait:
+
+La contrainte est satisfaite s'il n'existe pas deux tuples avec le même nom mais des numéros de téléphone différents. On ne souhaite pas imposer une telle contrainte, car il est possible que deux personnes différentes aient le même noms et des numéros de téléphone différents. Dans notre relation, le nom seul ne suffit pas à identifier si deux personne sont identiques. Prenons par exemples $t_1$ et $t_2$, ils ne satisfont pas $\varphi_2$. Si l'on regarde de plus près, on peut facilement comprendre qu'il s'agit de deux personnes différentes. Ces deux personnes n'ont pas le même age i.e elles ont une date d'$Anniversaire$ différent. Si nous souhaitons améliorer la précision de la contrainte et éviter que $\{ t_1,t_2 \}$ soit considéré comme une violation, nous avons besoin de regarder l'attribut $Anniversaire$. Une meilleure DC serait:
 
 $$\varphi_2' = (Nom,=),(Anniversaire,=),(NumTel,\neq) $$
 
-Une DC peut être également \emph{sur-raffiné} ce qui entraine qu'une donnée erronée peut être considérée comme correcte par la DC. Prenons un exemple sur la table \ref{tableMain} avec la denial constraint suivante:
+Une DC peut être également \emph{sur-raffiné} ce qui entraine qu'une donnée erronée peut ne pas être détectée par la DC.. Prenons un exemple sur la table \ref{tableMain} avec la denial constraint suivante:
 
 $$\varphi_2' = (Nom,=),(Anniversaire,=),(NumTel,\neq),(Annee,=) $$
 
@@ -381,31 +386,32 @@ Dans ce cas, l'information $Annee$ n'est pas utile pour distinguer deux personne
 %\end{itemize}
 %---------
 
-\subsection{Quelques définitions et propriétés}
+\section{Quelques définitions et propriétés sur les DC}
 
 Dans cette sous-section, nous allons définir quelques notions et propriétés sur les DC qui nous serviront dans les chapitres qui suivront.
-\subsubsection{Satisfiabilité}
+
+\subsection{Satisfiabilité}
 
 \begin{mydef}
-Soit $\varphi$ DC sur $S$. On dit que $\varphi$ est \emph{satisfiable} si elle peut être satisfaite par une relation non vide sur $S$, i.e si $\exists I$ sur $S$ avec $I$ non vide tel que $I \models \varphi$, alors $\varphi$ est \emph{satisfiable}.
+Soit $\varphi$ DC sur $S$. On dit que $\varphi$ est \emph{satisfiable} si elle peut être satisfaite par une relation non vide sur $S$.
 
-Si $\varphi$ n'est pas satisfiable, nous dirons qu'il est \emph{insatisfiable} 
+Si $\varphi$ n'est pas satisfiable, nous dirons qu'elle est \emph{insatisfiable} 
 \end{mydef}
 
 Il est intéressant de savoir à l'avance si une une denial constraint est satisfiable ou pas. Le lemme suivant nous permet de détecter les DC qui ne sont pas satisfiables.
 
 \begin{mylemma}\label{satisLemma}
-	Soit $\varphi$ une denial constraint sur $S$, alors $\varphi$ est satisfiable si et seulement si il existe un prédicat $P_i \in pred (\varphi)$ de la forme $(A_i,\theta_i)$ tel que $\theta_i$ ne contient pas $=$, i.e $\theta_i \not\in \{ \{=\},\{<,=\},\{=,>\},\{<,=,>\},\} $ 
+	Soit $\varphi$ une denial constraint sur $S$, alors $\varphi$ est satisfiable si et seulement si il existe un prédicat $P = (A,\theta)  \in \varphi$ tel que $\theta$ ne contient pas $=$, i.e $\theta_i \not\in \{ \{=\},\{<,=\},\{=,>\},\{<,=,>\},\} $ 
 \end{mylemma}
 \begin{proof}~\\
-\alinea \framebox{$\implies$} Supposons que pour tout $P \in pred(\varphi)$, $\theta$ contient $=$. Alors pour chaque tuple $s$ sur $S$, pour chaque $P_i \in pred(\varphi)$ on a $s(A_i) \theta_i s(A_i)$. Il s'ensuit que toute relation non vide ne satisfait pas $\varphi$
+\alinea \framebox{$\implies$} Supposons que pour tout $P=(A,\theta) \in \varphi$, $\theta$ contient $=$. Alors pour chaque tuple $s \in I$ avec $I$ relation sur $S$, pour chaque $P \in \varphi$ on a $s(A) \theta s(A)$. Il s'ensuit que toute relation non vide ne satisfait pas $\varphi$
 
 \framebox{$\impliedby$} Supposons $B \in S$ tel que $B$ ne contient pas $=$. Alors pour chaque tuple $s$ sur $S$, nous avons que $s(B)\ \theta s(B)$ avec $\theta=\varphi(B)$ faux. Il s'ensuit que n'importe quelle relation avec exactement un tuple satisfait $\varphi$.
 
 \end{proof}
 
 
-\subsubsection{Implication logique}
+\subsection{Implication logique}
 
 \begin{mydef}
 Soit $\varphi_1,\varphi_2$ deux DC sur $S$. On dit que $\varphi_1$ \emph{implique (logiquement)} $\varphi_2$, que l'on note $\varphi_1 \models\varphi_2$, si pour chaque relation $I$ sur $S$, si $I \models \varphi_2$ alors on a $I \models \varphi_1$. On dira aussi que $\varphi_2$ est \emph{plus faible} que $\varphi_1$ ou bien que $\varphi_1$ est \emph{plus fort} que $\varphi_2$
@@ -435,7 +441,7 @@ Dès lors, nous avons $I\models\varphi_2$, mais $I\not\models\varphi_1$.
 
 \begin{mylemma}\label{lem:characterization}
 Soit $\varphi_1$ et $\varphi_2$ deux denial constraints sur $S$.
-Si $\varphi_2(A)\subseteq\varphi_1(A)$ $\forall A\in S$, alors $\varphi_1\models\varphi_2$.
+Si $\varphi_2(A)\subseteq\varphi_1(A)$ pour tout $ A\in S$, alors $\varphi_1\models\varphi_2$.
 \end{mylemma}
 \begin{proof}
 Supposons que $\varphi_2(A)\subseteq\varphi_1(A)$ pour tout $A\in S$.
@@ -448,91 +454,228 @@ alors nous aurons $s(A)\ \theta'\ t(A)$ est faux, avec $\theta'=\varphi_2(A)$.
 \end{proof}
 
 \begin{myexample}
- $\{(A,=)\}\models\{(A,\leq)\}$. car $\{=\} \subseteq \{<,=\} \equiv \leq$
+ $\{(A,<),(B,\leq)\}\models\{(A,<),(B,<)\}$. car $\{<\} \subseteq \{<,=\} \equiv \leq$.
+La DC de gauche signifie que deux tuples $s,t \in I$ satisfont la DC si la contrainte "si $s(A)<t(A)$ alors $s(B) > t(B)$" est satisfaite.
+La DC de droite signifie que deux tuples $s,t \in I$ satisfont la DC si la contrainte "$si s(A)<t(A)$ alors $s(B) >= t(B)$ est satisfaite.
 \end{myexample}
 
-\subsubsection{Trivialité}
+La réciproque d'une DC est une implication logique par le Lemme suivant:
+\begin{mylemma}
+\label{implicationReciproque}
+Pour toute DC $\varphi$ sur $S$, nous avons $\varphi \models \hat{\varphi}$
+\end{mylemma}
+
+\begin{proof}
+
+Soit une DC $\varphi$ sur $S$.
+Soit $D\subseteq S$ le domaine de $\varphi$.
+Pour tout $A\in D$, nous pouvons définir $\theta_{A}\mathrel{\mathop:}=\varphi(A)$.
+Soit une relation $I$ sur $S$ tel que $I\models\varphi$.
+Supposons par l'absurde que $I\not\models\hat{\varphi}$.
+Alors, nous pouvons supposer que pour tout tuples $s,t$ tel que pour tout $A\in D$, nous avons $s(A)\ \hat{\theta_{A}}\ t(A)$.
+Il est trivial de voir que pour tout $A$ dans le domaine de $\varphi$,
+nous avons $t(A)\ \theta_{A}\ s(A)$, et par conséquent nous avons $I\not\models\varphi$, ce qui est une contradiction.
+Nous pouvons conclure par contradiction que $I\models\hat{\varphi}$
+\end{proof}
+
+\begin{myexample}
+$\{(A,=), (B,>)\}\models\{(A,=), (B,<)\}$. Notons que nous avons également $\{(A,=), (B,<)\} \models \{(A,=), (B,>)\}$
+\end{myexample} 
+
+En effet, par le lemme \ref{implicationReciproque}  nous avons que $\varphi \models \hat{\varphi}$. Mais nous avons aussi $\hat{\varphi} \models \varphi$ car $\hat{\hat{\varphi}} = \varphi$.
+
+\subsubsection{Implication logique d'ensemble de DC}
+
+\begin{mydef}
+Soit $\Sigma$ un ensemble de DCs sur $S$. Soit $I$ une relation sur $S$. On écrit $I \models \Sigma$ si $I \models\varphi'$ pour chaque $\varphi' \in \Sigma$.
+\end{mydef}
+
+Soit $\varphi$ une DC sur $S$. Nous écrivons $\Sigma \models \varphi$ si pour chaque relation $I$ sur $S$, nous avons $I \models \Sigma$ implique $I \models \varphi$. Nous allons montrer grâce à ça qu'il est possible de remplacer plusieurs DCs par une seule. En effet si un sous ensemble $\Sigma'$ de $\Sigma$ est tel que $\Sigma' \models \varphi$, si $\Sigma \models I$ alors $(\Sigma \backslash \Sigma') \cup \varphi \models I$. Parcourons plusieurs exemples:
+\begin{myexample}
+\label{firstEx}
+Soit $S=\{A,B,C\}$.
+Soit
+\begin{eqnarray*}
+\varphi_{1} & = & \{(A,<), (B,\geq)\}\\
+\varphi_{2} & = & \{(A,>), (C,\leq)\}\\
+\varphi & = & \{(A,\neq), (B,\geq), (C,\leq)\}
+\end{eqnarray*}
+Nous allons montrer $\{\varphi_{1},\varphi_{2}\}\models\varphi$.
+Soit une relation $I$ sur $S$ telle que $I\models\varphi_{1}$ (*) et $I\models\varphi_{2}$ (**).
+Supposons par l'absurde que $I\not\models\varphi$.
+Alors, nous pouvons supposer qu'il existe deux tuple $s,t\in I$ tels que nous avons
+$s(A)\neq t(A)$ et $s(B)\geq t(B)$ et $s(C)\leq t(C)$.
+Puisque $s(A)\neq t(A)$ et $(\dom,\leq)$ est un ordre total,
+deux cas peuvent se présenter:
+\begin{description}
+\item[Cas $s(A)<t(A)$.]
+Puisque $s(B)\geq t(B)$, nous avons $I\not\models\varphi_{1}$, ce qui est contradictoire avec (*).
+\item[Cas $s(A)>t(A)$.]
+Puisque $s(C)\leq t(C)$, nous avons $I\not\models\varphi_{2}$, ce qui est contradictoire avec (**).
+\end{description}
+Nous pouvons donc conclure que nous avons $I\models\varphi$.
+\end{myexample}
+
+\begin{myexample}
+\label{secondEx}
+
+Soit $S=\{A,B\}$.
+Soit
+\begin{eqnarray*}
+\varphi_{1} & = & \{(A,<), (B,\geq)\}\\
+\varphi_{2} & = & \{(A,>), (B,\leq)\}\\
+\varphi & = & \{(A,\neq), (B,=)\}
+\end{eqnarray*}
+Nous allons montrer que $\{\varphi_{1},\varphi_{2}\}\models\varphi$.
+Soit une relation $I$ sur $S$ telle que nous avons $I\models\varphi_{1}$ (*) et $I\models\varphi_{2}$ (**).
+Supposons par l'absurde que $I\not\models\varphi$.
+Dès lors nous pouvons dire qu'il existe deux tuples $s,t\in I$ tels que
+$s(A)\neq t(A)$ et $s(B)=t(B)$.
+Puisque $s(A)\neq t(A)$ et $(\dom,\leq)$ est un ordre total,
+deux cas de figure peuvent se produire:
+\begin{description}
+\item[Cas $s(A)<t(A)$.]
+Puisque $s(B)\geq t(B)$, nous avons$I\not\models\varphi_{1}$, ce qui est une contradiction avec (*).
+\item[Case $s(A)>t(A)$.]
+Puisque $s(B)\leq t(B)$, nous avons $I\not\models\varphi_{2}$, ce qui est une contradiction avec (**).
+\end{description}
+We conclude by contradiction that  $I\models\varphi$.
+\end{myexample}
+
+Les exemples précédents, nous suggère qu'il existe le Lemme suivant:\\
+
+\begin{mylemma}
+\label{simpliLemme}
+Soit $A \in S$ et soit $\Sigma$ = $\{\varphi_1 , \varphi_2,..., \varphi_n \}$ un ensemble de $n$ DCs sur $S$ et $\varphi$ une DC sur $S$ tel que:
+\begin{enumerate}
+\item $\varphi(A) = \varphi_1(A) \cup \varphi_2(A) \cup ... \cup \varphi_n(A)$;
+\item pour tout $B \in S \backslash \{ A \}$ , $\varphi(B) = \varphi_1(B) \cap \varphi_2(B) \cap  ... \cap \varphi_n(B)$
+\end{enumerate}
+
+alors nous avons $\{ \varphi_1 , \varphi_2 ,...,\varphi_n \} \models \varphi$
+\end{mylemma}
+
+\begin{proof}~\\
+Soit $I$ une relation sur $S$ tel que $I \models \varphi_1$,$I \models \varphi_2$,...,$I \models \varphi_n$. Supposons que $I \not\models \varphi$ et que les conditions 1 et 2 du Lemme sont respecté. Soit $A \in S$ et $s,t$ deux tuples de $I$. Alors nous pouvons dire par la définition de $I \not\models \varphi$ que nous avons:
+
+\begin{itemize} 
+\item $s.A \theta_A t.A$ avec $\theta_A = \varphi(A)$
+\item pour tout $B \in S \backslash \{A\}$ $s.A \theta_B t.A$ avec $\theta_B = \varphi_B$
+\end{itemize}
+
+Puisque nous avons la première condition du Lemme, nous avons que $\varphi(A) = \varphi_1(A) \cup \varphi_2(A) \cup ... \cup \varphi_n(A)$ et donc nous devons avoir $s.A \varphi_i(A) t.A$ avec $\varphi_i(A)$ un sous-ensemble de $\{<,=,>\}$ pour tout $\varphi_i \in \Sigma$ = $\{\varphi_1 , \varphi_2,..., \varphi_n \}$
+
+Puisque nous avons la seconde condition du Lemme, nous avons que pour tout $B \in S \backslash \{A\}$, on a  $\varphi(B) = \varphi_1(B) \cap \varphi_2(B) \cap  ... \cap \varphi_n(B)$ et donc nous avons $s.A \varphi_i(B) t.A$ avec $\varphi_i(B)$ un sous-ensemble de $\{<,=,>\}$ pour tout $\varphi_i \in \Sigma$ = $\{\varphi_1 , \varphi_2,..., \varphi_n \}$
+
+$n$ cas peuvent apparaitre:
+\begin{description}
+\item[Cas $s(A)\ \varphi_{1}(A) t(A)$.]
+Puisque $s(B)\ \varphi_{1}(B) t(B)$ pour tout $B\in S\setminus\{A\}$,
+nous avons $I\not\models\varphi_{1}$, une contradiction.
+\item[...]
+\item[Cas $s(A)\ \varphi_{i}(A) t(A)$.]
+Puisque $s(B)\ \varphi_{i}(B) t(B)$ pour tout $B\in S\setminus\{A\}$,
+nous avons $I\not\models\varphi_{i}$, une contradiction.
+\end{description}
+
+Dès lors par ces contradictions nous avons $I \models \varphi$
+\end{proof}
+
+Par le lemme \ref{simpliLemme}, nous pouvons simplifier nos ensemble de DC. En effet si nous avons un ensemble de DC $\Sigma$= $\{\varphi_1 , \varphi_2,..., \varphi_n \}$ et $\Sigma'$ = $\{ \varphi \}$ tel qu'ils respectent le lemme \ref{simpliLemme} alors nous pouvons remplacer $\Sigma$ par $\Sigma'$.\\
+
+Notons que l'exemple \ref{firstEx} est un cas particulier de l'exemple\ref{secondEx}. En effet, dans l'exemple \ref{firstEx} nous pouvons écrire $\varphi_1 = \{(A,<),(B,\geq),(C,\top)  \}$ et $\varphi_2 = \{(A,<),(B,\top),(C,\leq)  \}$.\\
+
+\begin{mycorollaire}
+Soit $\varphi_1,\varphi_2$ deux DC sur $S$. Soit $A \in S$ tel que $\varphi_1(A)\cup\varphi_2(A) = \top$. Soit $\varphi$ une DC sur $S \backslash \{ A\}$ tel que pour tout $B \in S \backslash \{ A\}$, nous avons $\varphi(B) = \varphi_1(B) \cap \varphi_2(B)$. Alors nous avons $\{\varphi_1,\varphi_2 \} \models \varphi$
+\end{mycorollaire}
+
+\subsection{Trivialité}
 
 Une DC peut être inutile et toujours vraie. De telles DC ne devraient pas être présentes dans la base de données puisqu'elles ne détecteront jamais aucune violation. Dans ce cas, on dira que la DC est \emph{triviale}. 
 \begin{mydef}
-	Une DC $\varphi$ est dite \emph{triviale} si $\forall I$ sur S, on a $I \models \varphi$
+	Une DC $\varphi$ est dite \emph{triviale} si pour tout $I$ sur S, on a $I \models \varphi$
 \end{mydef}
 
 \begin{mylemma} \label{trivialLemma}
-Soit $\varphi$ une DC sur $S$. alors $\varphi$ est triviale si et seulement si $\theta = \bot$ pour un prédicat de la forme $P=(A,\theta) \in pred(\varphi)$.
+Soit $\varphi$ une DC sur $S$. alors $\varphi$ est triviale si et seulement si nous avons $\theta = \bot$ pour un prédicat $P=(A,\theta) \in \varphi$.
 \end{mylemma}
 \begin{proof}
 ~\\
 \alinea \framebox{$\implies$}
-Supposons que pour chaque prédicat $P=(A,\theta) \in pred(\varphi)$ avec $\theta \neq \bot$. Soit $s,t$ deux tuples tel que pour chaque $P=(B,\theta)$, nous avons $s(B)\ \theta\ t(B)$ vrai.
+Supposons que pour chaque prédicat $P=(A,\theta) \in \varphi$ avec $\theta \neq \bot$. Soit $s,t$ deux tuples tel que pour chaque $P=(B,\theta)$, nous avons $s(B)\ \theta\ t(B)$ vrai.
 Puisque $\theta \neq \bot$ et que $\dom$ contient au moins deux éléments, $s,t$ peuvent être construit. Dès lors $\{s,t\}$ ne satisfont pas $\varphi$ puisque $\varphi$ n'est pas triviale.
 
 \framebox{$\impliedby$}
-Supposons qu'il existe un prédicat $P=(A,\theta) \in pred (\varphi)$ tel que $\theta = \bot$.
+Supposons qu'il existe un prédicat $P=(A,\theta) \in \varphi$ tel que $\theta = \bot$.
 Puisque $s(A) \bot t(A)$ est faux pour tout tuples $s,t$ sur $S$, aucune relation ne peut contenir deux tuples $s,t$ tel que $s(A) \bot t(A)$ est vrai.
 \end{proof}
 
 %TODO : trouver un exemple
 
-\subsubsection{Augmentation}
-
-Dans les chapitres suivants, nous verrons comment nous pouvons améliorer les DCs afin qu'elles puissent détecter les données erronées de manière correcte. Pour ce faire nous aurons besoin de modifier des prédicats et donc de changer les opérateurs de ceux ci. Mais modifier un opérateur $\top$ est inutile par la propriété suivante:
-
-\begin{myprop}
-%	If $\varphi = \neg (P_1 \wedge P_2 \wedge ... \wedge P_n)$ is a valid DC, then $\varphi ' = \neg(P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q)$ is also a valide DC
-	Soit une DC $\varphi$ sur S et une relation $I$ tel que $I \models \varphi$. Si il existe un prédicat $P_i = (A_i,\theta_i) \in pred(\varphi)$ tel que $\theta_i = \top$ alors pour la DC $\varphi'$ tel que $pred( \varphi' ) = pred( \varphi ) \textbackslash P_i$ avec $P_i' =(A_i,\theta_i)$ et $\theta_i \neq \top$, on a $I \models \varphi'$
-\end{myprop}
-
-
-
-Cette propriété est triviale. Souvenons nous que $\varphi$ est un DC tel que $I \models \varphi$ donc $\forall t \in I$ on a $\varphi$ vrai. Imaginons que $\varphi$ contienne le prédicat de la forme $(A,\top)$ Prenons $\varphi'$ une DC qui est la variante de $\varphi$ tel que $pred(\varphi) =  pred(\varphi')$ à l'exception du prédicat $(A,\top)$ qui devient $(A,\theta)$ avec $ \theta \neq \top$. Puisque $\varphi$ était satisfaite par $I$, il y avait déjà un autre prédicat de $\varphi$ qui était faut $\forall t \in I$. Donc $\varphi'$ est satisfaite pour qu'importe la valeur de $(A,\theta)$.
-
-\subsubsection{Transitivity}
-%In \cite{DCs} they defined the transitivity of DCs as:
+%\subsubsection{Augmentation}
+%
+%Dans les chapitres suivants, nous verrons comment nous pouvons améliorer les DCs afin qu'elles puissent détecter les données erronées de manière correcte. Pour ce faire nous aurons besoin de modifier des prédicats et donc de changer les opérateurs de ceux ci. Mais modifier un opérateur $\top$ est inutile par la propriété suivante:
 %
 %\begin{myprop}
-%	If $\varphi = \neg (P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q_1)$ and $\varphi ' = \neg (R_1 \wedge R_2 \wedge ... \wedge R_n \wedge Q_2)$ are both valid DCs and $Q_2 \in Imp(\overline{Q_1})$, \\ then $ \varphi '' = \neg(P_1 \wedge ... \wedge P_n \wedge R_1 \wedge ... \wedge R_n)$ is also a valid DC.
+%%	If $\varphi = \neg (P_1 \wedge P_2 \wedge ... \wedge P_n)$ is a valid DC, then $\varphi ' = \neg(P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q)$ is also a valide DC
+%	Soit une DC $\varphi$ sur S et une relation $I$ tel que $I \models \varphi$. Si il existe un prédicat $P_i = (A_i,\theta_i) \in pred(\varphi)$ tel que $\theta_i = \top$ alors pour la DC $\varphi'$ tel que $pred( \varphi' ) = pred( \varphi ) \textbackslash P_i$ avec $P_i' =(A_i,\theta_i)$ et $\theta_i \neq \top$, on a $I \models \varphi'$
 %\end{myprop}
 %
-%In other words if two \textbf{valid} DCs, each with one predicate that can't be false in the same time, then merging those DCs and removing the two predicates will produce a \textbf{valid} DC.
 %
-%It's possible to prove that:
 %
-%\begin{proof}~\\
-%	\hspace*{0.55cm} $\varphi$ is a valid DC : $\neg (P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q_1)$ is true.
-%	
-%	$\varphi '$ is a valid DC : $\neg (R_1 \wedge R_2 \wedge ... \wedge R_n \wedge Q_2)$ is true.
-%	
-%	$Q_2 \in Imp(\overline{Q_1})$ : $Q_1 \oplus Q_2$ is true%$Q_1 \wedge Q_2$ is false 
-%	
-%	then $\neg (P_1 \wedge ... \wedge P_n) \vee \neg (R_1 \wedge ... \wedge R_n \wedge Q_2) \equiv \varphi'' $ is true \footnote{$\neg p \vee \neg Q \equiv \neg (p \wedge q)$}
-%\end{proof}
+%Cette propriété est triviale. Souvenons nous que $\varphi$ est un DC tel que $I \models \varphi$ donc $\forall t \in I$ on a $\varphi$ vrai. Imaginons que $\varphi$ contienne le prédicat de la forme $(A,\top)$ Prenons $\varphi'$ une DC qui est la variante de $\varphi$ tel que $pred(\varphi) =  pred(\varphi')$ à l'exception du prédicat $(A,\top)$ qui devient $(A,\theta)$ avec $ \theta \neq \top$. Puisque $\varphi$ était satisfaite par $I$, il y avait déjà un autre prédicat de $\varphi$ qui était faut $\forall t \in I$. Donc $\varphi'$ est satisfaite pour qu'importe la valeur de $(A,\theta)$.
 
-\begin{myprop}
-	Soit $\varphi$ et $\varphi'$ deux DC sur $S$ et $I$ une relation sur $S$. Si $\varphi = \{P_1,P_2,...,P_{i-1},P_i\}$ est satisfaite par $I$ et $\varphi ' = \{P_i',P_{i+1},...,P_n \}$ satisfaite par $I$, avec $P_j$ prédicat de la forme $(A_j,\theta_j) \forall j \in \{1,...,n \}$ et $\theta_i' \in Imp(\overline{\theta_i})$, alors $\varphi'' = \{P_1,P_2,...,P_{i-1},P_{i+1},...,P_n\}$ est également satisfaite par $I$
-\end{myprop}
+%\subsection{Transitivity}
+%%In \cite{DCs} they defined the transitivity of DCs as:
+%%
+%%\begin{myprop}
+%%	If $\varphi = \neg (P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q_1)$ and $\varphi ' = \neg (R_1 \wedge R_2 \wedge ... \wedge R_n \wedge Q_2)$ are both valid DCs and $Q_2 \in Imp(\overline{Q_1})$, \\ then $ \varphi '' = \neg(P_1 \wedge ... \wedge P_n \wedge R_1 \wedge ... \wedge R_n)$ is also a valid DC.
+%%\end{myprop}
+%%
+%%In other words if two \textbf{valid} DCs, each with one predicate that can't be false in the same time, then merging those DCs and removing the two predicates will produce a \textbf{valid} DC.
+%%
+%%It's possible to prove that:
+%%
+%%\begin{proof}~\\
+%%	\hspace*{0.55cm} $\varphi$ is a valid DC : $\neg (P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q_1)$ is true.
+%%	
+%%	$\varphi '$ is a valid DC : $\neg (R_1 \wedge R_2 \wedge ... \wedge R_n \wedge Q_2)$ is true.
+%%	
+%%	$Q_2 \in Imp(\overline{Q_1})$ : $Q_1 \oplus Q_2$ is true%$Q_1 \wedge Q_2$ is false 
+%%	
+%%	then $\neg (P_1 \wedge ... \wedge P_n) \vee \neg (R_1 \wedge ... \wedge R_n \wedge Q_2) \equiv \varphi'' $ is true \footnote{$\neg p \vee \neg Q \equiv \neg (p \wedge q)$}
+%%\end{proof}
+%
+%\begin{myprop}
+%	Soit $\varphi$ et $\varphi'$ deux DC sur $S$ et $I$ une relation sur $S$. Si $\varphi = \{P_1,P_2,...,P_{i-1},P_i\}$ est satisfaite par $I$ et $\varphi ' = \{P_i',P_{i+1},...,P_n \}$ satisfaite par $I$, avec $P_j$ prédicat de la forme $(A_j,\theta_j) \forall j \in \{1,...,n \}$ et $\theta_i' \in Imp(\overline{\theta_i})$, alors $\varphi'' = \{P_1,P_2,...,P_{i-1},P_{i+1},...,P_n\}$ est également satisfaite par $I$
+%\end{myprop}
+%
+%En d'autre mots, il est possible de fusionner deux denial constraint satisfaites par $I$ si ces deux contraintes possèdent chacune un prédicat sur un même attribut et si ces prédicats ne peuvent pas être faux en même temps. Alors, la fusion de ces deux contraintes sans les deux prédicats est toujours satisfaite.
 
-En d'autre mots, il est possible de fusionner deux denial constraint satisfaites par $I$ si ces deux contraintes possèdent chacune un prédicat sur un même attribut et si ces prédicats ne peuvent pas être faux en même temps. Alors, la fusion de ces deux contraintes sans les deux prédicats est toujours satisfaite.
+%\subsubsection{Raffinement}
+%\label{RaffinementSection}
+%Dans l'article \cite{main} ils définissent le raffinement d'une denial constraint comme étant:
+%
+%\begin{mydef}
+%% $\varphi_2$ is a \textbf{refinement} of $\varphi_1$, denoted by $\varphi_1 \preceq \varphi_2$, if for each $ P$ : $x\phi_1 y \in pred(\varphi_1)$, there exists a $Q : x \phi_2 y \in pred(\varphi_2)$ such that $\phi_1 \in Imp(\phi_2)$
+% $\varphi_2$ est un \textbf{raffinement} de $\varphi_1$, noté $\varphi_1 \preceq \varphi_2$, Si pour chaque prédicat $(A,\theta_A) \in pred(\varphi_1)$ on a un prédicat $(A,\theta_A') \in pred(\varphi_2)$ tel que $\theta_A'$ implique $\theta_A$ ($\theta_A' \in Imp(\theta_A)$) 
+%\end{mydef}
 
-\subsubsection{Raffinement}
-\label{RaffinementSection}
-Dans l'article \cite{main} ils définissent le raffinement d'une denial constraint comme étant:
-
-\begin{mydef}
-% $\varphi_2$ is a \textbf{refinement} of $\varphi_1$, denoted by $\varphi_1 \preceq \varphi_2$, if for each $ P$ : $x\phi_1 y \in pred(\varphi_1)$, there exists a $Q : x \phi_2 y \in pred(\varphi_2)$ such that $\phi_1 \in Imp(\phi_2)$
- $\varphi_2$ est un \textbf{raffinement} de $\varphi_1$, noté $\varphi_1 \preceq \varphi_2$, Si pour chaque prédicat $(A,\theta_A) \in pred(\varphi_1)$ on a un prédicat $(A,\theta_A') \in pred(\varphi_2)$ tel que $\theta_A'$ implique $\theta_A$ ($\theta_A' \in Imp(\theta_A)$) 
-\end{mydef}
-
-\begin{myexample}
-	Soit $\varphi_1 = \{(Taxe,\leq),(Revenu,<) \}$ et $\varphi_2 = \{(Taxe,<),(Revenu,<),(Ann\'ee,=) \}$ nous avons $\varphi_2 \preceq \varphi_1$ car $\varphi_1(Taxe) \in Imp(\varphi_2(Taxe))$ et $\varphi_1(Revenu) \in Imp(\varphi_2(Revenu))$ et $\varphi_1(Ann\'ee) \in Imp(\varphi_2(Ann\'ee))$
-\end{myexample}
-
-Notons que $\varphi$ est raffinement de lui même et que remplacer l'opérateur $\top$ d'un prédicat par n'importe quel autre
-\begin{mydef}
- $\Sigma_2$ est \textbf{raffinement} de $\Sigma_1$, noté $\Sigma_1 \preceq \Sigma_2$, si pour chaque $ \varphi_2 \in \Sigma_2$, Il existe un $\varphi_2 \in \Sigma_1$ tel que $\varphi_1 \preceq \varphi_2$
-\end{mydef}
-
-Si nous voulons changer moins de données, nous pouvons raffiner nos DC. Dans notre exemple précédent, la nouvelle denial constraint est plus faible que la précédente, diminuant le nombre de tuples détecté comme étant une violation.
+%\begin{mydef}
+%On dit que $\varphi_2$ est un raffinement de $\varphi_1$, noté $\varphi_1 \preceq \varphi_2$  si pour chaque attribut $A \in S$,
+%nous avons que $\varphi_2(A) \subseteq \varphi_1(A)$.  
+%\end{mydef}
+%
+%\begin{myexample}
+%	Soit $\varphi_1 = \{(Taxe,\leq),(Revenu,<) \}$ et $\varphi_2 = \{(Taxe,<),(Revenu,<),(Ann\'ee,=) \}$ nous avons $\varphi_2 \preceq \varphi_1$ car $\varphi_1(Taxe) \in Imp(\varphi_2(Taxe))$ et $\varphi_1(Revenu) \in Imp(\varphi_2(Revenu))$ et $\varphi_1(Ann\'ee) \in Imp(\varphi_2(Ann\'ee))$
+%\end{myexample}
+%
+%Notons que $\varphi$ est raffinement de lui même et que remplacer l'opérateur $\top$ d'un prédicat par n'importe quel autre
+%\begin{mydef}
+% $\Sigma_2$ est \textbf{raffinement} de $\Sigma_1$, noté $\Sigma_1 \preceq \Sigma_2$, si pour chaque $ \varphi_2 \in \Sigma_2$, Il existe un $\varphi_2 \in \Sigma_1$ tel que $\varphi_1 \preceq \varphi_2$
+%\end{mydef}
+%
+%Si nous voulons changer moins de données, nous pouvons raffiner nos DC. Dans notre exemple précédent, la nouvelle denial constraint est plus faible que la précédente, diminuant le nombre de tuples détecté comme étant une violation.
 
 \chapter{Data Repairing}
 
@@ -554,10 +697,10 @@ Le but d'une réparation de données est de trouver une nouvelle relation $I'$ q
 \end{mydef}
 
 \begin{mydef}
-	Soit $\Sigma$ un ensemble de DC sur $S$. Soit une relation $I$ sur $S$. Une \emph{réparation de $I$} est une fonction $f$ de domaine $I$ qui attribue à chaque tuple $t$ de $I$ un nouveau tuple $f(t)$ tel que $f(t) \models \Sigma$. L'ensemble d'arrivée de $f$ est noté $I'=f(I)$. On a donc $I' \models \Sigma$
+	Soit $\Sigma$ un ensemble de DC sur $S$. Soit une relation $I$ sur $S$. Une \emph{réparation de $I$} est une fonction $f$ de domaine $I$ qui attribue à chaque tuple $t$ de $I$ un nouveau tuple $f(t)$. L'ensemble d'arrivée de $f$ est noté $I'=f(I)$. On a donc $I' \models \Sigma$
 \end{mydef}
 
-Donc, lorsque l'on parle de réparation de données, on cherche à trouver $I'$ tel que $I' \models \Sigma$ c'est à dire une nouvelle instance où toutes les violations dans le set de contrainte $\Sigma$ sont éliminées. Nous allons considérer que lors d'une réparation, nous ne supprimons pas de tuples mais que nous le modifions. En effet, chaque ligne de la table est susceptible de contenir des précieuses informations. Chaque ligne supprimée diminuerait la quantité d'informations utiles de la base de données. Dans de nombreux cas, seules quelques colonnes de la table contiennent quelques erreurs et les autres colonnes ne présentent aucun problème.  Nous n'ajoutons pas de tuples à la relation. Lorsqu'un tuple $t$ est réparé celà peut conduire à avoir deux tuples identiques. \\
+Donc, lorsque l'on parle de réparation de données, on cherche à trouver $I'$ tel que $I' \models \Sigma$ c'est à dire une nouvelle instance où toutes les violations dans le set de contrainte $\Sigma$ sont éliminées. Nous allons considérer que lors d'une réparation, nous ne supprimons pas de tuples mais que nous les modifions. En effet, chaque ligne de la table est susceptible de contenir des précieuses informations. Chaque ligne supprimée diminuerait la quantité d'informations utiles de la base de données. Dans de nombreux cas, seules quelques colonnes de la table contiennent quelques erreurs et les autres colonnes ne présentent aucun problème.  Nous n'ajoutons pas de tuples à la relation. Lorsqu'un tuple $t$ est réparé celà peut conduire à avoir deux tuples identiques. \\
 
 \begin{myexample}
 	Soit la relation $I$ suivante:\\
@@ -579,9 +722,9 @@ Donc, lorsque l'on parle de réparation de données, on cherche à trouver $I'$ 
 		\end{array}  
 		$$
 	\end{minipage}~\\
-et la DC $\varphi = \{ (A,=),(B,\neq\}$. Nous avons $I' \models \varphi$ et $I \not\models \varphi$. $I'$ est une réparation de $I$, le tuple $(a,c)$ a été modifié en $(a,b)$
+et la DC $\varphi = \{ (A,=),(B,\neq)\}$. Nous avons $I' \models \varphi$ et $I \not\models \varphi$. $I'$ est une réparation de $I$, le tuple $(a,c)$ a été modifié en $(a,b)$
 
-Notons ici la présence de deux lignes identiques dans l'instance I'. Ce n'est pas une pratique courante dans les bases de données, nous sommes donc dans ce cas ci autorisé à supprimer un des lignes ce qui nous donne :\\
+Notons ici la présence de deux lignes identiques dans l'instance I'. Ce n'est pas une pratique courante dans les bases de données, nous sommes donc dans ce cas ci autorisé à supprimer une des lignes ce qui nous donne :\\
 $$
 		\begin{array}{c|cc}
 		I' & A & B\\\cline{2-3}
@@ -595,34 +738,42 @@ $$
 La réparation de données suit le principe du changement minimum: La nouvelle relation $I'$ doit minimiser le coût de réparation de données défini comme étant:
 
 \begin{mydef}
- Soit $I$ une relation sur $S$ et $f(I)$=$I'$ une réparation de $I$, alors le coût de réparation est le suivant:
- $$ \Delta(I,I') = \sum_{t \in I, A \in S} w(t.A).dist(t.A,f(t).A) $$
+ Soit $I$ une relation sur $S$ et $f(I)$ une réparation de $I$, alors le coût de réparation est le suivant:
+ $$ \Delta(I,f(I)) = \sum_{t \in I, A \in S} w(t.A).dist(t.A,f(t).A) $$
  où:
  \begin{itemize}
  	\item $dist(t.A,f(t).A)$ est la distance entre la valeur $t.A$ et sa réparation $f(t).A$.
- 	\item $w(t.A)$ est un poid sur la valeur $t.A$.
+ 	\item $w(t.A)$ est un poids sur la valeur $t.A$.
  \end{itemize}
 \end{mydef}
 
-Dans le coût, nous avons un poid $w(t.A)$ pour un attribut $A \in S$ et un tuple $t \in I$. Ce poid correspond à la confiance que l'on accorde en la valeur de $t$ pour l'attribut $A$. On peut grâce à cette valeur influencer la réparation de données pour privilégier la réparation d'une valeur plutôt qu'une autre. Pour pouvoir assigner un poids $w(t.A)$, il faut avoir une bonne connaissance du contexte de la base de données d'origine. Il est courant d'avoir la même valeur pour $w(t.A)$ et $w(s.A)$ avec $s,t \in I$ car en général on a connaissance de la confiance pour un attribut en particulier pas pour chaque valeur du tuple. Par exemple, pour la table \ref{tablePerson}, nous pouvons supposer qu'une valeur pour l'attribut \emph{Enfant} est plus susceptible d'être précise que la valeur pour l'attribut \emph{Salaire} ou \emph{Taxe}. Lorsqu'on manque de connaissances sur la base de données, on fixe le même poids à chaque attribut.\\
+Dans le coût, nous avons un poids $w(t.A)$ pour un attribut $A \in S$ et un tuple $t \in I$. Ce poids correspond à la confiance que l'on accorde en la valeur de $t$ pour l'attribut $A$. On peut grâce à cette valeur influencer la réparation de données pour privilégier la réparation d'une valeur plutôt qu'une autre. Pour pouvoir assigner un poids $w(t.A)$, il faut avoir une bonne connaissance du contexte de la base de données d'origine. Il est courant d'avoir la même valeur pour $w(t.A)$ et $w(s.A)$ avec pour tout $s,t \in I$ car en général on a connaissance de la confiance pour un attribut en particulier pas pour chaque valeur du tuple. On remplace donc $w(t.A)$ par $w(A)$dans notre formule. Par exemple, pour la table \ref{tablePerson}, nous pouvons supposer qu'une valeur pour l'attribut \emph{Enfant} est plus susceptible d'être précise que la valeur pour l'attribut \emph{Salaire} ou \emph{Taxe}. Lorsqu'on manque de connaissances sur la base de données, on fixe le même poids à chaque attribut. Nous supprimons donc le poids $w(t.A)$ dans notre formule.\\
 
 Le coût de réparation peut être le nombre de valeurs de $I$ que l'on a changées si nous décidons que:
 $$
 dist(t.A,f(t).A) =
 \left\{
 	\begin{array}{ll}
-	  1 \; Si\; t.A \neq f(t).A \;(La\ valeur\ a\ chang\acute{e}) \\
-	  0 \; Sinon\;(aucun\ changement\ n'est\ fait)
+	  1 \; si\; t.A \neq f(t).A \;(La\ valeur\ a\ chang\acute{e}) \\
+	  0 \; sinon\;(aucun\ changement\ n'est\ fait)
 	\end{array}
 \right.
 $$
 Nous pouvons aussi décider que la distance est égale à la différence entre les deux valeurs dans le cas d'un attribut numérique. Pour un attribut de type chaine de caractère, nous pouvons utiliser la distance d'édition \footnote{Le nombre minimum d'opération nécessaire pour transformer la chaine de caractère initiale en la chaine de caractère cible}.\\
 
-Pour réparer une donnée, nous devons remplacer sa valeur par une autre plus adéquate. Mais quel valeur choisir? Dans l'article de référence principal \cite{main}, si la valeur $t.A$ est erronée, ils essayent de trouver une valeur pour $f(t).A$ qui soit dans le $\dom (A)$ et qui respecte les contraintes. Si ce n'est pas possible ils attribuent une \emph{variable fraiche $fv$} à $t.A$. \\
+Pour réparer une donnée, nous devons remplacer sa valeur par une autre plus adéquate. Mais quel valeur choisir? Dans l'article de référence principal \cite{main}, si la valeur $t.A$ est erronée, les auteurs essayent de trouver une valeur pour $f(t).A$ qui soit dans le domaine actif $\dom (A,I)$ et qui respecte les contraintes. Le domaine actif $\dom(A,I)$ est l'ensemble de toues les valeurs de $A$ dans $I$. Si ce n'est pas possible ils attribuent une \emph{variable fraiche $fv$} à $t.A$. \\
 
 \begin{mydef}
-Une \emph{variable fraiche}$fv$ est une valeur qui ne satisfait aucun prédicat c'est à dire : soit $\varphi$ une DC sur $S$ et $I$ une relation sur $S$. Une variable fraiche $fv$ pour $A \in S$ est une valeur tel que $fv \not\in \dom(A)$ le prédicat $(A,\theta_A) \in pred(\varphi)$ est toujours faux quelque soit l'opérateur $\theta_A$ donc pour tout tuple $t$ avec $t \in I$, si $t.A = fv$ alors $t \models \varphi$.
+Une \emph{variable fraiche}$fv$ est une valeur qui ne satisfait aucun prédicat c'est à dire : soit $\varphi$ une DC sur $S$ et $I$ une relation sur $S$. Une variable fraiche $fv$ pour $A \in S$ est une valeur tel que $fv \not\in \dom(A,I)$ le prédicat $(A,\theta_A) \in \varphi$ est toujours faux quelque soit l'opérateur $\theta_A$ donc pour tout tuple $s,t$ avec $t \in I$, si $t.A = fv$ alors ${s,t} \models \varphi$.
 \end{mydef}
+
+L'ajout des variables fraiches a un impact très important sur la théorie vue lors du chapitre précédent. Premièrement nous savons que pour tout tuples $s,t \in I$, le prédicat $s.A \theta t.A$ est toujours vrai si $\theta = \top$. Si $s.A$ ou $t.A$ est une variable fraiche le prédicat devient faux malgré que $\theta = \top$. Ceci nous force à redéfinir plus précisément l'opérateur $\top$ lorsque des variables fraiches étendent le domaine $\dom$:
+
+\begin{mydef}
+Soit $I$ une relation sur $S$, pour tout tuples $s,t \in I$, si $s.A,t.A \in \dom(A,I)$ pour $A \in S$, alors $s.A \top t.A$ est toujours vrai.
+\end{mydef}
+
+Autre impact important est que nous avons $fv = fv$ faux ainsi que $fv \neq fv$ faux. De manière générale, $fv \theta fv$ et $fv \overline{\theta} fv$ sont tous les deux faux. Ce comportement ne se retrouve pas avec des valeurs de $\dom$. En effet par la définition de $\overline{\theta}$ , pour tout tuples $s,t \in I$ et un attribut $A \in S$, si $s.A,t.A \in \dom(A,I)$, $s.A \theta t.A$ et $s.A \overline{\theta} t.A$ ne peuvent être vraie ou faux en même temps.\\
 
 Nous allons procéder de manière un peu différente par rapport à l'article de référence \cite{main}. Nous allons automatiquement attribuer une nouvelle valeur $fv$ pour chaque donnée erronée. Par la suite, nous allons essayer de trouver une valeur adéquate pour remplacer la valeur fraiche $fv$ si possible. Une des motivations derrière ce changement vient du fait qu'après une réparation, certaines valeurs du domaine n'y figurent plus (ces valeurs étaient erronées). De plus il n'est pas pertinent de croire que si une valeur du domaine peut réparer une valeur erronée, alors elle est forcément la bonne valeur. Une valeur en dehors du domaine peut tout aussi bien convenir.\\
 
@@ -633,14 +784,14 @@ Prenons un exemple pour relation $I$ la table \ref{tableMain}. Supposons que not
 
 $$ \varphi = \{(Revenu,>),(Taxe,\leq)\}$$
 
-En d'autres termes, on suppose par cette contrainte que si une première personne perçoit un revenu annuel plus élevé qu'une seconde personne, alors la première personne doit payer un montant de taxe annuelle plus élevé. Nous avons $(t_2,t_1) \not\models \varphi$ parce que $t_2.Revenu\ >\ t_1.Revenu$ et $t_2.Taxe\ \leq\ t_1.Taxe$. Nous avons également $(t_3,t_1) \not\models \varphi,(t_5,t_1) \not\models \varphi,...$. Toutes les violations de $\varphi$ peuvent être trouvé à la figure \ref{BadTax}. Une réparation $I'$ de $I$ pourrait être la table \ref{tableExample}.
+nous pouvons interpréter cette relation comme étant : si $t.Revenu > s.Revenu$ alors $t.Taxe > s.Taxe$. En d'autres termes, on suppose par cette contrainte que si une première personne perçoit un revenu annuel plus élevé qu'une seconde personne, alors la première personne doit payer un montant de taxe annuelle plus élevé. Nous avons $\{t_2,t_1\} \not\models \varphi$ parce que $t_2.Revenu\ >\ t_1.Revenu$ et $t_2.Taxe\ \leq\ t_1.Taxe$. Nous avons également $\{t_3,t_1\} \not\models \varphi,\{t_5,t_1\} \not\models \varphi,...$. Toutes les violations de $\varphi$ peuvent être trouvé à la figure \ref{BadTax}. Une réparation $I'$ de $I$ pourrait être la table \ref{tableExample}.
 
 
 \begin{table}[H]
 	\centering
 	\begin{tabular}{|c|c c c c c c c c c c|}
 	\hline
-	   & $t_1$ & $t_2$ & $t_3$ &$t_4$ &$t_5$ &$t_6$ &$t_7$ &$t_18$ &$t_9$ &$t_10$ \\
+	   & $t_1$ & $t_2$ & $t_3$ &$t_4$ &$t_5$ &$t_6$ &$t_7$ &$t_8$ &$t_9$ &$t_{10}$ \\
 	\hline
 	 Taxe & 0 & \color{red} $fv_1$ & \color{red} $fv_2$& 3k & \color{orange}$fv_3$& \color{orange} $fv_4$& \color{orange} $fv_5$& 21k & 21k & 40k\\
 	 \hline
@@ -677,7 +828,7 @@ Nous avons assigné une variable fraiche $fv_1$ comme valeur pour $t_2.Taxe$ mai
 Nous pouvons calculer le coût de réparation pour la relation de la table \ref{tableMain} en considérant les distances suivantes:\\
 
 $$
-\forall a \in dom(A) \ avec \ a \neq b.
+\forall a,b \in dom(A,I) \ avec \ a \neq b, fv \not\in\dom(A,I).
 \left\{
 	\begin{array}{ll}
 	   dist(a,a)=0\\
@@ -701,7 +852,7 @@ Par exemple prenons la DC suivante:
 
 $$ \varphi = \{(Revenu,>),(Taxe,\leq) \} $$
 
-La denial constraint $\varphi$ exprime le fait que si je reçois un revenu plus élevé qu'une autre personne, alors je dois payer un montant de taxe strictement plus élevé. Nous allons modifier $\varphi$ pour obtenir une nouvelle denial constraint $\varphi'$ en changeant le prédicat $(Taxe,\leq)$ en $(Taxe,<)$. Dès lors, maintenant $\varphi'$ exprime le fait que si je reçois un revenu plus élevé qu'une autre personne, alors je dois payer un montant de taxe plus élevé ou équivalent. Cela permet d'exempter de taxe plusieurs personnes ayant un Revenu faible, mais différent les uns des autres. 
+Nous pouvons traduire la DC $\varphi$ de la manière suivante : pour tout tuples $s,t \in I$ si $t.Revenu>s.Revenu$ alors $t.Taxe > s.Taxe$. Cette DC exprime le fait que si une personne reçoit un revenu plus élevé qu'une autre personne, alors elle doit payer un montant de taxe strictement plus élevé. Nous allons modifier $\varphi$ pour obtenir une nouvelle denial constraint $\varphi'$ en changeant le prédicat $(Taxe,\leq)$ en $(Taxe,<)$, ce qui peut se traduire comme étant : pour tout tuples $s,t \in I$ si $t.Revenu>s.Revenu$ alors $t.Taxe > s.Taxe$. Dès lors, maintenant $\varphi'$ exprime le fait que si une personne reçoit un revenu plus élevé qu'une autre personne, alors cette personne doit payer un montant de taxe plus élevé ou équivalent. Cela permet d'exempter de taxe plusieurs personnes ayant un Revenu faible, mais différent les uns des autres. 
 
 $$ \varphi' = \{(Revenu,>),(Taxe,<) \} $$
 
@@ -711,7 +862,7 @@ Avec cette nouvelle contrainte, nous avons moins de violations détectées. Tout
 	\centering
 	\begin{tabular}{|c|c c c c c c c c c c|}
 	\hline
-	   & $t_1$ & $t_2$ & $t_3$ &$t_4$ &$t_5$ &$t_6$ &$t_7$ &$t_18$ &$t_9$ &$t_10$ \\
+	   & $t_1$ & $t_2$ & $t_3$ &$t_4$ &$t_5$ &$t_6$ &$t_7$ &$t_8$ &$t_9$ &$t_{10}$ \\
 	\hline
 	 Taxe & 0 & 0 & 0 & \textcolor{red}{$fv_1$} & 0 & 0 & 0 & 21k & 21k & 40k\\
 	 \hline
@@ -726,7 +877,7 @@ Avec cette nouvelle contrainte, nous avons moins de violations détectées. Tout
 	\caption{\label{GoodTax} All the violation for $\varphi '$}
 \end{figure}
 
-Contrairement à la réparation de $\varphi$ qui proposait une correction avec 5 variables fraiches (voir table \ref{tableExample}), nous 'avons ici qu'une seule variable fraiche. De plus, nous savons certaines choses à propos de cette variable fraiche:
+Contrairement à la réparation de $\varphi$ qui proposait une correction avec cinq variables fraiches (voir table \ref{tableExample}), nous avons ici qu'une seule variable fraiche. De plus, nous savons certaines choses à propos de cette variable fraiche:
 
 \begin{enumerate}
 
@@ -739,9 +890,9 @@ Nous avons donc $0 \leq fv_1 \leq 0$, dès lors la seule valeur possible pour re
 
 \end{myexample}
 
-Nous voyons donc que la modification de la contrainte conduit à un coût de réparation plus faible. Mais modifier une contrainte doit aussi avoir un coût. En effet , si on ne donne pas de coût à la modification d'une contrainte, il suffirait de sur-raffiné toutes nos contraintes pour détecter moins de violations et donc faire moins de modifications. Nous allons aussi considérer que nous n'ajoutons pas DC ni n'en retirons de $\Sigma$ pour obtenir $\Sigma'$ et donc $|\Sigma| = |\Sigma'|$.\\
+Nous voyons donc que la modification de la contrainte conduit à un coût de réparation plus faible. Mais modifier une contrainte doit aussi avoir un coût. En effet , si on ne donne pas de coût à la modification d'une contrainte, il suffirait de sur-raffiner toutes nos contraintes pour détecter moins de violations et donc faire moins de modifications. Nous allons aussi considérer que nous n'ajoutons pas DC ni n'en retirons de $\Sigma$ pour obtenir $\Sigma'$ et donc $|\Sigma| = |\Sigma'|$.\\
 
-Nous devons désormais définir une marche à suivre concernant les variations de DC. Nous devons trouver un moyen de définir un coût de variation. Considérons le treillis tel qu'illustré à la figure \ref{treillis} pour un attribut $A$ de $S$. Chaque nœud du treillis représente un prédicat différent pour $A$, donc $A$ associé à un opérateur, un des éléments de l'ensemble puissance de $OP$. Descendre dans une branche du treillis consiste à ajouter un élément de $OP$ à l'opérateur. Par exemple passer de $(A,<)$ à $(A,\leq)$ consiste à ajouter l'opérateur $=$ à $\{ < \}$. Lorsque l'on monte dans le treillis, on retire un élément de $OP$ à l'opérateur. Par exemple, passer de $(A, \geq)$ à $(A,=)$ consiste à retirer l'opérateur $>$ à $\{ >,= \}$.\\
+Nous devons désormais définir une marche à suivre concernant les variations de DC. Nous devons trouver un moyen de définir un coût de variation. Considérons le treillis tel qu'illustrer à la figure \ref{treillis} pour un attribut $A$ de $S$. Chaque nœud du treillis représente un prédicat différent pour $A$, donc $A$ associé à un opérateur, un des éléments de l'ensemble puissance de $OP$. Descendre dans une branche du treillis consiste à ajouter un élément de $OP$ à l'opérateur et donc à rendre la DC plus forte. Par exemple passer de $(A,<)$ à $(A,\leq)$ consiste à ajouter l'opérateur $=$ à $\{ < \}$. Le noeud le plus bas est $(A,\top)$ et la DC sur $S = \{ A \}$ qui n'est même pas satisfiable. Lorsque l'on monte dans le treillis, on retire un élément de $OP$ à l'opérateur. Par exemple, passer de $(A, \geq)$ à $(A,=)$ consiste à retirer l'opérateur $>$ à $\{ >,= \}$. Le nœud le plus haut dans le treillis est $(A,\bot)$ qui est trivial.\\
 
 \begin{figure}
 	\centering
@@ -750,7 +901,7 @@ Nous devons désormais définir une marche à suivre concernant les variations d
 \end{figure}
 
 % déplacer section suivante$
-Nous devons modifier nos DC de telle manière qu'une contrainte sur-raffinée ou sur-simplifiée ne le soit plus. Si une DC est sur-raffinée, nous devons descendre dans le treillis. En effet , plus on descend dans le treillis, plus le prédicat sur l'attribut $A$ sera faible, i.e la DC sera faible. A l'inverse, si une DC est sur-simplifiée; nous devons monter dans le treillis. En effet plus nous montons dans le treillis, plus le prédicat sur l'attribut $A$ sera fort, i.e la DC sera plus forte. Plus nous changeons de prédicats, plus le \emph{coût de variation des contraintes} sera important. Le \emph{coût de variation des contraintes} se définit comme tel: 
+Nous devons modifier nos DC de telle manière qu'une contrainte sur-raffinée ou sur-simplifiée ne le soit plus. Si une DC est sur-raffinée, nous devons monter dans le treillis. En effet , plus on monte dans le treillis, plus le prédicat sur l'attribut $A$ sera fort, i.e la DC sera fort. A l'inverse, si une DC est sur-simplifiée; nous devons descendre dans le treillis. En effet plus nous descendons dans le treillis, plus le prédicat sur l'attribut $A$ sera faible, i.e la DC sera plus faible. Plus nous changeons de prédicats, plus le \emph{coût de variation des contraintes} sera important. Le \emph{coût de variation des contraintes} se définit comme tel: 
 
 \begin{mydef}
 Soit $\Sigma$ un ensemble de DC sur un ensemble $S$. Pour une variante $\Sigma '$ de $\Sigma$, la fonction de calcul du \emph{coût de variations des contraintes} de $\Sigma$ est:
@@ -762,26 +913,33 @@ $$\Theta (\Sigma,\Sigma ') = \sum_{\varphi in \Sigma} edit(\varphi,\varphi ')$$
 
 La fonction $edit(\varphi , \varphi ')$ qui indique le coût pour changer $\varphi$ en $\varphi'$ est défini comme étant:
 
-\begin{mydef}
+\begin{mydef} \label{edit}
+
 $$
  edit(\varphi, \varphi') = \sum_{A \in S} path(\varphi(A),\varphi'(A))$$
  
 avec $path(\varphi(A),\varphi'(A))$ le coût du chemin emprunté dans le treillis.
 \end{mydef}
 
-Si nous considérons notre treillis comme un graphe, il reste maintenant à trouver le poids de chacun des arcs de ce graphe.
+Nous avons représenter un treillis pour un seul prédicat. Si nous souhaitons représenté le treillis pour deux prédicats, nous avons besoins de $8^2$ = $64$ nœud ce qui n'est visuellement pas pratique. Nous avons choisis la solution de représenté deux treillis, un pour chacun des attributs et la variation consiste à se déplacer dans les deux treillis à la fois et de sommer le coût des deux chemins (voir formule de la définition \ref{edit}). Les deux approches donnent le même résultat.
+
+Nous souhaitons que notre coût de variations des contraintes ne soit pas trop élevé. Pour ce faire, nous avons besoin que ce coût n'excède pas une valeur $\theta$. Plus tard lorsque nous présenterons l'algorithme de réparation, nous devrons choisir un paramètre $\theta$ pour limiter le coût de variation.\\
+
+Si nous considérons notre treillis comme un graphe, il reste maintenant à trouver le poids de chacun des arcs de ce graphe. 
 
 \subsection{Parcours dans le treillis}
 
-	Maintenant que nous avons défini le poids de variation des contraintes, regardons le coût pour se déplacer dans le treillis. Soit $\varphi$ une DC sur $S$ et $\varphi'$ une variante de $\varphi$. Soit $A$ un attribut sur $S$. Le cout pour passer de $\varphi(A)$ à $\varphi'$, i.e la valeur de $path(\varphi(A),\varphi'(A)$ est le coût du plus court chemin du treillis. Le treillis doit être vu comme un graphe pouvant être parcouru dans les deux sens. Le poids de chaque arc est de $c(A)$, $c(A)$ étant une valeur symbolisant la confiance qu'on accorde à la valeur de $A$. Si on n'a aucune connaissance sur la base de données, $c(A) =c(B)$ , pour tout $A,B \in S$.
+	Maintenant que nous avons défini le poids de variation des contraintes, regardons le coût pour se déplacer dans le treillis. Soit $\varphi$ une DC sur $S$ et $\varphi'$ une variante de $\varphi$. Soit $A$ un attribut sur $S$. Le cout pour passer de $\varphi(A)$ à $\varphi'$, i.e la valeur de $path(\varphi(A),\varphi'(A)$ est le coût du plus court chemin du treillis. Le treillis doit être vu comme un graphe pouvant être parcouru dans les deux sens. Pour un attribut $A\in S$, le poids de chaque arc est de $c(A)$, $c(A)$ étant une valeur symbolisant la confiance qu'on accorde à la valeur de $A$. Si on n'a aucune connaissance sur la base de données, $c(A) =c(B)$ , pour tout $A,B \in S$.
 	
 \begin{myexample}
-	Soit $\varphi = \{(Taxe,\leq),(Revenu,<) \}$ et $\varphi' = \{(Taxe,>)(Revenu,<) \}$ et c(A) =1.
+	Soit $\varphi = \{(Taxe,\leq),(Revenu,<) \}$ et $\varphi' = \{(Taxe,>)(Revenu,<) \}$ et c(Taxe) = c(Revenu) =1.
 	
 	Pour passer de $(Taxe,\leq)$ à $(Taxe,>)$, un chemin possible est $(Taxe,\leq) \rightarrow (Taxe,<) \rightarrow (Taxe,\bot) \rightarrow (Taxe,>)$ et ce chemin à un coût de 3.
 \end{myexample}
 
-Par observation, on peut facilement se rendre compte que le plus court chemin du treillis est de longueur 3 maximum. Dans les sous-sections qui suivent, nous verrons qu'il sera important de limiter nos candidats, ce qui modifiera éventuellement le poids de certains arcs.
+Par observation, on peut facilement se rendre compte que le plus court chemin d'un treillis est de longueur 3 maximum. Dans les sous-sections qui suivent, nous verrons qu'il sera important de limiter nos candidats, ce qui modifiera éventuellement le poids de certains arcs.\\
+
+Nous avons vu dans le chapitre précédent un lemme disant que $\varphi \models \hat{\varphi}$ et que nous avons aussi $\hat{varphi} \models \varphi$ pour $\varphi$ une DC sur $S$. Pourtant pour modifier $\varphi$ en $\hat{\varphi}$, nous avons un coût non nul. Ce n'est pas un problème, la réparation d'une relation $I$ sera la même peut importe qu'on ait $\varphi$ ou $\hat{\varphi}$ dans l'ensemble des DC. Dès lors le coût de réparation sera le même, et puisque l'on cherche à minimiser le coût de réparation aucun des deux ensemble ne sera privilégié par rapport à l'autre.
 
 \subsection{Limitation des candidats}
 
