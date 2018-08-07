@@ -948,25 +948,26 @@ Dans notre treillis, nous avons 8 nœuds. Pour une DC sur un ensemble $S$ de tai
 
 Nous savons déjà par le chapitre précédent que les contraintes triviales sont inutiles. En effet, une contrainte triviale sera toujours vraie et donc considérera tous les tuples comme étant corrects. Le Lemme \ref{trivialLemma} nous permet de rejeter toutes les DC dont au moins un des prédicats est de la forme $(A,\bot)$.\\
 
-Nous avons également besoin que la denial constraint soit satisfiable. Si une DC n'est pas satisfiable alors elle possède uniquement des prédicats avec l'opérateur $\top$ ou $=$. Nous pouvons donc rejeter toutes les DC ne possédant aucun opérateur parmi $\{ \leq,\geq,\neq,<,> \}$\\
+Nous avons également besoin que la denial constraint soit satisfiable. Si une DC n'est pas satisfiable alors elle possède uniquement des prédicats avec l'opérateur $\top$ ou $=$. Nous pouvons donc rejeter toutes les DC ne possédant aucun opérateur parmi $\{ \bot,\neq,<,> \}$\\
 
-\subsection{Denial constraints maximales}
+%TODO GO WEAKER\textsl{•}
+%Nous avons besoin également que les DC soit \emph{maximales}. Dans \cite{main} ils définissent une DC maximale comme étant:
+%
+%\begin{mydef}
+% La variante $\varphi'$ d'une DC $\varphi$ est dite \emph{maximale} si  $\varphi \preceq \varphi'$ \footnote{voir définition du raffinement chapitre \ref{RaffinementSection}} est qu'il n'existe pas de DC $\varphi''$ tel que $\varphi' \preceq \varphi'$ et que $edit(\varphi,\varphi'') = edit(\varphi,\varphi')$
+%\end{mydef}
+%
+%\begin{myprop}\cite{main}
+%\label{maxprop}
+%Soit $\varphi$ une DC sur $S$. Soit $\varphi'$ une variante de $\varphi$ sur $S$. Pour chaque attribut $A$ de $S$ tel que $\varphi(A) = \{ \top, =, <, > \}$, si $\varphi'(A) \in \{\neq,\leq,\geq \}$ alors $\varphi'$ n'est pas maximal.
+%
+%\end{myprop}
+%
+%Cette propriété vient de la définition de $Imp(\varphi)$. Soit $\varphi_1, \varphi_2$ deux DC sur $S$ Soit une relation $I$ sur $S$. Pour deux tuples $s,t \in I$ et un attribut $A$ de $S$, si $\varphi_1 \in Imp(\varphi_2)$ alors $s.A \Theta_1 t.A$ implique $s.A \Theta_2 t.A$ avec $\Theta_1 = \varphi_1(A)$ et $\Theta_2 = \varphi_2(A)$. Les opérateurs $\leq$, $\geq$ et $\neq$ sont les seuls opérateurs qui impliquent d'autres opérateurs qu'eux même comme on peut le voir à la table \ref{operatorTable}(c'est également le cas pour l'opérateur $\top$, mais celui-ci est exclu de la propriété).\\
 
-Nous avons besoin également que les DC soit \emph{maximales}. Dans \cite{main} ils définissent une DC maximale comme étant:
+Nous souhaitons aussi rendre nos DC plus faible. Plus une DC est faible, moins il y aura de violations dans la relation. Puisque nous cherchons à minimiser le coût de réparation, nous devons minimiser le nombre de violations détectées. Dès lors nous ne chercherons plus que les DCs plus faible que celle dont on cherche les variations. Grâce à cette ça, nous savons maintenant qu'il est inutile de considérer toutes les insertions \footnote{Par insertion de prédicats, comprenons ici que nous passons de $\varphi(A) = \top$ à $\varphi(A) \neq \top$} de prédicats possibles. De manière plus générale, si nous considérons une variation d'un prédicat, on ne peut le changer par un prédicat plus bas dans le treillis. Notons que nous pouvons toujours descendre dans le treillis à condition de ne pas descendre plus de fois qu'on n'est monté. Par exemple, pour $A \in S$, si nous avons le prédicat $(A, \{= \})$ alors nous pouvons descendre en $(A,\{=,<\})$ puis monter en $(A, \{ <\})$.
 
-\begin{mydef}
- La variante $\varphi'$ d'une DC $\varphi$ est dite \emph{maximale} si  $\varphi \preceq \varphi'$ \footnote{voir définition du raffinement chapitre \ref{RaffinementSection}} est qu'il n'existe pas de DC $\varphi''$ tel que $\varphi' \preceq \varphi'$ et que $edit(\varphi,\varphi'') = edit(\varphi,\varphi')$
-\end{mydef}
-
-\begin{myprop}\cite{main}
-\label{maxprop}
-Soit $\varphi$ une DC sur $S$. Soit $\varphi'$ une variante de $\varphi$ sur $S$. Pour chaque attribut $A$ de $S$ tel que $\varphi(A) = \{ \top, =, <, > \}$, si $\varphi'(A) \in \{\neq,\leq,\geq \}$ alors $\varphi'$ n'est pas maximal.
-
-\end{myprop}
-
-Cette propriété vient de la définition de $Imp(\varphi)$. Soit $\varphi_1, \varphi_2$ deux DC sur $S$ Soit une relation $I$ sur $S$. Pour deux tuples $s,t \in I$ et un attribut $A$ de $S$, si $\varphi_1 \in Imp(\varphi_2)$ alors $s.A \Theta_1 t.A$ implique $s.A \Theta_2 t.A$ avec $\Theta_1 = \varphi_1(A)$ et $\Theta_2 = \varphi_2(A)$. Les opérateurs $\leq$, $\geq$ et $\neq$ sont les seuls opérateurs qui impliquent d'autres opérateurs qu'eux même comme on peut le voir à la table \ref{operatorTable}(c'est également le cas pour l'opérateur $\top$, mais celui-ci est exclu de la propriété).\\
-
-Grâce à cette propriété, nous savons maintenant qu'il est inutile de considérer toutes les insertions \footnote{Par insertion de prédicats, comprenons ici que nous passons de $\varphi(A) = \top$ à $\varphi(A) \neq \top$} de prédicats possibles. Nous avons seulement besoin d'insérer des prédicats avec les opérateurs $\{<,=,>\}$ lorsque que l'on considère les variantes de $\varphi$. Illustrons cela avec un exemple. 
+ Illustrons le fait qu'une DC plus faible demande moins de réparation avec un exemple. 
 \begin{myexample}
 Nous allons prendre deux DC sur la relation de la table \ref{tableMain}:
 $$ \varphi_1 : \{(Nom,=),(Revenu,=),(Numtel,\neq) \}$$
@@ -975,7 +976,9 @@ $$ \varphi_2 : \{(Nom,=),(Revenu,\leq),(Numtel,\neq) \}$$
 
 \end{myexample}
 
-Nous savons que $\leq \in Imp(=)$ (voir table \ref{operatorTable}) donc nous avons $\varphi_2 \preceq \varphi_1$. Grâce à la propriété \ref{maxprop}, $\varphi_2$ n'est pas une denial constraint maximale parce qu'elle contient l'opérateur $\leq$. Dans ce scénario, nous pouvons calculer un coût de réparation pour l'attribut $NumTel$ de 7 pour la DC $\varphi_2$ et la DC $\varphi$ aura un coût de réparation de $Numtel$ de valeur 3.
+
+
+Nous pouvons appliquer le Lemme \ref{lem:characterization}, en effet nous avons que $\{=\} \subseteq \{ <, = \}$. Nous avons donc $\varphi_1 \models \varphi_2$. Pour passer de $\varphi_1$ à $\varphi_2$, nous avons monté dans le treillis de $Revenu$. Dans ce scénario, nous pouvons calculer un coût de réparation pour l'attribut $NumTel$ de 7 pour la DC $\varphi_2$ et la DC $\varphi$ aura un coût de réparation de $Numtel$ de valeur 3.
 
 \begin{table}[H]
 	\parbox{.45\linewidth}{
@@ -1026,18 +1029,29 @@ Nous savons que $\leq \in Imp(=)$ (voir table \ref{operatorTable}) donc nous avo
 Nous voyons que la DC raffinée a un coût de réparation plus faible. Ce n'est pas une coincidence puisque le Lemme suivant existe: \cite{main}
 
 \begin{mylemma}
- Soit $\Sigma$ un ensemble de DC sur $S$ et $I$ une relation sur $S$. Soit 2 variantes de $\Sigma$ noté $\Sigma_1,\Sigma_2$ et $\Sigma_2$ est un raffinement de $\Sigma$. Si $\Sigma \preceq \Sigma_1$ et $\Sigma_1 \preceq \Sigma_2$ alors $\Delta(I,I_1) \geq \Delta(I,I_2)$ avec $I_1$ la relation résultante de la réparation avec $\Sigma_1$ et $I_2$ la relation résultante de la réparation avec $\Sigma_2$.
+ Soit $\Sigma$ un ensemble de DC sur $S$ et $I$ une relation sur $S$. Soit 2 variantes de $\Sigma$ noté $\Sigma_1,\Sigma_2$ et $\Sigma_2$ est un raffinement de $\Sigma$. Si $\Sigma \models \Sigma_1$ et $\Sigma_1 \models \Sigma_2$ alors $\Delta(I,I_1) \geq \Delta(I,I_2)$ avec $I_1$ la relation résultante de la réparation avec $\Sigma_1$ et $I_2$ la relation résultante de la réparation avec $\Sigma_2$.
 \end{mylemma}
 
-Comme conséquence à ce Lemme, tous les ensembles de denial constraint $\Sigma$ qui ne sont pas maximals ne donneront pas la meilleure réparation.
+Comme conséquence à ce Lemme, tous les ensembles de denial constraint $\Sigma$ qui ne sont pas plus faible ne donneront pas la meilleure réparation.
+
+Nous avons dit précédemment que nous avions $8^{|S|}$ variantes possibles pour une DC $\varphi$ sur $S$. Nous avons éliminé certains cas, le résumé de ces cas sont les suivants:
+\begin{itemize}
+\item Nous pouvons éliminer toutes les variantes triviales i.e les variantes contenant un opérateur $\bot$ c'est à dire $2^{|S|}-1$ \footnote{$|S| \geq 1$ sinon le problème de trouver des variantes de DCs n'aurait pas de sens. }.
+\item Nous pouvons éliminer toutes les variantes non-satisfiables i.e les DCs qui ne contiennent pas d'opérateurs parmi $\{\neq,<,> \}$
+\item Les DCs qui ne sont pas plus faibles que la DC de base.
+\item Les DCs qui ont un coût de variations supérieur à $\theta$.
+\end{itemize}
+
+Ils reste beaucoup de cas valide, et calculer le coût de réparation $\Delta(I,f(I))$ pour une relation $I$ est coûteux. Nous allons devoit continuer à limiter nos cas.
 
 \subsection{Limitation par bornes}
 
-Nous avons vu précédemment que pour une seule DC, nous avions $8^{|S|}$ variantes possibles (voir treillis à la figure \ref{treillis} ). Nous avons donné des pistes pour limiter le nombre de candidats. Pour continuer dans cette lancée, nous allons déterminer deux bornes entre lesquelles le coût de la réparation la moins coûteuse se trouve. Nous avons la borne inférieure notée $\delta_l(\Sigma,I)$ et la borne supérieure notée $\delta_u(\Sigma,I)$. Nous savons que le coût de réparation $\Delta(I,I')$ pour la relation $I$ sur $S$ avec l'ensemble de DC $\Sigma$ sera situé entre les deux bornes i.e $\delta_l(\Sigma,I) \leq \Delta(I,I') \leq \delta_u(\Sigma,I)$. L'idée étant qu'on puisse calculer les deux bornes très rapidement, là où $\Delta(I,I')$ ne peut être calculer qu'après avoir essayer la réparation. Considérons la propriété suivante:
+Nous avons vu précédemment que pour une seule DC, nous avions $8^{|S|}$ variantes possibles (voir treillis à la figure \ref{treillis} ). Nous avons donné des pistes pour limiter le nombre de candidats. Pour continuer dans cette lancée, nous allons déterminer deux bornes entre lesquelles le coût de la réparation la moins coûteuse se trouve. Soit $I$ une relation sur $S$, $\Sigma$ et $\Sigma'$ deux ensembles de DC sur $S$, $f$ une fonction de réparation pour $I$ telle que $f(I)\models \Sigma$ et  $g$ une fonction de réparation pour $I$ telle que $f(I)\models \Sigma'$. En général, le calcul du coût $\Delta(I,f(I))$ peut avoir une complexité élévée. Dans certains cas, il est possible d'obtenir, par un calcul simple,  une borne inférieure $\delta_l$ et une borne supérieure $\delta_u$ de ce coût.  Si la borne inférieure pour $\Delta(I,f(I))$ est plus grand que le coût supérieur de $\Delta(I,g)$, alors on peut élaguer f. Nous avons donc la propriété suivante:
+
 
 \begin{myprop}
 \label{boundRemove}
-	Soit deux ensemble de denial constraints $\Sigma_1$ et $\Sigma_2$ pour une relation $I$ sur $R$, si $\delta_u(\Sigma_1,I) < \delta_l(\Sigma_2,I)$ alors $\Sigma_2$ n'est pas un bon candidat et peut être ignoré.
+	Soit deux ensemble de denial constraints $\Sigma_1$ et $\Sigma_2$ pour une relation $I$ sur $R$, $f$ une fonction de réparation pour $I$ telle que $f(I)\models \Sigma_1$ et  $g$ une fonction de réparation pour $I$ telle que $f(I)\models \Sigma_2$. Si $\delta_u(\Sigma_1,I) < \delta_l(\Sigma_2,I)$ alors $\Delta(I,g(I)$ > $\Delta(I,f(I)$
 \end{myprop}
 
 
@@ -1057,7 +1071,75 @@ Alors par transitivité  $\Delta(I,I_1)$ < $\Delta(I,I_2)$. $I_2$ est une répar
 
 Cela veut dire que si la pire borne (borne supérieure) de la réparation de $\Sigma_1$ est moins bonne que la meilleure borne (borne inférieure) de la réparation de $\Sigma_2$ alors $\Sigma_1$ sera un meilleur ensemble DC pour la réparation que $\Sigma_2$ et donc $\Sigma_2$ peut être abandonnée. C'est intéressant pour l'élaboration d'un algorithme cherchant à trouver le meilleur ensemble de contraintes. En effet, si le calcul de ces bornes est moins couteux que le calcul du cout de réparation $\Delta(I,I')$ alors on peut réduire la complexité de cet algorithme.
 
+\subsection{Algorithme de variations de DCs}
+Nous pouvons déjà proposer l'algorithme suivant qui nous permet d'obtenir toutes les variations d'une DC $\varphi$
 
+\IncMargin{1em}
+\begin{algorithm}
+\label{variations}
+
+	\DontPrintSemicolon
+  \caption{get\_variation($\varphi$):}
+  \LinesNumbered
+    \SetKwInOut{Input}{Entrée}
+    \SetKwInOut{Output}{Sortie}
+
+   % \underline{$\theta$-TolerantRepair} $(\mathbb{D},\Sigma,I)$\;
+    \Input{Une DC $\varphi$ dont on veut la variation}
+    \Output{L'ensemble de toutes les variations de $\varphi$ respectant les conditions énoncés précédemment}
+    Prendre un attribut $A$ quelconque de $S$.\;
+    $variations$ = get\_recursive\_variations($A$,$\emptyset$,$\varphi$)\;
+    \Pour{chaque $var$ dans $variations$}{
+    \Si{$var$ est trivial \textbf{ou} $var$ n'est pas satisfiable \textbf{ou} $var$ n'est pas plus faible que $\varphi$}{
+    Supprimer $var$ de $variations$\;
+    }
+    }
+    \Return $variations$
+\end{algorithm}\DecMargin{1em}
+
+
+\IncMargin{1em}
+\begin{algorithm}
+\label{variations_rec}
+
+	\DontPrintSemicolon
+  \caption{get\_recursive\_variation(A,$att\_pris$,$\varphi$):}
+  \LinesNumbered
+    \SetKwInOut{Input}{Entrée}
+    \SetKwInOut{Output}{Sortie}
+
+   % \underline{$\theta$-TolerantRepair} $(\mathbb{D},\Sigma,I)$\;
+    \Input{Un attribut $A$, $att\_pris$ l'ensemble des attributs déjà utilisé dans les récursions précédentes, une DC $\varphi$ dont on veut la variation}
+    \Output{Toutes les variations de $\varphi$ en modifiant les prédicats contenant $A$}
+    Initialiser $\Sigma$ vide\;
+    \Si{$|att\_pris| < |S|$ }
+    {
+    	\Pour{chaque prédicat $pred$ plus faible que $(A,\varphi(A)$}
+    	{
+    		Former une nouvelle DC $\varphi'$ en remplaçant $(A,\varphi(A))$ par $pred$\;
+    		Ajouter $\varphi'$ à $\Sigma$\;
+    		Prendre un attribut $B$ de $S \backslash att\_pris$\;
+    		Ajouter les DC retournées par get\_recursive\_variation($B$,$att\_pris \cup \{A\}$,$\varphi$)\;
+    		
+    	}
+    }
+    \Return $\Sigma$
+\end{algorithm}\DecMargin{1em}
+
+L'algorithme \ref{variations} retourne toutes les variations d'une DC $\varphi$ donnée en entrée. Les variations sont donnés par la ligne 2 en appelant l'algorithme \ref{variations_rec}, un algorithme récursif. Nous trions chaque variations dans les lignes 3 à 5, suivant les différentes limitations que nous avons évoquées dans les sections précédentes.\\
+
+L'algorithme \ref{variations_rec} est un algorithme récursif qui donne toutes les variations possibles pour une DC $\varphi$ en paramètre. On crée des DCs $\varphi'$ à partir de $\varphi$ en changeant juste le prédicat sur l'attribut $A$ , un attribut en paramètre. On obtient donc une variation de $\varphi$ et on l'ajoute à $\Sigma$. Pour chacune de ces variations on fait un appel récursif sur $\varphi'$ en prenant un attribut qui n'a pas encore utilisé, c'est à dire un attribut de $S$ qui n'est pas dans $att\_pris$. On ajoute également $A$ dans les attributs pris. La complexité en temps dans le pire des cas de l'algorithme est en $O(8^{n})$. Le pire cas est la DC $\varphi$ = $\{\}$ c'est à dire que tout les opérateurs sont $\top$ et donc l'entièreté des treillis sont parcourus pour chaque attribut de $S$.
+
+%def get_var_recur(self,i,dc):
+%        returnList = []
+%        if(i<len(dc.predicates)):
+%            weak_pred = self.predicates[i].get_weaker_not_empty()
+%            for elem in weak_pred:
+%                new_dc = copy.deepcopy(dc)
+%                new_dc.predicates[i] = elem
+%                returnList.append(new_dc)
+%                returnList = returnList + self.get_var_recur(i+1,new_dc)
+%        return returnList
 \subsubsection{Graphe de conflits}
 
 Maintenant, nous allons introduire le \emph{graphe de conflits} qui peut représenter les violations dans une relation $I$ sur $S$. Dans un premiers temps, nous avons besoins de trouver l'ensemble de toutes les violations et ensuite obtenir nos deux bornes grâce à cet ensemble. On définition l'\emph{ensemble des violations} comme étant: \cite{main}
