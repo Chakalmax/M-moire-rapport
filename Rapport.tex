@@ -31,6 +31,7 @@
 
 \newcommand{\dom}{\mathbf{dom}}
 \newcommand{\C}{\mathbb{C}}
+\newcommand{\V}{\mathbb{V}}
 
 \def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
 \let\endchangemargin=\endlist 
@@ -160,7 +161,7 @@ Faculté des Sciences $\bullet$ University of Mons $\bullet$ Place du Parc 20 $\
 
 \pagenumbering{arabic} \setcounter{page}{1} 
 
-\alinea De nombreuses institutions et entreprises collectent, stockent et utilisent de grandes quantités d'informations. Le traitement de ces données permettent à ces entreprises d'effectuer des statistiques ou de fournir un service à l'un de leurs clients. Mais dans les bases de données, nous pouvons retrouver des données \emph{erronées}. Leur présence peut être due à une erreur lors de l'encodage ou lors de la collecte des informations(appareils imprécis, mauvaises méthodes de collecte, personne qui ment ou se trompe,...). Ces erreurs nuisent au traitement des données, biaisant les statistiques et perturbant les services qui en ont besoin. Afin d'éviter ce problème, les données devraient respecter des \emph{contraintes d'intégrité}. Une contrainte d'intégrité est une règle appliquée aux données. Si une donnée ne respecte pas au moins une de ses contraintes alors cette donnée doit être considérée comme erronée. \\
+De nombreuses institutions et entreprises collectent, stockent et utilisent de grandes quantités d'informations. Le traitement de ces données permettent à ces entreprises d'effectuer des statistiques ou de fournir un service à l'un de leurs clients. Mais dans les bases de données, nous pouvons retrouver des données \emph{erronées}. Leur présence peut être due à une erreur lors de l'encodage ou lors de la collecte des informations(appareils imprécis, mauvaises méthodes de collecte, personne qui ment ou se trompe,...). Ces erreurs nuisent au traitement des données, biaisant les statistiques et perturbant les services qui en ont besoin. Afin d'éviter ce problème, les données devraient respecter des \emph{contraintes d'intégrité}. Une contrainte d'intégrité est une règle appliquée aux données. Si une donnée ne respecte pas au moins une de ses contraintes alors cette donnée doit être considérée comme erronée. \\
 
 Malheureusement, il se peut que ces contraintes soient elles aussi erronées. A cause de ses erreurs sur les contraintes, celles-ci peuvent échouer dans la différenciation des données réellement erronées et des données correctes. Il se peut que certaines données soient identifiées comme étant des violations des contraintes (données erronées) malgré qu'elles ne le devraient pas. Il existe aussi des contraintes qui n'arrivent pas à détecter des violations. Les erreurs à la fois sur les données et sur les contraintes sont un problème pour quiconque souhaite utiliser la base de données\\
 
@@ -169,7 +170,6 @@ Malheureusement, il se peut que ces contraintes soient elles aussi erronées. A 
 \begin{tabular}{c|c c c c c}
  & Nome & Année & Salaire (\texteuro\,) & Grade & Bureau\\
  \hline
- $t_1$ & Dupont & 2012 & 23.000 & ouvrier & 1B18 \\
  $t_2$ & Dupont & 2013 & 24.000 & ouvrier & 1B14 \\
  $t_3$ & Dupont & 2014 & 38.000 & chef de service & 2B12 \\
  $t_4$ & Dupont & 2015 & 42.000 & chef de service & 2B18 \\
@@ -418,7 +418,7 @@ Soit $\varphi_1,\varphi_2$ deux DC sur $S$. On dit que $\varphi_1$ \emph{impliqu
 \end{mydef}
 
 \begin{myexample}
-%Soit $S=\{Nom,Anniversaire,NumTel,Année,Revenu,Taxe \}$ et deux DC $\varphi_1 = \{ (Salaire,\leq)(Taxe,\geq) \}$ et $\varphi_2 = \{ (Salaire,<)(Taxe,>) \}$$ Prenons une relation I qui satisfait $\varphi_1$
+
 Soit $S=\{A,B\}$.
 Soit $\varphi_1=\{(A,\leq),(B,\neq)\}$ et $\varphi_2=\{(A,<),(B,>)\}$.
 Alors $\varphi_1$ implique $\varphi_2$.
@@ -612,83 +612,11 @@ Puisque $s(A) \bot t(A)$ est faux pour tout tuples $s,t$ sur $S$, aucune relatio
 
 %TODO : trouver un exemple
 
-%\subsubsection{Augmentation}
-%
-%Dans les chapitres suivants, nous verrons comment nous pouvons améliorer les DCs afin qu'elles puissent détecter les données erronées de manière correcte. Pour ce faire nous aurons besoin de modifier des prédicats et donc de changer les opérateurs de ceux ci. Mais modifier un opérateur $\top$ est inutile par la propriété suivante:
-%
-%\begin{myprop}
-%%	If $\varphi = \neg (P_1 \wedge P_2 \wedge ... \wedge P_n)$ is a valid DC, then $\varphi ' = \neg(P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q)$ is also a valide DC
-%	Soit une DC $\varphi$ sur S et une relation $I$ tel que $I \models \varphi$. Si il existe un prédicat $P_i = (A_i,\theta_i) \in pred(\varphi)$ tel que $\theta_i = \top$ alors pour la DC $\varphi'$ tel que $pred( \varphi' ) = pred( \varphi ) \textbackslash P_i$ avec $P_i' =(A_i,\theta_i)$ et $\theta_i \neq \top$, on a $I \models \varphi'$
-%\end{myprop}
-%
-%
-%
-%Cette propriété est triviale. Souvenons nous que $\varphi$ est un DC tel que $I \models \varphi$ donc $\forall t \in I$ on a $\varphi$ vrai. Imaginons que $\varphi$ contienne le prédicat de la forme $(A,\top)$ Prenons $\varphi'$ une DC qui est la variante de $\varphi$ tel que $pred(\varphi) =  pred(\varphi')$ à l'exception du prédicat $(A,\top)$ qui devient $(A,\theta)$ avec $ \theta \neq \top$. Puisque $\varphi$ était satisfaite par $I$, il y avait déjà un autre prédicat de $\varphi$ qui était faut $\forall t \in I$. Donc $\varphi'$ est satisfaite pour qu'importe la valeur de $(A,\theta)$.
-
-%\subsection{Transitivity}
-%%In \cite{DCs} they defined the transitivity of DCs as:
-%%
-%%\begin{myprop}
-%%	If $\varphi = \neg (P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q_1)$ and $\varphi ' = \neg (R_1 \wedge R_2 \wedge ... \wedge R_n \wedge Q_2)$ are both valid DCs and $Q_2 \in Imp(\overline{Q_1})$, \\ then $ \varphi '' = \neg(P_1 \wedge ... \wedge P_n \wedge R_1 \wedge ... \wedge R_n)$ is also a valid DC.
-%%\end{myprop}
-%%
-%%In other words if two \textbf{valid} DCs, each with one predicate that can't be false in the same time, then merging those DCs and removing the two predicates will produce a \textbf{valid} DC.
-%%
-%%It's possible to prove that:
-%%
-%%\begin{proof}~\\
-%%	\hspace*{0.55cm} $\varphi$ is a valid DC : $\neg (P_1 \wedge P_2 \wedge ... \wedge P_n \wedge Q_1)$ is true.
-%%	
-%%	$\varphi '$ is a valid DC : $\neg (R_1 \wedge R_2 \wedge ... \wedge R_n \wedge Q_2)$ is true.
-%%	
-%%	$Q_2 \in Imp(\overline{Q_1})$ : $Q_1 \oplus Q_2$ is true%$Q_1 \wedge Q_2$ is false 
-%%	
-%%	then $\neg (P_1 \wedge ... \wedge P_n) \vee \neg (R_1 \wedge ... \wedge R_n \wedge Q_2) \equiv \varphi'' $ is true \footnote{$\neg p \vee \neg Q \equiv \neg (p \wedge q)$}
-%%\end{proof}
-%
-%\begin{myprop}
-%	Soit $\varphi$ et $\varphi'$ deux DC sur $S$ et $I$ une relation sur $S$. Si $\varphi = \{P_1,P_2,...,P_{i-1},P_i\}$ est satisfaite par $I$ et $\varphi ' = \{P_i',P_{i+1},...,P_n \}$ satisfaite par $I$, avec $P_j$ prédicat de la forme $(A_j,\theta_j) \forall j \in \{1,...,n \}$ et $\theta_i' \in Imp(\overline{\theta_i})$, alors $\varphi'' = \{P_1,P_2,...,P_{i-1},P_{i+1},...,P_n\}$ est également satisfaite par $I$
-%\end{myprop}
-%
-%En d'autre mots, il est possible de fusionner deux denial constraint satisfaites par $I$ si ces deux contraintes possèdent chacune un prédicat sur un même attribut et si ces prédicats ne peuvent pas être faux en même temps. Alors, la fusion de ces deux contraintes sans les deux prédicats est toujours satisfaite.
-
-%\subsubsection{Raffinement}
-%\label{RaffinementSection}
-%Dans l'article \cite{main} ils définissent le raffinement d'une denial constraint comme étant:
-%
-%\begin{mydef}
-%% $\varphi_2$ is a \textbf{refinement} of $\varphi_1$, denoted by $\varphi_1 \preceq \varphi_2$, if for each $ P$ : $x\phi_1 y \in pred(\varphi_1)$, there exists a $Q : x \phi_2 y \in pred(\varphi_2)$ such that $\phi_1 \in Imp(\phi_2)$
-% $\varphi_2$ est un \textbf{raffinement} de $\varphi_1$, noté $\varphi_1 \preceq \varphi_2$, Si pour chaque prédicat $(A,\theta_A) \in pred(\varphi_1)$ on a un prédicat $(A,\theta_A') \in pred(\varphi_2)$ tel que $\theta_A'$ implique $\theta_A$ ($\theta_A' \in Imp(\theta_A)$) 
-%\end{mydef}
-
-%\begin{mydef}
-%On dit que $\varphi_2$ est un raffinement de $\varphi_1$, noté $\varphi_1 \preceq \varphi_2$  si pour chaque attribut $A \in S$,
-%nous avons que $\varphi_2(A) \subseteq \varphi_1(A)$.  
-%\end{mydef}
-%
-%\begin{myexample}
-%	Soit $\varphi_1 = \{(Taxe,\leq),(Revenu,<) \}$ et $\varphi_2 = \{(Taxe,<),(Revenu,<),(Ann\'ee,=) \}$ nous avons $\varphi_2 \preceq \varphi_1$ car $\varphi_1(Taxe) \in Imp(\varphi_2(Taxe))$ et $\varphi_1(Revenu) \in Imp(\varphi_2(Revenu))$ et $\varphi_1(Ann\'ee) \in Imp(\varphi_2(Ann\'ee))$
-%\end{myexample}
-%
-%Notons que $\varphi$ est raffinement de lui même et que remplacer l'opérateur $\top$ d'un prédicat par n'importe quel autre
-%\begin{mydef}
-% $\Sigma_2$ est \textbf{raffinement} de $\Sigma_1$, noté $\Sigma_1 \preceq \Sigma_2$, si pour chaque $ \varphi_2 \in \Sigma_2$, Il existe un $\varphi_2 \in \Sigma_1$ tel que $\varphi_1 \preceq \varphi_2$
-%\end{mydef}
-%
-%Si nous voulons changer moins de données, nous pouvons raffiner nos DC. Dans notre exemple précédent, la nouvelle denial constraint est plus faible que la précédente, diminuant le nombre de tuples détecté comme étant une violation.
-
 \chapter{Data Repairing}
 
 Les erreurs sont fréquentes dans les bases de données et ces anomalies nuisent à la fiabilité de certaines applications qui les utilisent. Il existe des méthodes dont le but est de détecter ces erreurs mais ces méthodes ne les réparent pas. A la place, les applications pourront filtrer les données et ignorer les erreurs détectées mais malgré ce filtrage, les applications peuvent toujours être non fiables \cite{anodetect}. Au lieu de simplement détecter les erreurs et les filtrer, il est préférable de réparer les données erronées.\\
 
-Dans le chapitre précédent, nous avons vu comment détecter des erreurs au moyen de denial constraints. Nous avons aussi discuté brièvement de la sur-simplification ou du sur-raffinement de ces DC. Nous allons maintenant aborder la réparation des données mais aussi la réparation des DC.\\
-
-%\begin{mydef}
-%We define $cell(\varphi)$ as :
-%$$ cell(\varphi) = \{t.A|P : t.A \phi c \in pred(\varphi) \} \cup \{t.A,s.A|P : t.A \phi s.A \in pred(\varphi) \}$$
-%\end{mydef}
-%
-%So $cell(\varphi)$ are all the t.A involved in $\varphi$. We can also define $cell(\Sigma)$ as $\cup_{\varphi \in \Sigma} \; cell(\varphi)$ . If t.A is not in $cell(\Sigma)$, it cannot be a violation of a constraint and therefore don't need to be repair. 
+Dans le chapitre précédent, nous avons vu comment détecter des erreurs au moyen de denial constraints. Nous avons aussi discuté brièvement de la sur-simplification ou du sur-raffinement de ces DC. Nous allons maintenant aborder la réparation des données. Nous aborderons la réparation des DCs dans la prochain chapitre.\\
 
 Le but d'une réparation de données est de trouver une nouvelle relation $I'$ qui est une modification d'une relation $I$ de $S$. Dans $I'$ il n'y a pas de données erronées. Cela nous amène à définir ce qu'est une base de données sans erreurs. Une base de données sans erreurs est une base de données dont toutes les contraintes sont satisfaites, c'est à dire : \\
 
@@ -700,7 +628,7 @@ Le but d'une réparation de données est de trouver une nouvelle relation $I'$ q
 	Soit $\Sigma$ un ensemble de DC sur $S$. Soit une relation $I$ sur $S$. Une \emph{réparation de $I$} est une fonction $f$ de domaine $I$ qui attribue à chaque tuple $t$ de $I$ un nouveau tuple $f(t)$. L'ensemble d'arrivée de $f$ est noté $I'=f(I)$. On a donc $I' \models \Sigma$
 \end{mydef}
 
-Donc, lorsque l'on parle de réparation de données, on cherche à trouver $I'$ tel que $I' \models \Sigma$ c'est à dire une nouvelle instance où toutes les violations dans le set de contrainte $\Sigma$ sont éliminées. Nous allons considérer que lors d'une réparation, nous ne supprimons pas de tuples mais que nous les modifions. En effet, chaque ligne de la table est susceptible de contenir des précieuses informations. Chaque ligne supprimée diminuerait la quantité d'informations utiles de la base de données. Dans de nombreux cas, seules quelques colonnes de la table contiennent quelques erreurs et les autres colonnes ne présentent aucun problème.  Nous n'ajoutons pas de tuples à la relation. Lorsqu'un tuple $t$ est réparé celà peut conduire à avoir deux tuples identiques. \\
+Donc, lorsque nous parlons de réparation de données, nous cherchons à trouver $f(I) = I'$ avec $I$ la relation à réparer tel que $I' \models \Sigma$ c'est à dire une nouvelle relation où toutes les violations dans l'ensemble de contraintes $\Sigma$ sont éliminées. Nous allons considérer que lors d'une réparation, nous ne supprimons pas de tuples mais que nous les modifions. En effet, chaque ligne de la table est susceptible de contenir des précieuses informations. Chaque ligne supprimée diminuerait la quantité d'informations de la base de données. Dans de nombreux cas, seules quelques colonnes de la table contiennent quelques erreurs et les autres colonnes ne présentent aucun problème.  Nous n'ajoutons pas de tuples à la relation. Lorsqu'un tuple $t$ est réparé cela peut conduire à avoir deux tuples identiques. \\
 
 \begin{myexample}
 	Soit la relation $I$ suivante:\\
@@ -722,9 +650,9 @@ Donc, lorsque l'on parle de réparation de données, on cherche à trouver $I'$ 
 		\end{array}  
 		$$
 	\end{minipage}~\\
-et la DC $\varphi = \{ (A,=),(B,\neq)\}$. Nous avons $I' \models \varphi$ et $I \not\models \varphi$. $I'$ est une réparation de $I$, le tuple $(a,c)$ a été modifié en $(a,b)$
+et la DC $\varphi = \{ (A,=),(B,\neq)\}$. Nous avons $I' \models \varphi$ et $I \not\models \varphi$. $I' = f(I)$ est une réparation de $I$, le tuple $(a,c)$ a été modifié en $(a,b)$
 
-Notons ici la présence de deux lignes identiques dans l'instance I'. Ce n'est pas une pratique courante dans les bases de données, nous sommes donc dans ce cas ci autorisé à supprimer une des lignes ce qui nous donne :\\
+Notons ici la présence de deux lignes identiques dans l'instance $I'$. Ce n'est pas une pratique courante dans les bases de données, nous sommes donc dans ce cas ci autorisé à supprimer une des lignes ce qui nous donne :\\
 $$
 		\begin{array}{c|cc}
 		I' & A & B\\\cline{2-3}
@@ -733,12 +661,11 @@ $$
 		$$
 \end{myexample}
 
-%Lors d'une réparation de donnée, un tuple $t \in I$ ne respectant pas une ensemble de DC $\Sigma$ devra être une modifié en un tuple $t'$ tel que $t' \models \Sigma$. Il faudra pouvoir aisément le lien entre un tuple de la relation $I$ et sa réparation dans $I$. C'est pourquoi à chaque tuple sera associé un identifiant de tuple $i$ avec $ i \in \{1,2,...,|I|\}$. Un tuple $t$ dont l'identifiant est $i$ sera désormais dénoté $t_i$ et sa réparation sera $t_i'$.\\
-
 La réparation de données suit le principe du changement minimum: La nouvelle relation $I'$ doit minimiser le coût de réparation de données défini comme étant:
 
 \begin{mydef}
- Soit $I$ une relation sur $S$ et $f(I)$ une réparation de $I$, alors le coût de réparation est le suivant:
+\label{coutRéparation}
+ Soit $I$ une relation sur $S$ et $f(I)$ une fonction réparation de $I$, alors le coût de réparation est le suivant:
  $$ \Delta(I,f(I)) = \sum_{t \in I, A \in S} w(t.A).dist(t.A,f(t).A) $$
  où:
  \begin{itemize}
@@ -747,7 +674,7 @@ La réparation de données suit le principe du changement minimum: La nouvelle r
  \end{itemize}
 \end{mydef}
 
-Dans le coût, nous avons un poids $w(t.A)$ pour un attribut $A \in S$ et un tuple $t \in I$. Ce poids correspond à la confiance que l'on accorde en la valeur de $t$ pour l'attribut $A$. On peut grâce à cette valeur influencer la réparation de données pour privilégier la réparation d'une valeur plutôt qu'une autre. Pour pouvoir assigner un poids $w(t.A)$, il faut avoir une bonne connaissance du contexte de la base de données d'origine. Il est courant d'avoir la même valeur pour $w(t.A)$ et $w(s.A)$ avec pour tout $s,t \in I$ car en général on a connaissance de la confiance pour un attribut en particulier pas pour chaque valeur du tuple. On remplace donc $w(t.A)$ par $w(A)$dans notre formule. Par exemple, pour la table \ref{tablePerson}, nous pouvons supposer qu'une valeur pour l'attribut \emph{Enfant} est plus susceptible d'être précise que la valeur pour l'attribut \emph{Salaire} ou \emph{Taxe}. Lorsqu'on manque de connaissances sur la base de données, on fixe le même poids à chaque attribut. Nous supprimons donc le poids $w(t.A)$ dans notre formule.\\
+Dans le coût, nous avons un poids $w(t.A)$ pour un attribut $A \in S$ et un tuple $t \in I$. Ce poids correspond à la confiance que l'on accorde en la valeur de $t$ pour l'attribut $A$. On peut grâce à cette valeur influencer la réparation de données pour privilégier la réparation d'une valeur plutôt qu'une autre. Pour pouvoir assigner un poids $w(t.A)$, il faut avoir une bonne connaissance du contexte de la base de données d'origine. Il est courant d'avoir la même valeur pour $w(t.A)$ et $w(s.A)$ avec pour tout $s,t \in I$ car en général on a connaissance de la confiance pour un attribut en particulier pas pour chaque valeur du tuple. On remplace donc $w(t.A)$ par $w(A)$dans notre formule. Par exemple, pour la table \ref{tablePerson}, nous pouvons supposer qu'une valeur pour l'attribut \emph{Enfant} est plus susceptible d'être précise que la valeur pour l'attribut \emph{Salaire} ou \emph{Taxe}. Dès lors $w(Enfant)$ sera plus grand que $w(Salaire)$ et $w(Taxe)$. Lorsqu'on manque de connaissances sur la base de données, on fixe le même poids à chaque attribut. Nous supprimons donc le poids $w(t.A)$ dans notre formule.\\
 
 Le coût de réparation peut être le nombre de valeurs de $I$ que l'on a changées si nous décidons que:
 $$
@@ -761,7 +688,7 @@ dist(t.A,f(t).A) =
 $$
 Nous pouvons aussi décider que la distance est égale à la différence entre les deux valeurs dans le cas d'un attribut numérique. Pour un attribut de type chaine de caractère, nous pouvons utiliser la distance d'édition \footnote{Le nombre minimum d'opération nécessaire pour transformer la chaine de caractère initiale en la chaine de caractère cible}.\\
 
-Pour réparer une donnée, nous devons remplacer sa valeur par une autre plus adéquate. Mais quel valeur choisir? Dans l'article de référence principal \cite{main}, si la valeur $t.A$ est erronée, les auteurs essayent de trouver une valeur pour $f(t).A$ qui soit dans le domaine actif $\dom (A,I)$ et qui respecte les contraintes. Le domaine actif $\dom(A,I)$ est l'ensemble de toues les valeurs de $A$ dans $I$. Si ce n'est pas possible ils attribuent une \emph{variable fraiche $fv$} à $t.A$. \\
+Pour réparer une donnée, nous devons remplacer sa valeur par une autre plus adéquate. Mais quelle valeur choisir? Dans l'article de référence principal \cite{main}, si la valeur $t.A$ est erronée, les auteurs essayent de trouver une valeur pour $f(t).A$ qui soit dans le domaine actif $\dom (A,I)$ et qui respecte les contraintes. Le domaine actif $\dom(A,I)$ est l'ensemble de toues les valeurs de $A$ dans $I$. Si ce n'est pas possible ils attribuent une \emph{variable fraiche $fv$} à $t.A$. \\
 
 \begin{mydef}
 Une \emph{variable fraiche}$fv$ est une valeur qui ne satisfait aucun prédicat c'est à dire : soit $\varphi$ une DC sur $S$ et $I$ une relation sur $S$. Une variable fraiche $fv$ pour $A \in S$ est une valeur tel que $fv \not\in \dom(A,I)$ le prédicat $(A,\theta_A) \in \varphi$ est toujours faux quelque soit l'opérateur $\theta_A$ donc pour tout tuple $s,t$ avec $t \in I$, si $t.A = fv$ alors ${s,t} \models \varphi$.
@@ -797,7 +724,7 @@ nous pouvons interpréter cette relation comme étant : si $t.Revenu > s.Revenu$
 	 \hline
 	\end{tabular}
 	\caption{\label{tableExample} Exemple de réparation $I'$ pour l'attribut} 
-	Tax for $\varphi$.
+	Taxe de $\varphi$.
 \end{table}
 
 
@@ -815,10 +742,13 @@ Nous avons choisi $fv_1$ comme variable fraiche pour $t_2$. Bien que ce soit une
 
 \end{enumerate}
 
-Nous avons assigné une variable fraiche $fv_1$ comme valeur pour $t_2.Taxe$ mais nous savons quand même que $0<fv_1<3k$ i.e $fv_1 \in ]0,3k[$ grâce à 1 et 2. Nous pouvons utiliser la même logique pour connaitre les valeurs possible pour les autres variables fraiches. Nous pouvons dire que $fv_2 = fv_1$, $3k<fv_3<21k$, $fv_4 = fv_3$ et $fv_3<fv_5<21k$. Maintenant que nous avons identifié les valeurs erronées ainsi qu'un ensemble de valeurs pour remplacer les variables fraiches, il reste à savoir quelle valeur finale on peut prendre. Pour cela nous avons plusieurs solutions possibles.\\
+Nous avons assigné une variable fraiche $fv_1$ comme valeur pour $t_2.Taxe$ mais nous savons quand même que $0<fv_1<3k$ i.e $fv_1 \in ]0,3k[$ grâce à 1 et 2. Nous pouvons utiliser la même logique pour connaitre les valeurs possible pour les autres variables fraiches. Nous pouvons dire que $fv_2 = fv_1$, $3k<fv_3<21k$, $fv_4 = fv_3$ et $fv_3<fv_5<21k$.
 \end{myexample}
+
+Maintenant que nous avons identifié les valeurs erronées ainsi qu'un ensemble de valeurs pour remplacer les variables fraiches, il reste à savoir quelle valeur finale on peut prendre. Pour cela nous avons plusieurs solutions possibles.\\
+
 \begin{itemize}
-	\item Prendre une valeur de $\dom(A)$. C'est la solution envisagée dans le principal article de référence que nous utilisons. Il ne sera pas toujours possible de prendre une valeur dans le domaine, par exemple il n'y a pas de valeur dans le $dom(Taxe)= \{0,3k,21k,40k\}$ qui puisse satisfaire la condition $fv_1$. Dès lors, dans le cas où aucune valeur de dom(A) n'est attribuable à la variable fraiche, celle-ci est conservée dans la base de données. Cette pratique n'est pas la plus logique puisque même si nous avions une valeur dans $\dom(Taxe)$ qui puisse satisfaire $fv_1$, il y a plusieurs valeurs en dehors de $\dom(Taxe)$ qui sont tout aussi correctes.
+	\item Prendre une valeur de $\dom(A,I)$. C'est la solution envisagée dans le principal article de référence que nous utilisons. Il ne sera pas toujours possible de prendre une valeur dans le domaine, par exemple, si on prend $I$ la relation de la table \ref{tableMain} il n'y a pas de valeur dans le $dom(Taxe,I)= \{0,3k,21k,40k\}$ qui puisse satisfaire la condition $fv_1$. Dès lors, dans le cas où aucune valeur de dom(A) n'est attribuable à la variable fraiche, celle-ci est conservée dans la base de données. Cette pratique n'est pas la plus logique puisque même si nous avions une valeur dans $\dom(Taxe,I)$ qui puisse satisfaire $fv_1$, il y a plusieurs valeurs en dehors de $\dom(Taxe,I)$ qui sont tout aussi correctes.
 	\item Prendre une valeur aléatoire mais respectant les conditions sur la variable fraiche. C'est une très mauvaise idée puisque nous avons une chance de s'éloigner de la vraie valeur. Cela peut impacter énormément l'ajout de tuples dans la relation après que la réparation soit effectuée. Ces nouveaux tuples malgré qu'ils soient corrects pourraient être perçus comme contenant des données erronées.
 	\item Garder les variables fraiches dans la base de données tout en conservant les informations que l'on connait à propos de celles-ci. Si nous n'avons qu'une seule valeur possible alors nous privilégions cette valeur à $fv$. Cette solution est celle qui respectera le mieux l'intégrité des données. Le seul problème qu'apporte cette solution est que de nombreuses applications ne pourront plus fonctionner correctement avec des variables fraiches. De nombreux SGBD ne permettent pas de stocker ces variables. Les informations que l'on connait sur elles peuvent changer au fur et à mesure que la relation se remplit.
 \end{itemize}
@@ -843,9 +773,261 @@ $$
 Lorsqu'on ne change pas la valeur, la distance est bien évidement égale à zéro. $dist(a,fv)$ soit être supérieure à $dist(a,b)$ pour privilégier les valeurs aux variables fraiches. $dist(fv,fv)$ représente le fait qu'on avait déjà une variable fraiche venant d'une réparation antérieure, et qu'on garde une variable fraiche. $dist(fv,b)$ représente le changement d'une variable fraiche venant d'une réparation antérieure par une valeur précise. Cela peut arriver lorsque l'on possède de plus amples informations sur la valeur fraiche,par exemple grâce à de nouveaux tuples dans la relation. Nous avons besoin que $dist(fv,fv) > dist(fv,b)$ pour favoriser la correction par une vraie valeur quand c'est possible. Dans l'exemple précédent, avec les valeurs susmentionnées, nous pouvons calculer un coût de réparation $\Delta(I,I')$ =$5*dist(a,a) + 5*dist(a,fv)$ = $7,5$.
 \end {myexample}
 
+
+\subsubsection{Graphe de conflits}
+
+Maintenant, nous allons introduire le \emph{graphe de conflits} qui peut représenter les violations dans une relation $I$ sur $S$. Dans un premiers temps, nous avons besoins de trouver l'ensemble de toutes les violations et ensuite obtenir nos deux bornes grâce à cet ensemble. On définition l'\emph{ensemble des violations} comme étant: \cite{main}
+
+\begin{mydef}
+ L'\emph{ensemble des violations} pour la DC $\varphi$ $viol(I,\varphi) = \{ (s,t) | (s,t) \not\models \varphi $ avec $ s,t \in I \}$ est un ensemble de couple de tuples qui viole $\varphi$.L'ensemble de violation de $\Sigma$ est $viol(I,\Sigma) = \cup_{\varphi \in \Sigma}viol(I,\varphi)$. 
+\end{mydef}
+
+Capturer les violations $viol(I,\Sigma)$ permet de connaitre les tuples dont aucune des valeurs doit être modifié et les tuples dont au moins une valeur est suceptible d'être modifié. Soit une relation $I$ sur $S$, soit un tuple $t \in I$ et $\varphi$ une DC sur $S$, si pour tout tuple $s \in I$, $(s,t) \not \in viol(I,\varphi)$ et $(t,s) \not \in viol(I,\varphi)$ alors aucune valeur de $t$ ne doit être modifiée.\\
+
+\begin{figure}
+ \centering
+ \includegraphics[scale=0.7]{img/grapht4.png}
+ \caption{\label{grapht4} Graphe de conflits pour $\varphi$}
+\end{figure}
+
+Lorsqu'un tuple $t$ est suspecté, toutes ses valeurs ne sont pas suspectes. Les valeurs que nous sommes susceptible de changer sont celles impliquées par une DC. On définit les cellules impliquées comme étant:
+
+\begin{mydef}
+Soit une relation $I$ sur $S$ et une DC $\varphi$ sur $S$. Soit deux tuples $s,t \in I$. Les \emph{cellules de $s$ et $t$ impliquées dans la DC $\varphi$ } se notent $cell(I,\varphi)$ et valent $cell(s,t,\varphi) = \{s.A,t.A| A \in S et (A,\theta_A) \in \varphi\, avec\, \theta_A = \varphi(A) = \top \}$
+\end{mydef}
+
+Si $s,t$ sont deux tuples de $I$ tel que $(s,t)$ ou $(t,s)$ est une violation alors seul les éléments de $cell(s,t,\varphi)$ doivent être éventuellement réparer. Chaque élément de $cell(s,t,\varphi)$ ne doit pas forcément être réparé. Parfois la réparation d'un seul de ses éléments suffit à réparer la violations.
+
+On peut également définir le \emph{degré d'une DC} $\varphi$ qui se défini comme étant la norme des cellules impliquées de $\varphi$. Pour tout $s,t \in I$ : $Deg(\varphi)$ = $ |cell(s,t,\varphi)|$. Nous définissons également le degré de $\Sigma$ noté $Deg(\Sigma)$ comme étant : $$Deg(\Sigma) = \sum_{\varphi \in \Sigma} |cell(s,t,\varphi)|$$
+
+Nous allons maintenant pouvoir construire notre \emph{graphe de conflit} de ($\Sigma,I$) formé de la manière suivante:
+\begin{itemize}
+\item Chaque nœud est un couple $(t,A)$ avec $t\in I$. Pour une question de lisibilité on ne représentera que les tuples $t$ qui apparaissent dans une violation c'est à dire qu'il existe un $s \in I$ tel que $(s,t) \in viol(I,\Sigma)$ ou $(t,s) \in viol(I,\Sigma)$ et $t.A \in cell(s,t,\varphi)$ avec $\varphi \in \Sigma$.
+\item Il y a un arc de $(s,A)$ vers $(t,A)$ si $(s,t \in viol(I,\Sigma)$ et $s.A,t.A \in cell(s,t,\varphi)$ avec $\varphi \in \Sigma$. 
+\item Si un graphe de conflit ne contient aucune arrête, alors la relation n'a pas de violation.
+\end{itemize}
+
+\begin{myexample}
+Prenons un exemple sur la table \ref{tableMain} ainsi qu'une DC que nous avons déjà utilisé auparavant:
+
+$$\varphi' =\{(Revenu,>),(Taxe,<) \})$$
+
+Pour notre relation, l'ensemble des violations est (voir figure \ref{GoodTax}):
+ $$ viol(I,\varphi') = \{ (t_5,t_4),(t_6,t_4),(t_7,t_4) \}$$
+
+Dans notre graphe, $(t_5,t_4) \in viol(I,\varphi')$ est représenté par $cell(t_5,t_4;\varphi')$ qui est égale à $\{ t_5.Revenu, t_4.Revenu, t_5.Taxe, t_4.Taxe\}$. Nous voulons éliminer les conflits, ce qui se traduit par éliminer les arcs du graphe. Introduisons d'abord deux Lemmes et une définition: \cite{main}
+\end{myexample}
+
+Le but d'une réparation est de se débarrasser de tous les arcs du graphe de conflit. Si il n'y a plus d'arc, il n'y a plus de violations, et donc nous avons une relation réparée. Pour éliminer une violation d'un graphe de conflit, i.e pour éliminer un arc, il faut modifier la valeur associée à un nœud de ce graphe. Par exemple si nous avons un arc de $(t,A)$ à $(s,A)$, si nous modifions correctement la valeur $t.A$ ou $s.A$, l'arc est supprimé.\\
+
+Le coût minimum pour réparer $(t,A)$ est $dist(t.A,a)$ avec $a \in \dom(I,A)$. En effet, remplacer $t.A$ par une variable fraiche coute plus cher. Nous allons essayer de réparer le moins de cellule possible, i.e modifier le moins de nœuds possibles tout en supprimant toutes les arrêtes. Celz correspond à trouver la \emph{couverture minimale par sommet}. Le problème de la couverture minimale par sommet, aussi communément appelé "Vertex Cover" consiste à trouver un ensemble minimum de sommet tel que l'on couvre toutes les arrêtes.
+
+\begin{myprop}
+\label{vertexCover}
+Soit $\V (G)$ le minimum Vertex Cover du graphe G correspond à $(\Sigma,I)$, on a que son poids vaut:
+
+$$ ||\V^*(G) || = \sum_{t.A \in \mathbb{V}(G)} min_{a} dist(t.A,a)$$
+
+et nous savons que $\Delta(I,f(I)) \geq ||V*(G) ||$ pour toute fonction de réparation $f$. 
+\end{myprop}
+
+En effet, corriger tout les éléments de $V*(G)$ consiste à supprimer toutes les arrêtes, c'est à dire retirer toutes les violations. C'est donc la réparation la moins chère!
+
+\begin{minipage}{.45\textwidth}\centering
+\hspace*{-0.8cm}\begin{figure}[H]
+ \includegraphics[scale=0.44]{img/ConflitTaxe.png}
+ \caption{\label{grapht4Taxe} Graphe de conflits pour l'attribut Taxe pour $\varphi$}
+\end{figure}\noindent
+\end{minipage}
+\begin{minipage}{.45\textwidth}\centering
+\begin{figure}[H]
+ \includegraphics[scale=0.44]{img/ConflitRevenu.png}
+ \caption{\label{grapht4Revenu} Graphe de conflits pour l'attribut Revenu pour $\varphi$}
+\end{figure}\noindent
+\end{minipage}~\\
+
+Notons que réparer une valeur $t.A$ de la relation supprime toutes les arrêtes du graphe de conflit qui relient $(t,A)$ à un autre nœud $(s,A)$. Mais les arcs reliant $(t,B)$ à un autre nœud $(s,B)$ avec $B \in S\backslash\{A\}$ peuvent aussi être supprimés. En effet si $t.A$ est modifié, il est possible que $t$ ne soit plus parmi les violations de $I$. Dès lors tout arc reliant $(t,B)$ à un autre nœud ne doit plus être inclut dans le graphe de conflit. Pour illustrer cela prenons le graphe de conflit de la figure  \ref{grapht4} et séparons le en deux (figure \ref{grapht4Revenu} et \ref{grapht4Taxe}). Si nous réparons $t5_.Revenu$ , l'arc $t_5.Revenu$ à $t_4.Revenu$ est supprimé. Mais puisque nous réparons $t_5.Revenu$, $(t_5,t_4) \not\in viol(I,\varphi')$ , nous pouvons supprimer l'arc de $t_5.Taxe$ à $t_4.Taxe$ aussi.\\
+
+Le problème du minimum Vertex Cover est connu comme étant un problème de la classe NP-Complet. Nous avons donc besoin de trouver une approximation de cette couverture. Dans l'article de référence\cite{main}, les auteurs proposent de considérer un facteur d'approximation f de $\V^*(G)$, i.e $\frac{||\V(G)||}{||\V*(G)||} \leq f$ avec $\V(G)$ une approximation de $\V^*(G)$ et f le degré maximum des sommets du graphe de conflit. Nous connaissons donc f, c'est le degré de $\Sigma$! Dès lors au vu de ce résultat et de la propriété \ref{vertexCover}, nous pouvons dire que:
+
+$$ ||\V(G)|| \leq f||\V^*(G) \leq Deg(\Sigma)\Delta(I,f(I)$$
+
+Dès lors nous pouvons définir la borne inférieure à notre coût de réparation:
+
+\begin{mydef}
+\label{defBorneInf}
+Soit $\Sigma$ un ensemble de DC sur $S$ et $I$ une relation sur $S$, le coût réparation maximum, i.e la borne inférieure pour le coût est de :
+$\delta_l(\Sigma,I) = \frac{||\V(G)||}{Deg(\Sigma)} $
+\end{mydef}
+
+Trouvons la borne supérieure. Pour se débarrasser des violations la solution la plus simple est de modifier tous les sommet de la couverture du graphe de conflit par une variable fraiche. Ce faisant, on a le coût de variation le plus élevé possible. En effet, $dist(a,fv)$ avec $a \in \dom(A,I)$ et $fv$ variable fraiche est la distance la plus grande. Nous avons donc ici la borne supérieure de réparation, c'est à dire la réparation la plus couteuse pour $I$ avec l'ensemble $\Sigma$. On définit cette borne supérieure comme étant:
+
+\begin{mydef}
+\label{defBorneSup}
+Soit $\Sigma$ un ensemble de DC sur $S$ et $I$ une relation sur $S$, le coût réparation maximum, i.e la borne supérieure pour le coût est de :
+$\delta_u(\Sigma,I) = \sum_{t.A \in \mathbb{V}(G)} dist(I(t.A),fv)$
+\end{mydef}
+
+Pour un ensemble de DCs $\Sigma$ et une relation $I$ sur $S$ ainsi qu'une fonction de réparation $f$ pour $I$ se basant sur $\Sigma$, nous savons que $\delta_l(\Sigma,I) \leq \Delta(I,f(I) \leq \delta_u(\Sigma,I)$
+
+Si nous revenons à notre example et que nous supposons que nous avons les distances suivantes :
+
+$$
+\forall a \in dom(A) \ avec \ a \neq b.
+\left\{
+	\begin{array}{ll}
+	   dist(a,a)=0\\
+	   dist(a,b)=1\\
+	   dist(a,fv)=1.5\\
+	   dist(fv,fv)=1.5\\
+	   dist(fv,b)=1\\
+	\end{array}
+\right.
+$$
+
+Donc si chaque arc a un poids de 1 (=$ dist(a,b)$) et si nous posons $\mathbb{V}(G)$ = $\{t_4.Tax \}$ nous avons $||\mathbb{V}(G)||$ = 1. Nous avons aussi $Deg(\Sigma)$ = 4, donc en utilisant les formules pour le calcul des bornes supérieure et inférieure: $\delta_l(\Sigma,I)$=$\frac{||\mathbb{V}(G)||}{Deg((\Sigma)}$ = $\frac{1}{4}$ = 0.25 and $\delta_u(\Sigma,I) = \sum_{t.A \in \mathbb{V}(G)} dist(I(t.A),fv)$ = $dist(a,fv)$=1.1 .
+
+\section{Réparation au coût minimal}
+
+Grâce au graphe de conflit, nous connaissons maintenant les valeurs $t.A$ qui doivent être modifiée pour respecter l'ensemble de DC $\Sigma$ et réparer la relation $I$  Mais pour l'instant, nous n'avons pas encore vu comment effectuer la réparation. Nous avons seulement expliqué que chaque mauvaise donnée est remplacée par une variable fraiche qui est ensuite remplacée par une vraie valeur si possible. Dans cette section, nous allons nous concentrer sur la réparation de données en minimisant le coût et en se basant sur $\Sigma'$. Pour ce faire, nous allons devoir nous assurer que nous ne créons pas de nouvelle violation après avoir corrigé une donnée. Par exemple, si nous choisissons de changer la valeur de $t_5.Taxe$ à $22k$, nous réglons la violation sur $(t_5,t_4)$ que nous avions avec la denial constraint $\varphi$ = $\{ (Revenu,>)(Taxe,<)\} $. En changeant cette valeur de cette manière, on crée une nouvelle violation $(t_8,t_5)$.\\
+
+Il est important de rappeler que trouver une réparation de coût minimum est un problème NP-difficile. Pour ces problèmes, il est important de trouver une approximation. Pour la suite de cette section, nous allons noter $\mathbb{C}$ les cellules sélectionnées dans $\mathbb{V}(G)$.
+
+\subsection{Identification des suspects}
+
+Trouver la réparation de coût minimal à partir d'un ensemble $\Sigma'$ de DC est un problème NP-complet \cite{main}, nous avons donc besoin d'un algorithme d'approximation pour trouver les solutions en un temps polynomial. Nous allons commencer par travailler avec la couverture $\mathbb{V}(G)$ = $\mathbb{C}$ et nous assurer qu'aucune nouvelle valeur n'introduit de nouvelle violations. Nous savons que les variables fraiches n'introduisent aucune violation puisque par définition une variable fraiche rend tout prédicat faux et donc la DC est vraie. Mais puisqu'on tente de trouver une valeur à ces variables, nous devons détecter quels tuples sont les plus susceptibles d'introduire de nouvelles violations après une correction des cellules de $\mathbb{C}$.
+
+\begin{mydef}
+	L'ensemble des \emph{suspects de $\varphi$} noté $susp( \mathbb{C}, \varphi)$ est un ensemble de couple de tuples qui satisfont tous les prédicats de $\varphi$ qui n'implique pas de cellules impliquées de $\mathbb{C}$, i.e les tuples qui satisfont la \emph{condition de suspicion:}
+
+	$$ sc(s,t,\varphi) = \{ s.A \theta t.A | s,t \in I ; P:(A,\theta) \in v\varphi ; s.A,t.A \not\in \mathbb{C} \}  $$
+	 
+\end{mydef}
+
+Soit deux tuples $s,t \in I$ on peut utiliser le graphe à la figure \ref{suspect1} pour représenter les attributs et le lien avec les suspects et les cellules impliquées. Les cercles représentent les éléments de $\mathbb{C}$ i.e les éléments qui vont changer et les carrés représentent les éléments qui ne sont pas de $\mathbb{C}$ i.e des éléments qui ne doivent pas changer. Les flèches représentent les opérateurs de nos prédicats. Par exemple la flèche allant de 1 à 5 représente l'opérateur $\Theta_A$ du prédicat $(A,\Theta_A)$. Si toutes les flèches noires de $\varphi$ sont satisfaites alors nous avons un suspect.
+
+\begin{figure}
+\centering
+\includegraphics[scale=1]{img/suspect1.png}
+\caption{\label{suspect1} $s,t$ sont deux suspect }
+\end{figure}
+
+Le lemme suivant nous permet d'affirmer qu'avoir la liste des suspects d'une DC contient toutes les violations de cette même DC \cite{main} :
+\begin{mylemma}
+Soit $I$ une relation sur $S$ , $\Sigma$ un ensemble de DC ,$\varphi$ une DC de $\Sigma$ et $\mathbb{C}$ une approximation de la couverture de poids minimum pour un graphe de conflit $G$ correspondant à  $\Sigma,I$ nous avons toujours $viol(I,\varphi) \subseteq susp(\mathbb{C},\varphi)$
+ \end{mylemma}
+ 
+ \begin{proof}
+ Soit $I$ une instance sur $S$ , deux tuples $s,t \in I$ et $\varphi$ une DC d'un ensemble de contrainte $\Sigma$ pour $I$.\\
+ Supposons que nous avons $(s,t) \in viol(I,\varphi)$ alors tous les prédicats de $\varphi$ sont vrais pour $(s,t)$ i.e $(s,t) \models \varphi$ et donc ils satisfont la condition de suspicion
+ \end{proof}
+
+\begin{myexample}
+
+Reprenons l'exemple sur $\varphi' = \{(Revenu,>),(Taxe,>) \}$ avec comme instance $I$ le tout en relation avec le graphe de conflits à la figure \ref{grapht4}. Nous allons uniquement changer $t_4.Taxe$ comme nous l'avons fait à la table \ref{tableExample}. Donc nous prenons $\mathbb{C}$ =  $\{ t_4.Taxe \}$ and $susp(\mathbb{C},\varphi') = \{( t_4 , t_1) , 
+( t_4 , t_2),
+( t_4 , t_3),
+( t_5 , t_4),
+( t_6 , t_4),
+( t_7 , t_4),
+( t_8 , t_4),
+( t_9 , t_4),
+( t_{10} , t_4) \}$ Regardons en détails $(t_4,t_1)$ à la figure \ref{fig3}. Nous avons $t_4.Taxe \in \mathbb{C}$ représenté par un cercle et $t_1.Taxe, t_4.Revenu, t_1.Revenu \not\in \mathbb{C}$ et donc représenté par un carré. Le prédicat $t_4.Taxe > t_1.Taxe$ a une flèche rouge car il contient un cercle i.e une valeur de Taxe qui doit être changée et son opérateur $>$ est remplacé par $<$ (pour représenté la situation actuelle) et $t_4.Revenu > t1.Revenu$ ne contient pas de cercle donc sa flèche est noire i.e aucune valeur à changer. \\
+
+Nous avons comme condition de suspicion sur $(t_4,t_1)$ : $sc(t_4,t_1,\varphi) = \{ t_4.Revenu > t_1.Revenu\}$. En se référant à la table \ref{tableMain}, nous avons $t_4.Revenu > t_1.Revenu$ ce qui implique que tous les prédicats avec une flèche bleue, c'est à dire ceux impliquant une valeur dans $\mathbb{C}$ sont satisfaits. Nous avons donc bien $(t_4,t_1)$ suspect , donc une réparation sur $t_4.Taxe$ peut introduire de nouvelles violations avec $t_1.Taxe$ , i.e $f(t_4.Taxe)$ < $t_1.Taxe$ avec $f$ fonction de réparation pour la relation I.
+\end{myexample}
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=1]{img/fig3}
+	\caption{\label{fig3}Les conditions de suspicions sont} représentées par des flèches bleues et le contexte de réparation \\
+	est représenté par des flèches rouges (avec l'opérateur inverse) \\
+\end{figure}
+
+\subsubsection{Contexte de réparation}
+
+Pour chaque couple de tuples $(s,t)\in susp(\mathbb{C},\varphi)$ nous pouvons définir un \emph{contexte de réparation} de la DC $\varphi$ qui se note $rc(s,t\varphi)$. Ce contexte de réparation nous permettra d'assurer que les réparations ne vont pas introduire de nouvelles violations. Le contexte de réparation d'une DC $\varphi$ est défini comme étant:
+
+\begin{mydef}
+Soit $I$ une relation sur $S$, soit $\varphi$ une DC sur $I$, soit $s,t \in I$, et $f$ une fonction de réparation pour I le contexte de réparation de $\varphi$ est noté $rc(s,t,\varphi)$ et vaut:
+
+\begin{displaymath}
+	\begin{split}
+		rc(s,t,\varphi) = 
+		&\{ t.A \overline{\theta} f(s.A) | (A,\Theta) \in pred(\varphi) , s,t \in I \}\cup\\
+		&\{ f(t.A) \overline{\theta} s.A | (A,\Theta) \in pred(\varphi) , s,t \in I  \}\cup\\
+		&\{ f(t.A) \overline{\theta} f(s.A) | (A,\Theta) \in pred(\varphi) , s,t \in I  \}
+	\end{split}
+\end{displaymath}
+
+\end{mydef}
+Si nos reprenons notre figure \ref{suspect1}  ou \ref{fig3}, les arcs rouges représentent le contexte de réparation.
+ 
+\begin{myprop}
+ Soit $I$ une relation sur $S$ et $\Sigma$ un ensemble de DC pour $I$. Toute relation $I'$ issue de la réparation de $I$ i.e $I' = f(I)$ est \emph{valide} si $I'$ satisfait tous les contextes de réparations.
+\end{myprop}
+
+\begin{myexample} (suite)
+Pour le couple de suspect $(t_4,t_1) \in susp(\mathbb{C},\varphi)$ nous avons le contexte de réparation $rc(t_4,t_1,\varphi) = \{ t_4.Taxe \geq t_1.Taxe \}$ que l'on obtient en prenant l'opposé de l'opérateur du prédicat $(Taxe, <)$ (voir définition) ce qui est représenté par une flèche rouge dans la figure \ref{suspect1}. En considérant toutes les paires de tuples de $susp(\mathbb{C},\varphi)$, nous obtenons l'entièreté du contexte de réparation de $\varphi$ visible graphiquement à la figure \ref{context}. Par les contextes de réparations de $\varphi$ : $f(t_4.Taxe) > t_1.Taxe = 0$ et $f(t_4.Taxe) \leq t_5.Taxe = 0$ par transitivité , nous pouvons affirmer avec certitude que la variable fraiche $fv$ que nous avions assigné vaut $fv = 0$.
+\end{myexample}
+
+Nous avons défini le contexte de réparation pour une DC $\varphi$. Nous pouvons maintenant définir le contexte de réparation pour un ensemble $\Sigma$ de DC : 
+\begin{mydef}
+	$$rc(\mathbb{C},\Sigma) = \bigcup_{(s,t) \in susp(\mathbb{C},\varphi), \varphi \in  \Sigma} rc(s,t,\varphi)$$
+\end{mydef}
+
+\begin{figure}
+\centering
+\includegraphics[scale=1]{img/context.png}
+\caption{\label{context} Contexte de réparation}
+\end{figure}
+
+Nous pouvons exprimer le problème de réparation d'une relation $I$ comme étant un problème de minimisation à résoudre : \\
+
+$\min \sum_{t. \in \mathbb{C}} dist(t.A,f(t.A))$ \\
+Sous la contrainte $ rc(\mathbb{C} , \Sigma)$
+
+Il est possible d'utiliser la programmation linéaire pour résoudre ce problème d'optimisation pour les valeurs numériques et une "value frequency map" pour les chaines de caractères \cite{main}.\\
+
+Nous pouvons décomposer $\C$ en plusieurs sous ensemble $\C_1 , \C_2,...,\C_n$ tel que $\forall s,t \in I$, il n'existe pas de $f(t.A) \overline{\Theta_A} f(s.A) \in rc(s,t,\varphi)$ pour $(s,t) \in susp(\C,\varphi)$ avec $\varphi \in \Sigma$ et $\Sigma$ un ensemble de DC pour la relation $I$ sur $S$. Nous pouvons dire que $rc(\C,\Sigma) = rc(\C_1,\Sigma) \cup ... \cup rc(\C_n,\Sigma) $ et donc nous pouvons résoudre notre problème en résolvant un problème de minimisation pour chaque $rc(\C_k , \Sigma)$ individuellement. En particulier nous pouvons résoudre le problème tuple par tuple.\\
+
+Maintenant nous pouvons décrire un algorithme de réparation de donnée:
+
+\IncMargin{1em}
+\begin{algorithm}
+\label{Réparation}
+
+	\DontPrintSemicolon
+  \caption{Data\_repairing($\Sigma$,$I$,$\C$):}
+  \LinesNumbered
+    \SetKwInOut{Input}{Entrée}
+    \SetKwInOut{Output}{Sortie}
+
+   % \underline{$\theta$-TolerantRepair} $(\mathbb{D},\Sigma,I)$\;
+    \Input{Un ensemble de DC $\Sigma$, une relation $I$ à réparer et l'ensemble $\C$ des éléments à réparer.}
+    \Output{Une réparation de $I$}
+    Initialiser $f(I) = I$\;
+    Initialiser $rc(\C,\Sigma)$\;
+    \Pour{ chaque $t \in C$}
+    {
+	Résoudre $rc(\{t\},\Sigma)$ par un solveur  
+	\Si{$rc(\{t\},\Sigma)$ peut être résolu}
+	{
+	$f(t)$ = solution du solveur	\;
+	} {
+	$t.A$ = l'élément apparaissant le plus de fois dans $rc(\{t\},\Sigma)$.
+	$f(t.A)$ = $fv$\;
+	}
+    }
+    \Return $f(I)$
+    
+\end{algorithm}\DecMargin{1em}
+
+\chapter{Variation de contraintes}
+
 \section{Variation sur les denial constraints}
 
-Nous avons vu précédemment qu'une denial constraint peut être sur-raffinée, échouant donc dans la détection d'erreurs. Une DC peut aussi être sur-simplifiée ce qui conduit à considérer des données correctes comme étant erronées. Parce que les contraintes peuvent être imprécises et inexactes, nous avons besoin de les corriger. En modifiant ces contraintes, nous pouvons obtenir une meilleure réparation\\
+Nous avons vu précédemment qu'une denial constraint peut être sur-raffinée, échouant donc dans la détection d'erreurs. Une DC peut aussi être sur-simplifiée ce qui conduit à considérer des données correctes comme étant erronées. Parce que les contraintes peuvent être imprécises et inexactes, nous avons besoin de les corriger. En modifiant ces contraintes, nous pouvons obtenir une meilleure réparation.\\
 
 \begin{myexample}
 Par exemple prenons la DC suivante:
@@ -904,6 +1086,7 @@ Nous devons désormais définir une marche à suivre concernant les variations d
 Nous devons modifier nos DC de telle manière qu'une contrainte sur-raffinée ou sur-simplifiée ne le soit plus. Si une DC est sur-raffinée, nous devons monter dans le treillis. En effet , plus on monte dans le treillis, plus le prédicat sur l'attribut $A$ sera fort, i.e la DC sera fort. A l'inverse, si une DC est sur-simplifiée; nous devons descendre dans le treillis. En effet plus nous descendons dans le treillis, plus le prédicat sur l'attribut $A$ sera faible, i.e la DC sera plus faible. Plus nous changeons de prédicats, plus le \emph{coût de variation des contraintes} sera important. Le \emph{coût de variation des contraintes} se définit comme tel: 
 
 \begin{mydef}
+\label{Thetadef}
 Soit $\Sigma$ un ensemble de DC sur un ensemble $S$. Pour une variante $\Sigma '$ de $\Sigma$, la fonction de calcul du \emph{coût de variations des contraintes} de $\Sigma$ est:
 
 $$\Theta (\Sigma,\Sigma ') = \sum_{\varphi in \Sigma} edit(\varphi,\varphi ')$$
@@ -929,7 +1112,7 @@ Si nous considérons notre treillis comme un graphe, il reste maintenant à trou
 
 \subsection{Parcours dans le treillis}
 
-	Maintenant que nous avons défini le poids de variation des contraintes, regardons le coût pour se déplacer dans le treillis. Soit $\varphi$ une DC sur $S$ et $\varphi'$ une variante de $\varphi$. Soit $A$ un attribut sur $S$. Le cout pour passer de $\varphi(A)$ à $\varphi'$, i.e la valeur de $path(\varphi(A),\varphi'(A)$ est le coût du plus court chemin du treillis. Le treillis doit être vu comme un graphe pouvant être parcouru dans les deux sens. Pour un attribut $A\in S$, le poids de chaque arc est de $c(A)$, $c(A)$ étant une valeur symbolisant la confiance qu'on accorde à la valeur de $A$. Si on n'a aucune connaissance sur la base de données, $c(A) =c(B)$ , pour tout $A,B \in S$.
+	Maintenant que nous avons défini le coût de variation des contraintes, regardons le coût pour se déplacer dans le treillis. Soit $\varphi$ une DC sur $S$ et $\varphi'$ une variante de $\varphi$. Soit $A$ un attribut sur $S$. Le cout pour passer de $\varphi(A)$ à $\varphi'$, i.e la valeur de $path(\varphi(A),\varphi'(A)$ est le coût du plus court chemin du treillis. Le treillis doit être vu comme un graphe pouvant être parcouru dans les deux sens. Pour un attribut $A\in S$, le poids de chaque arc est de $c(A)$, $c(A)$ étant une valeur symbolisant la confiance qu'on accorde à la valeur de $A$. Si on n'a aucune connaissance sur la base de données, $c(A) =c(B)$ , pour tout $A,B \in S$.
 	
 \begin{myexample}
 	Soit $\varphi = \{(Taxe,\leq),(Revenu,<) \}$ et $\varphi' = \{(Taxe,>)(Revenu,<) \}$ et c(Taxe) = c(Revenu) =1.
@@ -939,10 +1122,9 @@ Si nous considérons notre treillis comme un graphe, il reste maintenant à trou
 
 Par observation, on peut facilement se rendre compte que le plus court chemin d'un treillis est de longueur 3 maximum. Dans les sous-sections qui suivent, nous verrons qu'il sera important de limiter nos candidats, ce qui modifiera éventuellement le poids de certains arcs.\\
 
-Nous avons vu dans le chapitre précédent un lemme disant que $\varphi \models \hat{\varphi}$ et que nous avons aussi $\hat{varphi} \models \varphi$ pour $\varphi$ une DC sur $S$. Pourtant pour modifier $\varphi$ en $\hat{\varphi}$, nous avons un coût non nul. Ce n'est pas un problème, la réparation d'une relation $I$ sera la même peut importe qu'on ait $\varphi$ ou $\hat{\varphi}$ dans l'ensemble des DC. Dès lors le coût de réparation sera le même, et puisque l'on cherche à minimiser le coût de réparation aucun des deux ensemble ne sera privilégié par rapport à l'autre.
+Nous avons vu dans le chapitre précédent un lemme disant que $\varphi \models \hat{\varphi}$ et que nous avons aussi $\hat{\varphi} \models \varphi$ pour $\varphi$ une DC sur $S$. Pourtant pour modifier $\varphi$ en $\hat{\varphi}$, nous avons un coût non nul. Ce n'est pas un problème, la réparation d'une relation $I$ sera la même peut importe qu'on ait $\varphi$ ou $\hat{\varphi}$ dans l'ensemble des DC. Dès lors le coût de réparation sera le même, et puisque l'on cherche à minimiser le coût de réparation aucun des deux ensemble ne sera privilégié par rapport à l'autre.
 
 \subsection{Limitation des candidats}
-
 
 Dans notre treillis, nous avons 8 nœuds. Pour une DC sur un ensemble $S$ de taille 1, nous avons 8 différentes variantes de DC. Pour un ensemble $S$ de taille $n$ nous avons $8^n$ variations. Ce nombre est très important et envisager toutes les variations de contraintes serait coûteux en terme de complexité. Si le calcul d'une variation se fait en $O(1)$ alors considérer toutes les variantes possible est en $O(8^n)$. Si l'ensemble $\Sigma$ de contraintes est de taille $l$, puisqu'il faut considérer toutes les variantes pour chaque DC $\varphi \in \Sigma$, la complexité serait de $O((8^n)^l)$ Nous avons donc besoin de limiter le nombre de variations à considérer. Pour ce faire, nous allons utiliser des propriétés sur les DC pour limiter le nombre de contraintes à considérer.\\
 
@@ -950,22 +1132,7 @@ Nous savons déjà par le chapitre précédent que les contraintes triviales son
 
 Nous avons également besoin que la denial constraint soit satisfiable. Si une DC n'est pas satisfiable alors elle possède uniquement des prédicats avec l'opérateur $\top$ ou $=$. Nous pouvons donc rejeter toutes les DC ne possédant aucun opérateur parmi $\{ \bot,\neq,<,> \}$\\
 
-%TODO GO WEAKER\textsl{•}
-%Nous avons besoin également que les DC soit \emph{maximales}. Dans \cite{main} ils définissent une DC maximale comme étant:
-%
-%\begin{mydef}
-% La variante $\varphi'$ d'une DC $\varphi$ est dite \emph{maximale} si  $\varphi \preceq \varphi'$ \footnote{voir définition du raffinement chapitre \ref{RaffinementSection}} est qu'il n'existe pas de DC $\varphi''$ tel que $\varphi' \preceq \varphi'$ et que $edit(\varphi,\varphi'') = edit(\varphi,\varphi')$
-%\end{mydef}
-%
-%\begin{myprop}\cite{main}
-%\label{maxprop}
-%Soit $\varphi$ une DC sur $S$. Soit $\varphi'$ une variante de $\varphi$ sur $S$. Pour chaque attribut $A$ de $S$ tel que $\varphi(A) = \{ \top, =, <, > \}$, si $\varphi'(A) \in \{\neq,\leq,\geq \}$ alors $\varphi'$ n'est pas maximal.
-%
-%\end{myprop}
-%
-%Cette propriété vient de la définition de $Imp(\varphi)$. Soit $\varphi_1, \varphi_2$ deux DC sur $S$ Soit une relation $I$ sur $S$. Pour deux tuples $s,t \in I$ et un attribut $A$ de $S$, si $\varphi_1 \in Imp(\varphi_2)$ alors $s.A \Theta_1 t.A$ implique $s.A \Theta_2 t.A$ avec $\Theta_1 = \varphi_1(A)$ et $\Theta_2 = \varphi_2(A)$. Les opérateurs $\leq$, $\geq$ et $\neq$ sont les seuls opérateurs qui impliquent d'autres opérateurs qu'eux même comme on peut le voir à la table \ref{operatorTable}(c'est également le cas pour l'opérateur $\top$, mais celui-ci est exclu de la propriété).\\
-
-Nous souhaitons aussi rendre nos DC plus faible. Plus une DC est faible, moins il y aura de violations dans la relation. Puisque nous cherchons à minimiser le coût de réparation, nous devons minimiser le nombre de violations détectées. Dès lors nous ne chercherons plus que les DCs plus faible que celle dont on cherche les variations. Grâce à cette ça, nous savons maintenant qu'il est inutile de considérer toutes les insertions \footnote{Par insertion de prédicats, comprenons ici que nous passons de $\varphi(A) = \top$ à $\varphi(A) \neq \top$} de prédicats possibles. De manière plus générale, si nous considérons une variation d'un prédicat, on ne peut le changer par un prédicat plus bas dans le treillis. Notons que nous pouvons toujours descendre dans le treillis à condition de ne pas descendre plus de fois qu'on n'est monté. Par exemple, pour $A \in S$, si nous avons le prédicat $(A, \{= \})$ alors nous pouvons descendre en $(A,\{=,<\})$ puis monter en $(A, \{ <\})$.
+Nous souhaitons aussi rendre nos DC plus faible. Plus une DC est faible, moins il y aura de violations dans la relation. Puisque nous cherchons à minimiser le coût de réparation, nous devons minimiser le nombre de violations détectées. Dès lors nous ne chercherons plus que les DCs plus faible que celle dont on cherche les variations. Grâce à cette ça, nous savons maintenant qu'il est inutile de considérer toutes les insertions \footnote{Par insertion de prédicats, comprenons ici que nous passons de $\varphi(A) = \top$ à $\varphi(A) \neq \top$} de prédicats possibles. De manière plus générale, si nous considérons une variation d'un prédicat, on ne peut le changer par un prédicat plus bas dans le treillis. Notons que nous pouvons toujours descendre dans le treillis à condition de ne pas descendre plus de fois qu'on n'est monté. Par exemple, pour $A \in S$, si nous avons le prédicat $(A, \{= \})$ alors nous pouvons descendre en $(A,\{=,<\})$ puis monter en $(A, \{ <\})$.\\
 
  Illustrons le fait qu'une DC plus faible demande moins de réparation avec un exemple. 
 \begin{myexample}
@@ -1042,16 +1209,16 @@ Nous avons dit précédemment que nous avions $8^{|S|}$ variantes possibles pour
 \item Les DCs qui ont un coût de variations supérieur à $\theta$.
 \end{itemize}
 
-Ils reste beaucoup de cas valide, et calculer le coût de réparation $\Delta(I,f(I))$ pour une relation $I$ est coûteux. Nous allons devoit continuer à limiter nos cas.
+Ils reste beaucoup de cas valide, et calculer le coût de réparation $\Delta(I,f(I))$ pour une relation $I$ est coûteux. Nous allons devoir continuer à limiter nos cas.
 
 \subsection{Limitation par bornes}
 
-Nous avons vu précédemment que pour une seule DC, nous avions $8^{|S|}$ variantes possibles (voir treillis à la figure \ref{treillis} ). Nous avons donné des pistes pour limiter le nombre de candidats. Pour continuer dans cette lancée, nous allons déterminer deux bornes entre lesquelles le coût de la réparation la moins coûteuse se trouve. Soit $I$ une relation sur $S$, $\Sigma$ et $\Sigma'$ deux ensembles de DC sur $S$, $f$ une fonction de réparation pour $I$ telle que $f(I)\models \Sigma$ et  $g$ une fonction de réparation pour $I$ telle que $f(I)\models \Sigma'$. En général, le calcul du coût $\Delta(I,f(I))$ peut avoir une complexité élévée. Dans certains cas, il est possible d'obtenir, par un calcul simple,  une borne inférieure $\delta_l$ et une borne supérieure $\delta_u$ de ce coût.  Si la borne inférieure pour $\Delta(I,f(I))$ est plus grand que le coût supérieur de $\Delta(I,g)$, alors on peut élaguer f. Nous avons donc la propriété suivante:
+Nous avons vu précédemment que pour une seule DC, nous avions $8^{|S|}$ variantes possibles (voir treillis à la figure \ref{treillis} ). Nous avons donné des pistes pour limiter le nombre de candidats. Pour continuer dans cette lancée, nous allons déterminer deux bornes entre lesquelles le coût de la réparation la moins coûteuse se trouve. Soit $I$ une relation sur $S$, $\Sigma$ et $\Sigma'$ deux ensembles de DC sur $S$, $f$ une fonction de réparation pour $I$ telle que $f(I)\models \Sigma$ et  $g$ une fonction de réparation pour $I$ telle que $f(I)\models \Sigma'$. En général, le calcul du coût $\Delta(I,f(I))$ peut avoir une complexité élévée. Dans certains cas, il est possible d'obtenir, par un calcul simple,  une borne inférieure $\delta_l$ et une borne supérieure $\delta_u$ de ce coût.  Si la borne inférieure pour $\Delta(I,f(I))$ est plus grand que le coût supérieur de $\Delta(I,g(I))$, alors on peut privilégier $g$ à $f$. Nous avons donc la propriété suivante:
 
 
 \begin{myprop}
 \label{boundRemove}
-	Soit deux ensemble de denial constraints $\Sigma_1$ et $\Sigma_2$ pour une relation $I$ sur $R$, $f$ une fonction de réparation pour $I$ telle que $f(I)\models \Sigma_1$ et  $g$ une fonction de réparation pour $I$ telle que $f(I)\models \Sigma_2$. Si $\delta_u(\Sigma_1,I) < \delta_l(\Sigma_2,I)$ alors $\Delta(I,g(I)$ > $\Delta(I,f(I)$
+	Soit deux ensemble de denial constraints $\Sigma_1$ et $\Sigma_2$ pour une relation $I$ sur $R$, $f$ une fonction de réparation pour $I$ telle que $f(I)\models \Sigma_1$ et  $g$ une fonction de réparation pour $I$ telle que $f(I)\models \Sigma_2$. Si $\delta_u(\Sigma_1,I) < \delta_l(\Sigma_2,I)$ alors $\Delta(I,g(I))$ > $\Delta(I,f(I))$
 \end{myprop}
 
 
@@ -1071,6 +1238,12 @@ Alors par transitivité  $\Delta(I,I_1)$ < $\Delta(I,I_2)$. $I_2$ est une répar
 
 Cela veut dire que si la pire borne (borne supérieure) de la réparation de $\Sigma_1$ est moins bonne que la meilleure borne (borne inférieure) de la réparation de $\Sigma_2$ alors $\Sigma_1$ sera un meilleur ensemble DC pour la réparation que $\Sigma_2$ et donc $\Sigma_2$ peut être abandonnée. C'est intéressant pour l'élaboration d'un algorithme cherchant à trouver le meilleur ensemble de contraintes. En effet, si le calcul de ces bornes est moins couteux que le calcul du cout de réparation $\Delta(I,I')$ alors on peut réduire la complexité de cet algorithme.
 
+Nous connaissons déjà le calcul de ces deux bornes avec les Définitions: \ref{defBorneInf} et \ref{defBorneSup} vu au chapitre précédent. Les calculs sont:
+$$\delta_u(\Sigma,I) = \sum_{t.A \in \mathbb{V}(G)} dist(I(t.A),fv)$$
+$$\delta_l(\Sigma,I) = \frac{||\V(G)||}{Deg(\Sigma)} $$
+
+Nous pouvons donc gagner du temps de calcul en utilisant les deux bornes dans notre algorithme!
+
 \subsection{Algorithme de variations de DCs}
 Nous pouvons déjà proposer l'algorithme suivant qui nous permet d'obtenir toutes les variations d'une DC $\varphi$
 
@@ -1084,7 +1257,6 @@ Nous pouvons déjà proposer l'algorithme suivant qui nous permet d'obtenir tout
     \SetKwInOut{Input}{Entrée}
     \SetKwInOut{Output}{Sortie}
 
-   % \underline{$\theta$-TolerantRepair} $(\mathbb{D},\Sigma,I)$\;
     \Input{Une DC $\varphi$ dont on veut la variation}
     \Output{L'ensemble de toutes les variations de $\varphi$ respectant les conditions énoncés précédemment}
     Prendre un attribut $A$ quelconque de $S$.\;
@@ -1130,89 +1302,6 @@ L'algorithme \ref{variations} retourne toutes les variations d'une DC $\varphi$ 
 
 L'algorithme \ref{variations_rec} est un algorithme récursif qui donne toutes les variations possibles pour une DC $\varphi$ en paramètre. On crée des DCs $\varphi'$ à partir de $\varphi$ en changeant juste le prédicat sur l'attribut $A$ , un attribut en paramètre. On obtient donc une variation de $\varphi$ et on l'ajoute à $\Sigma$. Pour chacune de ces variations on fait un appel récursif sur $\varphi'$ en prenant un attribut qui n'a pas encore utilisé, c'est à dire un attribut de $S$ qui n'est pas dans $att\_pris$. On ajoute également $A$ dans les attributs pris. La complexité en temps dans le pire des cas de l'algorithme est en $O(8^{n})$. Le pire cas est la DC $\varphi$ = $\{\}$ c'est à dire que tout les opérateurs sont $\top$ et donc l'entièreté des treillis sont parcourus pour chaque attribut de $S$.
 
-%def get_var_recur(self,i,dc):
-%        returnList = []
-%        if(i<len(dc.predicates)):
-%            weak_pred = self.predicates[i].get_weaker_not_empty()
-%            for elem in weak_pred:
-%                new_dc = copy.deepcopy(dc)
-%                new_dc.predicates[i] = elem
-%                returnList.append(new_dc)
-%                returnList = returnList + self.get_var_recur(i+1,new_dc)
-%        return returnList
-\subsubsection{Graphe de conflits}
-
-Maintenant, nous allons introduire le \emph{graphe de conflits} qui peut représenter les violations dans une relation $I$ sur $S$. Dans un premiers temps, nous avons besoins de trouver l'ensemble de toutes les violations et ensuite obtenir nos deux bornes grâce à cet ensemble. On définition l'\emph{ensemble des violations} comme étant: \cite{main}
-
-\begin{mydef}
- L'\emph{ensemble des violations} $viol(I,\varphi) = \{ (s,t) | (s,t) \not\models \varphi $ avec $ s,t \in I \}$ est un ensemble de couple de tuples qui viole $\varphi$.L'ensemble de violation de $\Sigma$ est $viol(I,\Sigma) = \cup_{\varphi \in \Sigma}viol(I,\varphi)$.
-\end{mydef}
-
-\begin{figure}
- \centering
- \includegraphics[scale=0.8]{img/grapht4.png}
- \caption{\label{grapht4} Graphe de conflits pour $\varphi$}
-\end{figure}
-
-\begin{mydef}
-	L' \emph{ensemble cellules impliquées dans les violation} noté $cell(\varphi)$ est définie comme étant $cell(\varphi) = \{t.A,s.A|s,t \in I, (s,t) \in viol(I,\varphi), \varphi(A) \neq \top \}$. Les cellules de deux tuples $s,t \in I$ impliquées dans les violations de $\varphi$ est définie par $cell(s,t\varphi) = \{t.A,s.A|s,t \in I, \varphi(A) \neq \top \}$.
-\end{mydef}
-
-Avec le graphe de conflits $G$ nous pouvons représenter les violations dans la relation $I$. Pour chaque $(s,t) \in viol(I,\varphi)$ il y a un arc pour $cell(s,t,\varphi)$ dans G. Une bonne réparation $I'$ consiste à réparer la base de données de telle manière à ce que tout les arcs soient supprimés. Dès lors après une réparation, le graphe est vide.
-
-\begin{myexample}
-Prenons un exemple sur la table \ref{tableMain} ainsi qu'une DC que nous avons déjà utilisé auparavant:
-
-$$\varphi' =\{(Revenu,>),(Taxe,<) \})$$
-
-Pour notre relation, l'ensemble des violations est (voir figure \ref{GoodTax}):
- $$ viol(I,\varphi') = \{ (t_5,t_4),(t_6,t_4),(t_7,t_4) \}$$
-
-Dans notre graphe, $(t_5,t_4) \in viol(I,\varphi')$ est représenté par $cell(t_5,t_4;\varphi')$ qui est égale à $\{ t_5.Revenu, t_4.Revenu, t_5.Taxe, t_4.Taxe\}$. Nous voulons éliminer les conflits, ce qui se traduit par éliminer les arcs du graphe. Introduisons d'abord deux Lemmes et une définition: \cite{main}
-\end{myexample}
-	%% problems here%%
-\begin{mydef}
-	On note $ \min_{a} dist(t.A,a) $ le poid d'un arc t.A, i.e, le coût minimum qui devrait être payé pour réparer t.A avec une valeur $a$.
-\end{mydef}
-
-\begin{mydef}
-	$\mathbb{V}(G)$ est la \textbf{couverture de poids minimum} du graphe G correspondant à $\Sigma$ avec le poids
-	$$||\mathbb{V*(G)}|| = \sum_{t.A \in \mathbb{V}(G)} min_{a} dist(I(t.A),a)$$
-\end{mydef}
-
-\begin{mylemma}
-	Soit $I$ une relation sur $S$. Pour n'importe quelle réparation $I'$ de $I$, i.e, $I' \models \Sigma$, nous avons $\Delta(I,I') \leq ||V*(G)||$. 
-\end{mylemma}
-
-\begin{mydef}
-	Soit $I$ une relation sur $S$. Soit $\Sigma$ un ensemble de DC. Soit $s$,$t$ deux tuples de $I$. Nous définissons degré de $\Sigma$ noté $Deg(\Sigma)$ comme étant : $$Deg(\Sigma) = \sum_{\varphi \in \Sigma} |cell(s,t,\varphi)|$$
-\end{mydef}
-
-%Computing $\mathbb{V}$ is a NP-Hard problem so we need to approximate it. We'll consider an constant factor-f approximation of $\mathbb{V}$ which is $\frac{||\mathbb{V}(G)||}{||\mathbb{V}*(G)||} \leq f$. where f is the maximum degree of hyperedges and $||\mathbb{V}(G)||$ is an approximation of $||\mathbb{V}*(G)||$.
-
-Dans \cite{main} ils définissent la borne supérieure et la borne inférieure du coût de réparation comme étant:
-$$ \delta_l(\Sigma,I) = \frac{||\mathbb{V}(G)||}{Deg(\Sigma)}$$
-$$ \delta_u(\Sigma,I) = \sum_{t.A \in \mathbb{V}(G)} dist(I(t.A),fv)$$
-
-Si nous revenons à notre example et que nous supposons que nous avons les distances suivantes :
-
-$$
-\forall a \in dom(A) \ avec \ a \neq b.
-\left\{
-	\begin{array}{ll}
-	   dist(a,a)=0\\
-	   dist(a,b)=1\\
-	   dist(a,fv)=1.5\\
-	   dist(fv,fv)=1.5\\
-	   dist(fv,b)=1\\
-	\end{array}
-\right.
-$$
-
-Donc si chaque arc a un poids de 1 (=$ dist(a,b)$) et si nous posons $\mathbb{V}(G)$ = $\{t_4.Tax \}$ nous avons $||\mathbb{V}(G)||$ = 1. Nous avons aussi $Deg(\Sigma)$ = 4, donc en utilisant les formules pour le calcul des bornes supérieure et inférieure: $\delta_l(\Sigma,I)$=$\frac{||\mathbb{V}(G)||}{Deg((\Sigma)}$ = $\frac{1}{4}$ = 0.25 and $\delta_u(\Sigma,I) = \sum_{t.A \in \mathbb{V}(G)} dist(I(t.A),fv)$ = $dist(a,fv)$=1.1 .
-
-%%problem end%%
-
 \subsection{Coût dans le treillis}
 
 Nous pouvons donc modifier une DC $\varphi$ en modifiant ses prédicats. Nous avons vu précédemment que les opérateurs peuvent être représenter dans un treillis et modifier l'opérateur consiste à se déplacer dans le treillis. Le coût dépend donc du nombre d'arcs parcourus dans le treillis. Nous verrons dans cette sous-section quel est le poids pour chacun de ces arcs.\\
@@ -1232,47 +1321,45 @@ Il est possible de représenter le treillis comme à la figure \ref{treillisGrap
 	\caption{\label{treillisGraph} Chaque types de transition aura son propre poids.}
 \end{figure}
 
+Soit $\varphi$ la DC dont nous voulons calculer les variations. Nous avons vu précédemment que nous n'allions considérer que les DCs qui sont plus faibles que $\varphi$. Dès lors nous n'avons besoin de définir que les poids $w(a,b)$ avec $a > b$. En effet on ne descend jamais dans le treillis.
 
-Nous avons vu précédemment qu'une DC ne doit pas contenir l'opérateur $\bot$ car sinon la DC est triviale (voir Lemma \ref{trivialLemma}). De ce fait nous pouvons dire:
+Nous avons vu précédemment qu'une DC qui contient l'opérateur $\bot$ est triviale (voir Lemma \ref{trivialLemma}). Si Nous avons une DC non triviale, nous voulons éviter de la rendre triviale. En effet si on rend une DC triviale, on a certes un coût de réparation qui diminue mais on a directement une DC sur-raffinée. Il ne faut donc pas transformer un opérateur en $\bot$. Les arcs allant vers $\bot$ , i.e les arcs rouges dans la figure \ref{treillisGraph}, ne doivent jamais être empruntés. Pour cela, le poids de ces arcs sera $w(1,0)= + \infty$. Notons que si la DC $\varphi$ que nous voulons faire varier contient un opérateur $\bot$, quelque soit la variation que l'on fait, on obtiendra une DC qui qui est équivalente. Il n'y a donc aucun besoin de chercher une variation et on peut donc l'ignorer.\\
 
-\begin{itemize}
-	\item Il ne faut pas transformer un opérateur en $\bot$. Les arcs allant vers $\bot$ , i.e les arcs rouges dans la figure \ref{treillisGraph}, ne doivent jamais être empruntés. Pour cela, le poids de ces arcs sera $w(1,0)= + \infty$
-	\item Une DC ne devrait jamais avoir de prédicat dont l'opérateur est $\bot$. Si c'est le cas, il est nécessaire de corriger ce prédicat. Pour aider à la correction, nous posons $w(0,1) < 0$, dès lors emprunter un arc orange ne coute rien, c'est même positif et donc on encourage à faire cette modification. On force ainsi la correction de tels prédicats.
-\end{itemize}
+Il nous reste à définir deux poids montant: $w(3,2)$ et $w(2,1)$. A priori, il n'y a aucune raison de mettre un poid particulier sur ces transitions. Nous poserons que $0 < w(3,2)  = w(2,1) = \alpha$ avec $\alpha$ un poids que nous définirons en fonction de $\theta$ ($\alpha < \theta$). $\theta$ est une valeur que nous devrons définir dans l'algorithme $\theta$-tolérant.\\
 
-Nous avons également vu que si une DC n'est pas maximale, alors elle ne donnera pas la meilleure réparation. Il faut donc sanctionné les transitions qui partent d'un prédicat maximal vers un prédicat non maximal. Par la propriété \ref{maxprop}, nous savons que les prédicats qui contiennent les opérateurs $\leq, \geq$ ou $\neq$ ne sont pas maximals. Pour encourager à rendre une DC maximale, nous poserons $w(1,2)$ = + $\infty$ et $0 < w(2,1) <\alpha$ avec $\alpha$ un seuil que nous devrons définir plus tard.
+Les poids des arcs descendant seront mis à $\infty$ afin d'éviter qu'on emprunte ces arcs car nous voulons rendre nos DC plus faible, pas plus forte!\\
 
-Il nous reste à évaluer $w(2,3)$ et $w(3,2)$. $w(3,2)$ représente une insertion de prédicat tandis que $w(2,3)$ est une suppression de prédicat. A priori, il n'y a aucune raison de mettre un poid particulier sur ces transitions. Nous poserons que $0 < w(3,2)  = w(2,3) < \alpha$.
+ Dans notre implémentation, nous allons préférer la modification d'un prédicat avec un opérateur parmi $\{ \leq, \neq, \geq \}$ vers un opérateur $\{ <,=,> \}$ plutôt que la modification d'un prédicat avec l'opérateur $\top$ vers $\{ \leq, \neq, \geq \}$. En effet, si un prédicat à un opérateur qui n'est pas $\top$, c'est qu'on a considérer que ce prédicat était important. Nous considérons qu'il n'a pas été choisi au hasard et donc $0 < w(2,1)  = \alpha$ et $w(3,2) = 2\alpha$.
 
 \subsection{Variation d'un ensemble de contraintes}
 
-Nous avons jusqu'à présent abordé le sujet de la variation d'une seule contrainte. Pour faire varier un ensemble de contraintes $\Sigma$, il suffit d'appliquer le même raisonnement à au moins une des DCs de $\Sigma$. Mais nous devons statuer si on peut ajouter des DC ou même en supprimer. Nous déciderons d'aller dans le même sens que l'article sur lequel nous nous sommes initialement basés \cite{bcss} et donc nous n'ajouterons pas de DC ni n'en retirerons. Retirer une DC diminue le nombre d'erreurs détectées (l'ensemble des DC est sur-raffiné)et on peut supposer que chaque DC avait un sens lors de sa création (mais peut évidement être imprécis). L'ajout de DC est bien plus compliqué a mettre en oeuvre et on peut rapidement obtenir des DC qui n'ont pas de sens et qui détecteraient des erreurs qui ne le sont pas (l'ensemble de DC est sur-simplifié).
+Nous avons jusqu'à présent abordé le sujet de la variation d'une seule contrainte. Pour faire varier un ensemble de contraintes $\Sigma$, il suffit d'appliquer le même raisonnement à au moins une des DCs de $\Sigma$. Mais nous devons statuer si on peut ajouter des DC ou même en supprimer. Nous déciderons d'aller dans le même sens que l'article sur lequel nous nous sommes initialement basés \cite{bcss} et donc nous n'ajouterons pas de DC ni n'en retirerons. Retirer une DC diminue le nombre d'erreurs détectées (l'ensemble des DC est sur-raffiné)et on peut supposer que chaque DC avait un sens lors de sa création (mais peut évidement être imprécis). L'ajout de DC est bien plus compliqué a mettre en oeuvre et on peut rapidement obtenir des DC qui n'ont pas de sens et qui détecteraient des erreurs qui ne le sont pas (l'ensemble de DC est sur-simplifié).\\
 
-Puisque nous avons décidé de ne pas supprimer des DCs dans un ensemble de DC $\Sigma$, nous devons faire attention à la manière dont nous modifions $\Sigma$. Si cet ensemble contient au moins deux DC et qu'on modifie une des contraintes jusqu'à ce qu'elle soit identique à une autre, alors ça revient à faire une suppression.
+Nous avons décidé de ne pas supprimer des DCs dans un ensemble de DC $\Sigma$, mais suivant la manière dont nous modifions $\Sigma$, nous pouvons avoir deux DCs équivalent ce qui équivaut à une suppressions. Si un ensemble contient au moins deux DC et qu'on modifie une des contraintes jusqu'à ce qu'elle soit identique à une autre, alors ça revient à faire une suppression.
 
 \begin{myexample}
 Soit $S$ = $\{A,B,C\}$
-Prenons $\Sigma_1 = \{ \varphi_1= \{(A,<),(B,\neq) \} \varphi_2= \{(A,<),(C,\neq) \}\}$ et la variation $ \Sigma_2 = \{ \{(A,<),(B,\neq) \} ,\{(A,<),(B,\neq) \}\}$
+Prenons $\Sigma_1 = \{ \varphi_1= \{(A,<),(B,\neq) \} \varphi_2= \{(A,<),(C,\neq) \}\}$ et la variation $ \Sigma_2 = \{ \{(A,<),(B,\neq), \} ,\{(A,<),(B,\neq) \}\}$
 nous voyons que la variation contient deux fois la même DC, et donc on peut réécrire $ \Sigma_2 = \{ \{(A,<),(B,\neq) \}\}\}$ ce qui équivaut à une suppression.
 
 \end{myexample}
 
-Notons qu'il est possible de faire des variations inutiles :
+ou encore :
 
 \begin{myexample}
 
 Reprenons $S$ = $\{A,B,C\}$
-et $\Sigma' = \{ \varphi_1= \{(A,<),(B,\neq) \} \varphi_2= \{(A,<),(C,\neq) \}\}$ et la variation $\Sigma' = \{ \varphi_1'= \{(A,<),(C,\neq) \} \varphi_2'= \{(A,<),(B,\neq) \}\}$ , les deux DC ont été modifiés mais nous avons le même ensemble!
+et $\Sigma' = \{ \varphi_1= \{(A,<),(B,\neq) \} \varphi_2= \{(A,<),(C,\neq) \}\}$ et la variation $\Sigma' = \{ \varphi_1'= \{(A,<),(B,\neq),(C,\neq) \} \varphi_2'= \{(A,<),(B,\neq),(C,\neq) \}\}$ , les deux DC ont été modifiés mais nous avons le même ensemble!
 \end{myexample}
 \section{$\theta$-tolerant model}
 
-Dans cette section nous allons enfin aborder le \emph{modèle de réparation $\theta$-tolérant}. $\theta$ représente ici un seul de variation sur l'ensemble des contraintes $\Sigma$, nous ne voulons donc pas une variante de contraintes dont le coût serait plus grand que $\theta$ : $\Theta(I,I') \leq \theta$. L'idée est d'éviter le sur-raffinement et donc d'éviter de laisser certaines données erronées. Afin d'éviter la sur-simplification, nous utilisons le principe du changement minimum. Nous avons donc besoin d'une relation réparée $I'$ de la relation originale $I$ et minimisant le coût de réparation $\Delta(I,I')$.\\
+Dans cette section nous allons enfin aborder le \emph{modèle de réparation $\theta$-tolérant}. $\theta$ représente ici un seul de variation sur l'ensemble des contraintes $\Sigma$, nous ne voulons donc pas une variante de contraintes dont le coût serait plus grand que $\theta$ : $\Theta(I,f(I)) \leq \theta$ (voir défintion \ref{Thetadef} pour la définition du coût de variations des contraintes). L'idée est d'éviter le sur-raffinement et donc d'éviter de laisser certaines données erronées. Afin d'éviter la sur-simplification, nous utilisons le principe du changement minimum. Nous avons donc besoin d'une relation réparée $I'$ de la relation originale $I$ et minimisant le coût de réparation $\Delta(I,I')$.\\
 
-Trouver la meilleure réparation suivant le modèle $\theta$-tolérant, i.e trouver la réparation de coût minimum est un problème de la classe NP-difficile. La classe de problèmes NP-difficile est une classe dont les problèmes sont au moins aussi difficile que les problèmes les plus difficiles de la classe NP \footnote{Les problèmes NP sont des problèmes dont une solution peut être vérifiée comme étant bonne en un temps polynomial}. Nous devons donc retenir ici que ce n'est pas possible de résoudre la réparation $\theta$-tolérante en un temps polynomial. L'approche naïve est de récupérer toutes les variantes $\Sigma'$ de $\Sigma$ et de ensuite calculer $\Theta(I,I')$  avec $I'$ la relation résultante de la réparation suivant les DC de $\Sigma'$. Si $\Theta(I,I') \leq \theta$, on calcule le coût de réparation. Ensuite on compare le coût de la réparation $I'$ pour chaque $\Sigma'$ et on garde la réparation la moins coûteuse. Cette méthode est évidement très haute en complexité.\\
+Trouver la meilleure réparation suivant le modèle $\theta$-tolérant, i.e trouver la réparation de coût minimum est un problème de la classe NP-difficile. La classe de problèmes NP-difficile est une classe dont les problèmes sont au moins aussi difficile que les problèmes les plus difficiles de la classe NP \footnote{Les problèmes NP sont des problèmes dont une solution peut être vérifiée comme étant bonne en un temps polynomial}. Nous devons donc retenir ici que ce n'est pas possible de résoudre la réparation $\theta$-tolérante en un temps polynomial à moins que P=NP \footnote{La question de savoir si P=NP est une conjecture dans le domaine de l'informatique théorique.}. L'approche naïve est de récupérer toutes les variantes $\Sigma'$ de $\Sigma$ et de ensuite calculer $\Theta(I,I')$  avec $I'$ la relation résultante de la réparation suivant les DC de $\Sigma'$. Si $\Theta(I,I') \leq \theta$, on calcule le coût de réparation. Ensuite on compare le coût de la réparation $I'$ pour chaque $\Sigma'$ et on garde la réparation la moins coûteuse. Cette méthode est évidement très haute en complexité.\\
 
 Nous avons vu qu'on remplaçait chaque donnée erronée par une variable fraiche $fv$ puis nous essayons de remplacer certaines de ces variables fraiches par des vraies valeurs. Plus une réparation privilégies les vraies valeurs aux valeurs fraiches, plus elle aura de chance de minimiser le coût de réparation.\\
 
-Maintenant, considérons $\mathbb{D}$ = $\Sigma_1 ' * \Sigma_2' * ... \Sigma_{|\Sigma|}'$ où chaque $\Sigma_i' \in \mathbb{D}$ est une variante de $\Sigma$ obtenu par variations. Considérons que ces variantes sont limitées par $\theta$, donc nous avons $\Theta(\Sigma,\Sigma') \leq \theta$. L'algorithme \ref{theta} retourne la meilleure relation $I_{min}$ de l'ensemble des contraintes $\Sigma_{min}$. L'algorithme est simple: pour chaque $\Sigma_i$ , si la borne inférieure est plus petite que la borne supérieure (voir la propriétés \ref{boundRemove}), nous mettons à jour la valeur de $\delta_{min}$ car une meilleure réparation $I_i$ a été trouvée. \\
+Maintenant, considérons $\mathbb{D}$ comme étant l'ensemble de toutes les variations $\Sigma'$ de $\Sigma$. Considérons que ces variantes sont limitées par $\theta$, donc nous avons $\Theta(\Sigma,\Sigma') \leq \theta$. L'algorithme \ref{theta} retourne la meilleure relation $I_{min}$ de l'ensemble des contraintes $\Sigma_{min}$. L'algorithme est simple: pour chaque $\Sigma_i$ , si la borne inférieure est plus petite que la borne supérieure (voir la propriétés \ref{boundRemove}), nous mettons à jour la valeur de $\delta_{min}$ car une meilleure réparation $I_i$ a été trouvée. \\
 
 \IncMargin{1em}
 \begin{algorithm}
@@ -1292,7 +1379,7 @@ Maintenant, considérons $\mathbb{D}$ = $\Sigma_1 ' * \Sigma_2' * ... \Sigma_{|\
 	\Pour{chaque variante de contrainte $\Sigma_i \in \mathbb{D}$}{
     	\Si{$\delta_l (\Sigma_i,I) \leq \delta_{min}$}
     		{
-    		$I_i$ = DATAREPAIR($\Sigma_i,I,\mathbb{V}(G_i),\delta_{min}$)\;
+    		$I_i$ = DATAREPAIR($\Sigma_i,I,\mathbb{V}(G_i)$)\;
     		\Si{$\Delta(I,I_i) \leq \delta_{min}$}
     		{$\delta_{min}$ = $\Delta(I,I_i)$\;
     		$I_{min}$ = $I_i$\;}
@@ -1317,176 +1404,22 @@ Pour $\Sigma2$ nous obtenons le graphe de conflit de la figure \ref{graphSigma2}
 
 \begin{figure}
 \centering
-\hspace*{-1.8cm} \includegraphics[scale=0.565]{img/graph2}
+\hspace*{-1.8cm} \includegraphics[scale=0.465]{img/graph2}
 \caption{\label{graphSigma2}Graphe de conflit pour $\Sigma_2$ avec:}
 	nombre pair pour les Taxe, nombre impair pour le Revenu. \\
 	$t_1$ en jaune, $t_2$ en rouge, $t_3$ en vert,\\
 	$t_4$ en bleu, $t_5$ en violet et $t_6$ en blanc.
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
 \centering
-\includegraphics[scale=1]{img/TaxEqual}
+\includegraphics[scale=0.95]{img/TaxEqual}
 \caption{\label{EqualTax} Toutes les violations pour $\varphi''$}
 \end{figure}
 
 \end{myexample}
 
 Parlons maintenant de la complexité de l'algorithme. Disons que $l$ est le nombre de contraintes impliquées dans $\Sigma$ dès lors nous pouvons dire que la construction du graphe de conflits $G_i$ pour chaque $\Sigma_i \in \mathbb{D}$ est en $O(|I|^l)$. L'algorithme de réparation de données a une complexité en temps de $O(|I|^l)$ et l'algorithme \ref{theta} a une complexité en temps de $O(|I|^l|\mathbb{D}|)$. 
-
-\section{Réparation au coût minimal}
-
-Après avoir utilisé le modèle $\theta$-tolérant, nous connaissons enfin quel ensemble de denial constraints $\Sigma'$ (obtenu en faisant varier $\Sigma$) nous devons utiliser. Mais pour l'instant, nous n'avons pas encore vu comment effectuer la réparation. Nous avons seulement expliqué que chaque mauvaise donnée est remplacée par une variable fraiche et ensuite remplacée par une vraie valeur si possible. Dans cette section, nous allons nous concentrer sur la réparation de données en minimisant le coût et en se basant sur $\Sigma'$. Pour ce faire, nous allons devoir nous assurer que nous ne créons pas de nouvelle violation après avoir corrigé une donnée. Par exemple, si nous choisissons de changer la valeur de $t_5.Taxe$ à $22k$, nous réglons la violation sur $(t_5,t_4)$ que nous avions avec la denial constraint $\varphi$ = $\{ (Revenu,>)(Taxe,<)\} $. En changeant cette valeur de cette manière, on crée une nouvelle violation $(t_8,t_5)$.\\
-
-Il est important de rappeler que trouver une réparation de coût minimum est un problème NP-difficile. Pour ces problèmes, il est important de trouver une approximation. Pour la suite de cette section, nous allons noter $\mathbb{C}$ les cellules sélectionnées dans $\mathbb{V}(G)$.
-
-\subsection{Identification des suspects}
-
-Trouver la réparation de coût minimal à partir d'un ensemble $\Sigma'$ de DC est un problème NP-complet \cite{main}, nous avons donc besoin d'un algorithme d'approximation pour trouver les solutions en un temps polynomial. Nous allons commencer par travailler avec la couverture $\mathbb{V}(G)$ = $\mathbb{C}$ et nous assurer qu'aucune nouvelle valeur n'introduit de nouvelle violations. Nous savons que les variables fraiches n'introduisent aucune violation puisque par définition une variable fraiche rend tout prédicat faux et donc la DC est vraie. Mais puisqu'on tente de trouver une valeur à ces variables, nous devons détecter quels tuples sont les plus susceptibles d'introduire de nouvelles violations après une correction des cellules de $\mathbb{C}$.
-
-\begin{mydef}
-	Les \emph{suspects de $\varphi$} noté $susp( \mathbb{C}, \varphi)$ est un ensemble de couple de tuples qui satisfont tous les prédicats de $\varphi$ qui n'implique pas de cellules impliquées de $\mathbb{C}$, i.e les tuples qui satisfont la \emph{condition de suspicion:}
-
-	$$ sc(s,t,\varphi) = \{ s.A \Theta t.A | s,t \in I ; P:(A,\Theta) \in pred(\varphi) ; s.A,t.A \not\in \mathbb{C} \}  $$
-	 
-\end{mydef}
-
-Soit deux tuples $s,t \in I$ on peut utiliser le graphe à la figure \ref{suspect1} pour représenter les attributs et le lien avec les suspects et les cellules impliquées. Les cercles représentent les éléments de $\mathbb{C}$ i.e les éléments qui vont changer et les carrés représentent les éléments qui ne sont pas de $\mathbb{C}$ i.e des éléments qui ne doivent pas changer. Les flèches représentent les opérateurs de nos prédicats. Par exemple la flèche allant de 1 à 5 représentent l'opérateur $\Theta_A$ du prédicat $(A,\Theta_A)$. Si toutes les flèches noires de $\varphi$ sont satisfaites alors nous avons un suspect.
-
-\begin{figure}
-\centering
-\includegraphics[scale=1]{img/suspect1.png}
-\caption{\label{suspect1} $s,t$ sont deux suspect }
-\end{figure}
-
-Le lemme suivant nous permet d'affirmer qu'avoir la liste des suspects d'une DC contient toutes les violations de cette même DC \cite{main} :
-\begin{mylemma}
-Soit $I$ une relation sur $S$ , $\Sigma$ un ensemble de DC ,$\varphi$ une DC de $\Sigma$ et $\mathbb{C}$ une approximation de la couverture de poids minimum pour un graphe de conflit $G$ correspondant à  $\Sigma,I$ nous avons toujours $viol(I,\varphi) \subseteq susp(\mathbb{C},\varphi)$
- \end{mylemma}
- 
- \begin{proof}
- Soit $I$ une instance sur $S$ , deux tuples $s,t \in I$ et $\varphi$ une DC d'un ensemble de contrainte $\Sigma$ pour $I$.\\
- Supposons que nous avons $(s,t) \in viol(I,\varphi)$ alors tous les prédicats de $\varphi$ sont vrais pour $(s,t)$ i.e $(s,t) \models \varphi$ et donc ils satisfont la condition de suspicion
- \end{proof}
- 
-%\begin{mydef} \cite{main}
-%	L'ensemble des suspects $susp(\mathbb{C},\varphi)$ de $\varphi$ est un ensemble de tuple $(s,t)$ qui satisfont tous les prédicats dans  $\varphi$ et qui n'impliquent pas de cellules de $\mathbb{C}$.
-%\end{mydef}
-%
-%et ils satisfont les \emph{conditions de suspicion définis comme étant}:
-%
-%\begin{displaymath}
-%\begin{split}
-%sc(s,t) &= \{I(v_1)\phi c| P: v_1 \phi c \in pred(\varphi),v_1 \in \mathbb\{C\}\}\cup \\
-%	&\{I(v_1)\phi v_2| P: v_1 \phi v_2 \in pred(\varphi),v_1,v_2 \in \mathbb\{C\}\}
-%\end{split}
-%\end{displaymath}
-%
-%Toutes les violations dans la relation $I$, i.e tous les tuples $(s,t)$ avec $s,t \in I$ tel que ???, se retrouvent dans la liste de suspects, ce qui conduit à ce Lemme trivial:
-%
-%\begin{mylemma}
-%	Pour tout $\mathbb{C}$, Nous avons toujours $viol(I,\varphi) \subseteq susp(\mathbb{C},\varphi)$
-%\end{mylemma}
-%
-%Dès lors, si nous parvenons à obtenir tous les suspects, nous avons aussi toutes les violations.\\
-
-\begin{myexample}
-
-Reprenons l'exemple sur $\varphi' = \{(Revenu,>),(Taxe,>) \}$ avec comme instance $I$ le tout en relation avec le graphe de conflits à la figure \ref{grapht4}. Nous allons uniquement changer $t_4.Taxe$ comme nous l'avons fait à la table \ref{tableExample}. Donc nous prenons $\mathbb{C}$ =  $\{ t_4.Taxe \}$ and $susp(\mathbb{C},\varphi') = \{( t_4 , t_1) , 
-( t_4 , t_2),
-( t_4 , t_3),
-( t_5 , t_4),
-( t_6 , t_4),
-( t_7 , t_4),
-( t_8 , t_4),
-( t_9 , t_4),
-( t_{10} , t_4) \}$ Regardons en détails $(t_4,t_1)$ à la figure \ref{fig3}. Nous avons $t_4.Taxe \in \mathbb{C}$ représenté par un cercle et $t_1.Taxe, t_4.Revenu, t_1.Revenu \not\in \mathbb{C}$ et donc représenté par un carré. Le prédicat $t_4.Taxe > t_1.Taxe$ a une flèche rouge car il contient un cercle i.e une valeur de Taxe qui doit être changée et son opérateur $>$ est remplacé par $<$ (pour représenté la situation actuelle) et $t_4.Revenu > t1.Revenu$ ne contient pas de cercle donc sa flèche est noire i.e aucune valeur à changer. \\
-
-Nous avons comme condition de suspicion sur $(t_4,t_1)$ : $sc(t_4,t_1,\varphi) = \{ t_4.Revenu > t_1.Revenu\}$. En se référant à la table \ref{tableMain}, nous avons $t_4.Revenu > t_1.Revenu$ ce qui implique que tous les prédicats avec une flèche bleue, c'est à dire ceux impliquant une valeur dans $\mathbb{C}$ sont satisfaits. Nous avons donc bien $(t_4,t_1)$ suspect , donc une réparation sur $t_4.Taxe$ peut introduire de nouvelles violations avec $t_1.Taxe$ , i.e $f(t_4.Taxe)$ < $t_1.Taxe$ avec $f$ fonction de réparation pour la relation I.
-\end{myexample}
-
-\begin{figure}
-	\centering
-	\includegraphics[scale=1]{img/fig3}
-	\caption{\label{fig3}Les conditions de suspicions sont} représentées par des flèches bleues et le contexte de réparation \\
-	est représenté par des flèches rouges (avec l'opérateur inverse) \\
-\end{figure}
-
-\subsubsection{Contexte de réparation}
-
-Pour chaque couple de tuples $(s,t)\in susp(\mathbb{C},\varphi)$ nous pouvons définir un \emph{contexte de réparation} de la DC $\varphi$ qui se note $rc(s,t\varphi)$. Ce contexte de réparation nous permettra d'assurer que les réparations ne vont pas introduire de nouvelles violations. Le contexte de réparation d'une DC $\varphi$ est défini comme étant:
-
-\begin{mydef}
-Soit $I$ une relation sur $S$, soit $\varphi$ une DC sur $I$, soit $s,t \in I$, et $f$ une fonction de réparation pour I le contexte de réparation de $\varphi$ est noté $rc(s,t,\varphi)$ et vaut:
-
-\begin{displaymath}
-	\begin{split}
-		rc(s,t,\varphi) = 
-		&\{ t.A \overline{\theta} f(s.A) | (A,\Theta) \in pred(\varphi) , s,t \in I \}\cup\\
-		&\{ f(t.A) \overline{\theta} s.A | (A,\Theta) \in pred(\varphi) , s,t \in I  \}\cup\\
-		&\{ f(t.A) \overline{\theta} f(s.A) | (A,\Theta) \in pred(\varphi) , s,t \in I  \}
-	\end{split}
-\end{displaymath}
-
-\end{mydef}
-Si nos reprenons notre figure \ref{suspect1}  ou \ref{fig3}, les arcs rouges représentent le contexte de réparation.
- 
-\begin{myprop}
- Soit $I$ une relation sur $S$ et $\Sigma$ un ensemble de DC pour $I$. Toute relation $I'$ issue de la réparation de $I$ i.e $I' = f(I)$ est \emph{valide} si $I'$ satisfait tous les contextes de réparations.
-\end{myprop}
-
-\begin{myexample} (suite)
-Pour le couple de suspect $(t_4,t_1) \in susp(\mathbb{C},\varphi)$ nous avons le contexte de réparation $rc(t_4,t_1,\varphi) = \{ t_4.Taxe \geq t_1.Taxe \}$ que l'on obtient en prenant l'opposé de l'opérateur du prédicat $(Taxe, <)$ (voir définition) ce qui est représenté par une flèche rouge dans la figure \ref{suspect1}. En considérant toutes les paires de tuples de $susp(\mathbb{C},\varphi)$, nous obtenons l'entièreté du contexte de réparation de $\varphi$ visible graphiquement à la figure \ref{context}. Par les contextes de réparations de $\varphi$ : $f(t_4.Taxe) > t_1.Taxe = 0$ et $f(t_4.Taxe) \leq t_5.Taxe = 0$ par transitivité , nous pouvons affirmer avec certitude que la variable fraiche $fv$ que nous avions assigné vaut $fv = 0$.
-\end{myexample}
-
-Nous avons défini le contexte de réparation pour une DC $\varphi$. Nous pouvons maintenant définir le contexte de réparation pour un ensemble $\Sigma$ de DC : 
-\begin{mydef}
-	$$rc(\mathbb{C},\Sigma) = \bigcup_{(s,t) \in susp(\mathbb{C},\varphi), \varphi \in  \Sigma} rc(s,t,\varphi)$$
-\end{mydef}
-
-\begin{figure}
-\centering
-\includegraphics[scale=1]{img/context.png}
-\caption{\label{context} Contexte de réparation}
-\end{figure}
-
-Nous pouvons exprimer le problème de réparation d'une relation $I$ comme étant un problème de minimisation à résoudre : \\
-
-$\min \sum_{t. \in \mathbb{C}} dist(t.A,f(t.A))$ \\
-sous la contrainte$ rc(\mathbb{C} , \Sigma)$
-
-Il est possible d'utiliser la programmation linéaire pour résoudre ce problème d'optimisation pour les valeurs numériques et une "value frequency map" pour les chaines de caractères \cite{main}.\\
-
-Nous pouvons décomposer $\C$ en plusieurs sous ensemble $\C_1 , \C_2,...,\C_n$ tel que $\forall s,t \in I$, il n'existe pas de $f(t.A) \overline{\Theta_A} f(s.A) \in rc(s,t,\varphi)$ pour $(s,t) \in susp(\C,\varphi)$ avec $\varphi \in \Sigma$ et $\Sigma$ un ensemble de DC pour la relation $I$ sur $S$. Nous pouvons dire que $rc(\C,\Sigma) = rc(\C_1,\Sigma) \cup ... \cup rc(\C_n,\Sigma) $ et donc nous pouvons résoudre notre problème en résolvant chaque $rc(\C_k , \Sigma)$ individuellement.
-
-%\subsection{Algorithme de réparation de donnée}
-%
-%Maintenant nous pouvons décrire l'algorithme de réparation de données
-%
-%\IncMargin{1em}
-%\begin{algorithm}
-%\label{theta}
-%
-%	\DontPrintSemicolon
-%  \caption{DATAREPAIR$(\Sigma,I,\C,\delta_{min}$}
-%  \LinesNumbered
-%    \SetKwInOut{Input}{Entréé}
-%    \SetKwInOut{Output}{Sortie}
-%
-%   % \underline{$\theta$-TolerantRepair} $(\mathbb{D},\Sigma,I)$\;
-%    \Input{une relation $I$ sur $S$, un ensemble de DC $\Sigma$, l'ensemble $\C$ des cellules impliquées dans la réparation, une borne $\delta_{min}$ pour le coût de réparation des données }
-%    \Output{Une assignation de valeurs et de variables fraiches pour les éléments de $\C$ donnant une réparation $I'$}
-%    
-%    initialiser $rc(\C,\Sigma)$ et décomposer en $\C_1, ... ,\C_n$ \;
-%    \Pour{chaque $\C_k$ de $\C$}{
-%     \While{$\C_k \neq \emptyset$}{
-%      \Si{il existe un}{}
-%     
-%     }
-%    }
-%
-%
-%\end{algorithm}\DecMargin{1em}
 
 \chapter{Différence par rapport à l'article de base}
 
@@ -1513,7 +1446,9 @@ La définition bien qu'étant différente d'un point syntaxique représente tout
 
 Dans notre définition, nous avons un nombre de prédicats maximum qui est la norme de $S$. Ici nous ne sommes pas limités et ce à cause des constantes. Et cela peut générer des problèmes lorsque l'on tente de changer une DC lors de la réparation. En effet, si notre DC est de la forme $\varphi = \neg(t.A >10)$ doit-on considérer toutes les variations possibles ($\varphi' = \neg(t.A >11)$,$\varphi'' = \neg(t.A >12)$)? Et malgré que cela puisse être un problème, ce n'est jamais abordé dans l'article \cite{main}.\\
 
-Concernant les variations de contraintes, pour les auteurs de l'article, modifier un prédicat consiste à le supprimer puis le remplacer par un autre différent. Ce concept comporte un problème: toutes les modifications ne devraient pas être traités de la même façon. Par exemple si notre prédicat est de $(A,<)$ il devrait être moins couteux de le modifier en $(A,\leq)$ que de le modifier en $(A, \geq)$. En effet, pour modifier $\{ < \}$ en $ \leq \equiv \{<,= \}$ , il suffit d'ajouter l'opérateur $=$. Pour modifier $\{ <\}$ en $\geq \equiv \{ >,=\}$ il faut ajouter $=$ mais aussi ajouter $>$, et retirer $<$. Notre système de treillis reflète mieux le fait que la seconde modification est plus grande et donc plus couteuse.
+Concernant les variations de contraintes, pour les auteurs de l'article, modifier un prédicat consiste à le supprimer puis le remplacer par un autre différent. Ce concept comporte un problème: toutes les modifications ne devraient pas être traités de la même façon. Par exemple si notre prédicat est de $(A,<)$ il devrait être moins couteux de le modifier en $(A,\leq)$ que de le modifier en $(A, \geq)$. En effet, pour modifier $\{ < \}$ en $ \leq \equiv \{<,= \}$ , il suffit d'ajouter l'opérateur $=$. Pour modifier $\{ <\}$ en $\geq \equiv \{ >,=\}$ il faut ajouter $=$ mais aussi ajouter $>$, et retirer $<$. Notre système de treillis reflète mieux le fait que la seconde modification est plus grande et donc plus couteuse.\\
+
+Pour ce qui est de la réparation de donnée, l'article de référence propose l'utilisation des variables fraiches $fv$ sans discuter des conséquence que l'introduction de telles variables peut avoir sur la théorie. En effet, à aucun moment il ne mentionne le fait que $fv \neq a$ et $fv = a$ sont tous les deux faux.
 
 \chapter{Implémentation}
 
@@ -1543,9 +1478,27 @@ Parmi les bases de données , nous retrouvons bien évidement la relation de la 
 
 Le premier choix fut de faire deux classes pour représenter les prédicats et les denial constraint.
 
-La classe prédicat représente donc un prédicat comme nous l'avons défini, il y a donc un attribut et un opérateur pour ce prédicat. Parmi les opérateurs, nous ne retrouvons que les 6 opérateurs suivants : $ < , >, = , \neq , \geq$ et $\leq$ , les opérateurs $ \top$ et $\bot $ n'étant pas nécessaire. En effet, un prédicat avec l'opérateur $\top$ est toujours vrai, nous ne les écrivons même pas dans l'écriture abrégée dans les chapitres théoriques 2 et 3. L'opérateur $\bot$ étant toujours faux, aucune DC ne devrait l'avoir.
+\subsubsection{Classe Predicate}
 
-La classe DC est une collection (liste) de prédicats. Différentes fonctions permettent de modifier une DC ou de vérifier si une DC est respectée.
+La classe prédicat représente donc un prédicat comme nous l'avons défini, il y a donc un attribut et un opérateur pour ce prédicat. Parmi les opérateurs, nous ne retrouvons que les 8 opérateurs suivants : $ < , >, = , \neq , \geq , \leq , \top$ et $\bot $. 
+
+Nous avons plusieurs fonctions pour manipuler les prédicats. Parmi ces fonctions nous retrouvons:
+\begin{itemize}
+\item La fonction is\_true($row1$,$row2$) permet de savoir si deux tuples $row1$ et $row2$ respecte le prédicat.
+\item La fonction get\_weaker() permet d'obtenir un prédicat plus faible, i.e une variation du prédicat en montant dans le treillis.
+\item La fonction get\_weaker\_not\_empty() permet d'obtenir un prédicat plus faible mais en excluant l'opérateur $\bot$
+\item ...
+\end{itemize}
+
+\subsubsection{Classe DC}
+
+La classe DC est une collection(liste python) de prédicats. Une DC est initialisée avec un opérateur $\top$ pour tout les prédicats.
+
+Nous avons plusieurs fonctions pour manipuler les DCs. Parmi ces fonctions nous retrouvons:
+\begin{itemize}
+\item La fonction get\_violations(data) permettant de savoir quelles sont les couples de tuples de $data$ qui viole la DC.
+\item .
+\end{itemize}
 \chapter{Conclusion}
 TODO
 
