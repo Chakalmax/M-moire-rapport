@@ -793,7 +793,7 @@ Capturer les violations $viol(I,\Sigma)$ permet de connaitre les tuples dont auc
 Lorsqu'un tuple $t$ est suspecté, toutes ses valeurs ne sont pas suspectes. Les valeurs que nous sommes susceptible de changer sont celles impliquées par une DC. On définit les cellules impliquées comme étant:
 
 \begin{mydef}
-Soit une relation $I$ sur $S$ et une DC $\varphi$ sur $S$. Soit deux tuples $s,t \in I$. Les \emph{cellules de $s$ et $t$ impliquées dans la DC $\varphi$ } se notent $cell(I,\varphi)$ et valent $cell(s,t,\varphi) = \{s.A,t.A| A \in S et (A,\theta_A) \in \varphi\, avec\, \theta_A = \varphi(A) = \top \}$
+Soit une relation $I$ sur $S$ et une DC $\varphi$ sur $S$. Soit deux tuples $s,t \in I$. Les \emph{cellules de $s$ et $t$ impliquées dans la DC $\varphi$ } se notent $cell(I,\varphi)$ et valent $cell(s,t,\varphi) = \{s.A,t.A| A \in S et (A,\theta_A) \in \varphi\, avec\, \theta_A = \varphi(A) \not= \top \}$
 \end{mydef}
 
 Si $s,t$ sont deux tuples de $I$ tel que $(s,t)$ ou $(t,s)$ est une violation alors seul les éléments de $cell(s,t,\varphi)$ doivent être éventuellement réparer. Chaque élément de $cell(s,t,\varphi)$ ne doit pas forcément être réparé. Parfois la réparation d'un seul de ses éléments suffit à réparer la violations.
@@ -815,7 +815,7 @@ $$\varphi' =\{(Revenu,>),(Taxe,<) \})$$
 Pour notre relation, l'ensemble des violations est (voir figure \ref{GoodTax}):
  $$ viol(I,\varphi') = \{ (t_5,t_4),(t_6,t_4),(t_7,t_4) \}$$
 
-Dans notre graphe, $(t_5,t_4) \in viol(I,\varphi')$ est représenté par $cell(t_5,t_4;\varphi')$ qui est égale à $\{ t_5.Revenu, t_4.Revenu, t_5.Taxe, t_4.Taxe\}$. Nous voulons éliminer les conflits, ce qui se traduit par éliminer les arcs du graphe. Introduisons d'abord deux Lemmes et une définition: \cite{main}
+Dans notre graphe, $(t_5,t_4) \in viol(I,\varphi')$ est représenté par $cell(t_5,t_4;\varphi')$ qui est égale à $\{ t_5.Revenu, t_4.Revenu, t_5.Taxe, t_4.Taxe\}$. Nous voulons éliminer les violations, ce qui se traduit par éliminer les arcs du graphe. 
 \end{myexample}
 
 Le but d'une réparation est de se débarrasser de tous les arcs du graphe de conflit. Si il n'y a plus d'arc, il n'y a plus de violations, et donc nous avons une relation réparée. Pour éliminer une violation d'un graphe de conflit, i.e pour éliminer un arc, il faut modifier la valeur associée à un nœud de ce graphe. Par exemple si nous avons un arc de $(t,A)$ à $(s,A)$, si nous modifions correctement la valeur $t.A$ ou $s.A$, l'arc est supprimé.\\
@@ -900,7 +900,7 @@ Trouver la réparation de coût minimal à partir d'un ensemble $\Sigma'$ de DC 
 \begin{mydef}
 	L'ensemble des \emph{suspects de $\varphi$} noté $susp( \mathbb{C}, \varphi)$ est un ensemble de couple de tuples qui satisfont tous les prédicats de $\varphi$ qui n'implique pas de cellules impliquées de $\mathbb{C}$, i.e les tuples qui satisfont la \emph{condition de suspicion:}
 
-	$$ sc(s,t,\varphi) = \{ s.A \theta t.A | s,t \in I ; P:(A,\theta) \in v\varphi ; s.A,t.A \not\in \mathbb{C} \}  $$
+	$$ sc(s,t,\varphi) = \{ s.A \theta t.A | s,t \in I ; P:(A,\theta) \in \varphi ; s.A,t.A \not\in \mathbb{C} \}  $$
 	 
 \end{mydef}
 
@@ -954,9 +954,9 @@ Soit $I$ une relation sur $S$, soit $\varphi$ une DC sur $I$, soit $s,t \in I$, 
 \begin{displaymath}
 	\begin{split}
 		rc(s,t,\varphi) = 
-		&\{ t.A \overline{\theta} f(s.A) | (A,\Theta) \in pred(\varphi) , s,t \in I \}\cup\\
-		&\{ f(t.A) \overline{\theta} s.A | (A,\Theta) \in pred(\varphi) , s,t \in I  \}\cup\\
-		&\{ f(t.A) \overline{\theta} f(s.A) | (A,\Theta) \in pred(\varphi) , s,t \in I  \}
+		&\{ t.A \overline{\theta} f(s.A) | (A,\theta) \in \varphi , s,t \in I \}\cup\\
+		&\{ f(t.A) \overline{\theta} s.A | (A,\theta) \in \varphi , s,t \in I  \}\cup\\
+		&\{ f(t.A) \overline{\theta} f(s.A) | (A,\theta) \in \varphi , s,t \in I  \}
 	\end{split}
 \end{displaymath}
 
@@ -1497,8 +1497,12 @@ La classe DC est une collection(liste python) de prédicats. Une DC est initiali
 Nous avons plusieurs fonctions pour manipuler les DCs. Parmi ces fonctions nous retrouvons:
 \begin{itemize}
 \item La fonction get\_violations(data) permettant de savoir quelles sont les couples de tuples de $data$ qui viole la DC.
-\item .
+\item La fonction implies($\varphi$): permet de savoir si la DC courante est implique la DC $\varphi$
+\item La fonction is\_trivial() permettant de savoir si une DC est triviale ou pas.
+\item La fonction get\_varation qui permet d'avoir toutes les variations plus faible que la DC courante. Cette fonction est implémentée comme nos algorithme \ref{variations} et \ref{variations_rec}.
 \end{itemize}
+
+\subsection{Réparation}
 \chapter{Conclusion}
 TODO
 
